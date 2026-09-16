@@ -1,3 +1,4 @@
+import Sprint3 from "./Sprint3";
 import { useMemo, useState } from "react";
 import { filters, stats as kernelStats, type Kernel } from "./filters";
 import { makeScene, scenes, type GrayImage } from "./imageScenes";
@@ -1606,6 +1607,8 @@ function App() {
           by people; CNN filters are learned from data.
         </p>
       </section>
+
+      <Sprint3 />
 
       <footer>
         Built as a Chapter 3 companion lab · Runs entirely in the
