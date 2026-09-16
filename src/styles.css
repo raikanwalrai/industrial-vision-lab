@@ -345,3 +345,86 @@
     min-width: 0;
   }
 }
+
+.kernelMatrixViewer {
+  margin-top: 24px;
+}
+
+.kernelMatrixHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.kernelNameBadge {
+  padding: 10px 14px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.kernelMatrixLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.kernelMatrixCard,
+.kernelSummaryCard {
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.educationalKernelMatrix {
+  display: grid;
+  width: min(100%, 500px);
+  margin-top: 16px;
+  border: 1px solid #c8ced8;
+}
+
+.kernelMatrixCell {
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-right: 1px solid #c8ced8;
+  border-bottom: 1px solid #c8ced8;
+  font-family: monospace;
+}
+
+.kernelPosition {
+  font-size: 11px;
+  opacity: 0.65;
+}
+
+.kernelMatrixCell b {
+  font-size: 17px;
+}
+
+.kernelCenterCell {
+  font-weight: 700;
+  outline: 3px solid currentColor;
+  outline-offset: -3px;
+}
+
+.kernelMatrixHint {
+  margin-top: 16px;
+}
+
+@media (max-width: 800px) {
+  .kernelMatrixHeader,
+  .kernelMatrixLayout {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .kernelNameBadge {
+    width: fit-content;
+  }
+}

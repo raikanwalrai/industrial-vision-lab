@@ -169,6 +169,114 @@ function PixelInspector({
 }
 
 
+function KernelMatrixViewer({
+  kernel,
+  filterName,
+}: {
+  kernel: number[][];
+  filterName: string;
+}) {
+  const kernelSize = `${kernel.length} × ${kernel[0].length}`;
+  const centerRow = Math.floor(kernel.length / 2);
+  const centerCol = Math.floor(kernel[0].length / 2);
+  const centerWeight = kernel[centerRow][centerCol];
+
+  const flat = kernel.flat();
+  const sum = flat.reduce((a, b) => a + b, 0);
+  const min = Math.min(...flat);
+  const max = Math.max(...flat);
+
+  return (
+    <section className="kernelMatrixViewer panel">
+      <div className="sectionEyebrow">KERNEL MATRIX</div>
+
+      <div className="kernelMatrixHeader">
+        <div>
+          <h2>Understand the filter as numbers</h2>
+          <p>
+            A kernel is a small matrix of weights. Each weight is positioned
+            relative to the image neighbourhood that it will act on.
+          </p>
+        </div>
+
+        <div className="kernelNameBadge">
+          {filterName}
+        </div>
+      </div>
+
+      <div className="kernelMatrixLayout">
+        <div className="kernelMatrixCard">
+          <h3>Kernel weights</h3>
+
+          <div
+            className="educationalKernelMatrix"
+            style={{
+              gridTemplateColumns: `repeat(${kernel[0].length}, minmax(55px, 1fr))`,
+            }}
+          >
+            {kernel.flatMap((row, r) =>
+              row.map((value, c) => {
+                const center =
+                  r === centerRow && c === centerCol;
+
+                return (
+                  <div
+                    className={`kernelMatrixCell ${
+                      center ? "kernelCenterCell" : ""
+                    }`}
+                    key={`${r}-${c}`}
+                  >
+                    <span className="kernelPosition">
+                      ({r},{c})
+                    </span>
+
+                    <b>{value.toFixed(3)}</b>
+                  </div>
+                );
+              }),
+            )}
+          </div>
+
+          <p className="kernelMatrixHint">
+            Each cell has two meanings: its <b>position</b> and its
+            numerical <b>weight</b>.
+          </p>
+        </div>
+
+        <div className="kernelSummaryCard">
+          <h3>Kernel summary</h3>
+
+          <div className="metric">
+            <span>Kernel size</span>
+            <b>{kernelSize}</b>
+          </div>
+
+          <div className="metric">
+            <span>Centre weight</span>
+            <b>{centerWeight.toFixed(3)}</b>
+          </div>
+
+          <div className="metric">
+            <span>Σ weights</span>
+            <b>{sum.toFixed(4)}</b>
+          </div>
+
+          <div className="metric">
+            <span>Minimum</span>
+            <b>{min.toFixed(3)}</b>
+          </div>
+
+          <div className="metric">
+            <span>Maximum</span>
+            <b>{max.toFixed(3)}</b>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
 function FilterDetail({ filter }: { filter: Kernel }) {
   return (
     <section className="filterDetail panel">
@@ -443,6 +551,11 @@ export default function App() {
       <PixelInspector
         image={source}
         pixel={pixel}
+      />
+
+      <KernelMatrixViewer
+        kernel={activeKernel}
+        filterName={custom ? "Custom kernel" : selected.name}
       />
 
       {!custom && (
