@@ -133,6 +133,119 @@ function FilterDetail({ filter }: { filter: Kernel }) {
   );
 }
 
+
+function ComparisonLab({
+  source,
+  initialNames,
+}: {
+  source: GrayImage;
+  initialNames: string[];
+}) {
+  const [names, setNames] = useState(initialNames);
+
+  function toggleFilter(name: string) {
+    setNames((current) => {
+      if (current.includes(name)) {
+        return current.filter((n) => n !== name);
+      }
+
+      if (current.length >= 4) {
+        return current;
+      }
+
+      return [...current, name];
+    });
+  }
+
+  const results = useMemo(
+    () =>
+      names.map((name) => {
+        const filter = filters.find((f) => f.name === name)!;
+        const image = convolve(source, filter.values);
+        return {
+          filter,
+          image,
+          stats: statsImage(image),
+        };
+      }),
+    [source, names],
+  );
+
+  return (
+    <section className="comparisonLab panel">
+      <div className="comparisonHeader">
+        <div>
+          <div className="sectionEyebrow">COMPARE FILTERS</div>
+          <h2>What changes when the filter changes?</h2>
+          <p>
+            Keep the image fixed and change the filter. This makes it easier
+            to see what each kernel is actually doing.
+          </p>
+        </div>
+
+        <div className="comparisonCount">
+          {names.length} / 4 selected
+        </div>
+      </div>
+
+      <div className="comparisonControls">
+        {filters.map((filter) => {
+          const active = names.includes(filter.name);
+          const disabled = !active && names.length >= 4;
+
+          return (
+            <button
+              key={filter.name}
+              className={active ? "active" : ""}
+              disabled={disabled}
+              onClick={() => toggleFilter(filter.name)}
+            >
+              {filter.name}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="comparisonGrid">
+        <div className="comparisonCard originalCard">
+          <Canvas image={source} label="Original image" />
+          <h3>Original</h3>
+          <p>Reference image — no filter applied.</p>
+        </div>
+
+        {results.map(({ filter, image, stats }) => (
+          <div className="comparisonCard" key={filter.name}>
+            <Canvas image={image} label={filter.name} />
+            <h3>{filter.name}</h3>
+            <p>{filter.whatDoesItDo}</p>
+
+            <div className="comparisonMetric">
+              <span>Output mean</span>
+              <b>{stats.mean.toFixed(2)}</b>
+            </div>
+
+            <div className="comparisonMetric">
+              <span>Output range</span>
+              <b>
+                {stats.min.toFixed(1)} → {stats.max.toFixed(1)}
+              </b>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="comparisonObservation">
+        <span className="experimentLabel">OBSERVE</span>
+        <p>
+          Ask yourself: Which filters make the image smoother? Which ones
+          emphasize boundaries? Which ones create positive and negative
+          responses? The image is the same — the kernel is what changed.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
   const [sceneId, setSceneId] = useState("shapes");
   const [filterName, setFilterName] = useState("Box 3×3");
@@ -234,6 +347,13 @@ export default function App() {
       </section>
 
       {!custom && <FilterDetail filter={selected} />}
+
+      {!custom && (
+        <ComparisonLab
+          source={source}
+          initialNames={["Box 3×3", "Gaussian σ≈1", "Sobel X"]}
+        />
+      )}
 
       <section className="workbench">
         <div className="panel">
