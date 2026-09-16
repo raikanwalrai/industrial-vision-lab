@@ -428,3 +428,98 @@
     width: fit-content;
   }
 }
+
+.patchKernelAlignment {
+  margin-top: 24px;
+}
+
+.alignmentHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.alignmentPixel {
+  padding: 10px 14px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.alignmentPixel b {
+  margin-left: 8px;
+}
+
+.alignmentMatrices {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 50px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.alignmentCard {
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.alignmentMatrix {
+  display: grid;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 16px;
+  border: 1px solid #c8ced8;
+}
+
+.alignmentCell {
+  min-height: 66px;
+  min-width: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #c8ced8;
+  border-bottom: 1px solid #c8ced8;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.alignmentCell:nth-child(3n) {
+  border-right: 0;
+}
+
+.alignmentCell:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.alignmentCenterCell {
+  font-weight: 700;
+  outline: 3px solid currentColor;
+  outline-offset: -3px;
+}
+
+.alignmentSymbol {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.alignmentExplanation {
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+}
+
+@media (max-width: 800px) {
+  .alignmentHeader,
+  .alignmentMatrices {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .alignmentSymbol {
+    transform: rotate(90deg);
+  }
+}

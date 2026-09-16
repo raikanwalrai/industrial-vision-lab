@@ -169,6 +169,117 @@ function PixelInspector({
 }
 
 
+function PatchKernelAlignment({
+  image,
+  kernel,
+  pixel,
+}: {
+  image: GrayImage;
+  kernel: number[][];
+  pixel: { x: number; y: number };
+}) {
+  const neighbourhood = pixelNeighborhood(
+    image,
+    pixel.x,
+    pixel.y,
+    Math.floor(kernel.length / 2),
+  );
+
+  const rows = kernel.length;
+  const cols = kernel[0].length;
+
+  return (
+    <section className="patchKernelAlignment panel">
+      <div className="sectionEyebrow">PATCH + KERNEL ALIGNMENT</div>
+
+      <div className="alignmentHeader">
+        <div>
+          <h2>Match each image value with its kernel weight</h2>
+          <p>
+            The kernel does not float above the image randomly. Each kernel
+            position lines up with exactly one position in the image patch.
+          </p>
+        </div>
+
+        <div className="alignmentPixel">
+          Pixel
+          <b>
+            ({pixel.x}, {pixel.y})
+          </b>
+        </div>
+      </div>
+
+      <div className="alignmentMatrices">
+        <div className="alignmentCard">
+          <h3>Image patch</h3>
+
+          <div
+            className="alignmentMatrix imageAlignmentMatrix"
+            style={{
+              gridTemplateColumns: `repeat(${cols}, minmax(55px, 1fr))`,
+            }}
+          >
+            {neighbourhood.values.flatMap((row, r) =>
+              row.map((value, c) => (
+                <div
+                  className={
+                    r === Math.floor(rows / 2) &&
+                    c === Math.floor(cols / 2)
+                      ? "alignmentCell alignmentCenterCell"
+                      : "alignmentCell"
+                  }
+                  key={`${r}-${c}`}
+                >
+                  {value.toFixed(1)}
+                </div>
+              )),
+            )}
+          </div>
+        </div>
+
+        <div className="alignmentSymbol">×</div>
+
+        <div className="alignmentCard">
+          <h3>Kernel weights</h3>
+
+          <div
+            className="alignmentMatrix kernelAlignmentMatrix"
+            style={{
+              gridTemplateColumns: `repeat(${cols}, minmax(55px, 1fr))`,
+            }}
+          >
+            {kernel.flatMap((row, r) =>
+              row.map((value, c) => (
+                <div
+                  className={
+                    r === Math.floor(rows / 2) &&
+                    c === Math.floor(cols / 2)
+                      ? "alignmentCell alignmentCenterCell"
+                      : "alignmentCell"
+                  }
+                  key={`${r}-${c}`}
+                >
+                  {value.toFixed(3)}
+                </div>
+              )),
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="alignmentExplanation">
+        <span className="experimentLabel">KEY IDEA</span>
+        <p>
+          The top-left image value is paired with the top-left kernel weight.
+          The centre image value is paired with the centre kernel weight, and
+          so on. The next step is to multiply every matching pair.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+
 function KernelMatrixViewer({
   kernel,
   filterName,
@@ -556,6 +667,12 @@ export default function App() {
       <KernelMatrixViewer
         kernel={activeKernel}
         filterName={custom ? "Custom kernel" : selected.name}
+      />
+
+      <PatchKernelAlignment
+        image={source}
+        kernel={activeKernel}
+        pixel={pixel}
       />
 
       {!custom && (
