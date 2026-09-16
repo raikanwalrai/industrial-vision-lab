@@ -614,3 +614,130 @@
     grid-template-columns: 1fr;
   }
 }
+
+.sumOfProductsOutput {
+  margin-top: 24px;
+}
+
+.sumOutputHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.sumOutputPixel {
+  padding: 10px 14px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.sumOutputPixel b {
+  margin-left: 8px;
+}
+
+.sumProductsCard,
+.sumEquationCard,
+.outputPixelCard,
+.sumOutputExplanation {
+  margin-top: 18px;
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.sumProductMatrix {
+  display: grid;
+  width: fit-content;
+  max-width: 100%;
+  margin-top: 16px;
+  border: 1px solid #c8ced8;
+}
+
+.sumProductCell {
+  min-height: 58px;
+  min-width: 90px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #c8ced8;
+  border-bottom: 1px solid #c8ced8;
+  font-family: monospace;
+  font-size: 15px;
+}
+
+.sumProductCenterCell {
+  font-weight: 700;
+  outline: 3px solid currentColor;
+  outline-offset: -3px;
+}
+
+.sumEquation {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  font-family: monospace;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.sumResult {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.sumResult b {
+  font-family: monospace;
+  font-size: 22px;
+}
+
+.outputPixelCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.outputPixelCard p {
+  margin-bottom: 0;
+}
+
+.outputPixelValue {
+  min-width: 150px;
+  padding: 14px 18px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  text-align: center;
+  font-family: monospace;
+}
+
+.outputPixelValue span,
+.outputPixelValue b {
+  display: block;
+}
+
+.outputPixelValue b {
+  margin-top: 6px;
+  font-size: 24px;
+}
+
+@media (max-width: 800px) {
+  .sumOutputHeader,
+  .outputPixelCard {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .outputPixelValue {
+    justify-self: start;
+  }
+}
+

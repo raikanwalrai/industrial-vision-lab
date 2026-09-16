@@ -373,6 +373,126 @@ function ElementWiseMultiplication({
 }
 
 
+
+function SumOfProductsOutput({
+  image,
+  kernel,
+  pixel,
+}: {
+  image: GrayImage;
+  kernel: number[][];
+  pixel: { x: number; y: number };
+}) {
+  const radius = Math.floor(kernel.length / 2);
+  const neighbourhood = pixelNeighborhood(
+    image,
+    pixel.x,
+    pixel.y,
+    radius,
+  );
+
+  const rows = kernel.length;
+  const cols = kernel[0].length;
+
+  const products = neighbourhood.values.flatMap((row, r) =>
+    row.map((value, c) => value * kernel[r][c]),
+  );
+
+  const total = products.reduce((sum, product) => sum + product, 0);
+
+  const equation = products
+    .map((product, index) => {
+      const rounded = product.toFixed(2);
+      if (index === 0) return rounded;
+      return product >= 0
+        ? `+ ${rounded}`
+        : `− ${Math.abs(product).toFixed(2)}`;
+    })
+    .join(" ");
+
+  return (
+    <section className="sumOfProductsOutput panel">
+      <div className="sectionEyebrow">SUM OF PRODUCTS → OUTPUT PIXEL</div>
+
+      <div className="sumOutputHeader">
+        <div>
+          <h2>Add all the products</h2>
+          <p>
+            The multiplication step gave us one product for every matching
+            image value and kernel weight. Now add all of those products
+            together to produce one output pixel.
+          </p>
+        </div>
+
+        <div className="sumOutputPixel">
+          Output pixel
+          <b>
+            ({pixel.x}, {pixel.y})
+          </b>
+        </div>
+      </div>
+
+      <div className="sumProductsCard">
+        <h3>The products we are adding</h3>
+
+        <div
+          className="sumProductMatrix"
+          style={{
+            gridTemplateColumns: `repeat(${cols}, minmax(70px, 1fr))`,
+          }}
+        >
+          {products.map((product, index) => (
+            <div
+              className={`sumProductCell ${
+                index === Math.floor(products.length / 2)
+                  ? "sumProductCenterCell"
+                  : ""
+              }`}
+              key={index}
+            >
+              {product.toFixed(2)}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="sumEquationCard">
+        <span className="experimentLabel">SUM OF PRODUCTS</span>
+        <div className="sumEquation">{equation}</div>
+        <div className="sumResult">
+          <span>Total</span>
+          <b>{total.toFixed(2)}</b>
+        </div>
+      </div>
+
+      <div className="outputPixelCard">
+        <div>
+          <span className="experimentLabel">OUTPUT PIXEL</span>
+          <p>
+            The sum becomes the filter response at this location.
+          </p>
+        </div>
+
+        <div className="outputPixelValue">
+          <span>
+            g({pixel.x}, {pixel.y})
+          </span>
+          <b>{total.toFixed(2)}</b>
+        </div>
+      </div>
+
+      <div className="sumOutputExplanation">
+        <span className="experimentLabel">KEY IDEA</span>
+        <p>
+          One patch + one kernel → many products → one sum → one output pixel.
+          To create the whole output image, we move the kernel to the next
+          pixel and repeat the same calculation.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function KernelMatrixViewer({
   kernel,
   filterName,
@@ -769,6 +889,12 @@ export default function App() {
       />
 
       <ElementWiseMultiplication
+        image={source}
+        kernel={activeKernel}
+        pixel={pixel}
+      />
+
+      <SumOfProductsOutput
         image={source}
         kernel={activeKernel}
         pixel={pixel}
