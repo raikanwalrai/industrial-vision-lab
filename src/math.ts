@@ -40,3 +40,34 @@ export function patchCalculation(img: GrayImage, kernel: number[][], x=128, y=12
   }
   return {x,y,total,terms};
 }
+
+export function pixelNeighborhood(
+  img: GrayImage,
+  x: number,
+  y: number,
+  radius = 1,
+) {
+  const values: number[][] = [];
+
+  for (let j = -radius; j <= radius; j++) {
+    const row: number[] = [];
+
+    for (let i = -radius; i <= radius; i++) {
+      const yy = Math.max(0, Math.min(img.height - 1, y + j));
+      const xx = Math.max(0, Math.min(img.width - 1, x + i));
+
+      row.push(img.data[yy * img.width + xx]);
+    }
+
+    values.push(row);
+  }
+
+  const center = img.data[y * img.width + x];
+
+  return {
+    x,
+    y,
+    center,
+    values,
+  };
+}

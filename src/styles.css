@@ -238,3 +238,110 @@
     flex-direction: column;
   }
 }
+
+.pixelInspector {
+  margin-top: 24px;
+}
+
+.pixelInspectorHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.selectedPixel {
+  min-width: 150px;
+  padding: 14px 16px;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.selectedPixel span {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.selectedPixel b {
+  font-size: 18px;
+}
+
+.pixelInspectorGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.pixelMatrix,
+.pixelValueCard {
+  border: 1px solid #d8dee8;
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.numericMatrix {
+  display: grid;
+  width: min(100%, 360px);
+  margin-top: 16px;
+  border: 1px solid #c8ced8;
+}
+
+.numericCell {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid #c8ced8;
+  border-bottom: 1px solid #c8ced8;
+  font-family: monospace;
+  font-size: 18px;
+}
+
+.numericCell:nth-child(3n) {
+  border-right: 0;
+}
+
+.numericCell:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.centerCell {
+  font-weight: 700;
+  outline: 3px solid currentColor;
+  outline-offset: -3px;
+}
+
+.pixelValue {
+  font-family: monospace;
+  font-size: 36px;
+  font-weight: 700;
+  margin: 18px 0;
+}
+
+.pixelEquation {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d8dee8;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.learningNote {
+  margin-top: 18px;
+}
+
+@media (max-width: 800px) {
+  .pixelInspectorHeader,
+  .pixelInspectorGrid {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+
+  .selectedPixel {
+    min-width: 0;
+  }
+}

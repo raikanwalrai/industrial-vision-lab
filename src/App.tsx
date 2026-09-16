@@ -5,6 +5,7 @@ import {
   convolve,
   normalizeForDisplay,
   patchCalculation,
+  pixelNeighborhood,
   statsImage,
 } from "./math";
 
@@ -76,6 +77,97 @@ function KernelGrid({
     </div>
   );
 }
+
+function PixelInspector({
+  image,
+  pixel,
+}: {
+  image: GrayImage;
+  pixel: { x: number; y: number };
+}) {
+  const neighbourhood = pixelNeighborhood(
+    image,
+    pixel.x,
+    pixel.y,
+    1,
+  );
+
+  return (
+    <section className="pixelInspector panel">
+      <div className="sectionEyebrow">PIXEL INSPECTOR</div>
+
+      <div className="pixelInspectorHeader">
+        <div>
+          <h2>Understand the image as numbers</h2>
+          <p>
+            An image is a grid of numerical pixel values. The selected
+            coordinate tells us exactly which number we are looking at.
+          </p>
+        </div>
+
+        <div className="selectedPixel">
+          <span>SELECTED PIXEL</span>
+          <b>
+            ({pixel.x}, {pixel.y})
+          </b>
+        </div>
+      </div>
+
+      <div className="pixelInspectorGrid">
+        <div className="pixelMatrix">
+          <h3>Local 3 × 3 neighbourhood</h3>
+
+          <div
+            className="numericMatrix"
+            style={{
+              gridTemplateColumns: `repeat(${neighbourhood.values[0].length}, 1fr)`,
+            }}
+          >
+            {neighbourhood.values.flatMap((row, r) =>
+              row.map((value, c) => {
+                const center = r === 1 && c === 1;
+
+                return (
+                  <div
+                    className={`numericCell ${
+                      center ? "centerCell" : ""
+                    }`}
+                    key={`${r}-${c}`}
+                  >
+                    {value.toFixed(1)}
+                  </div>
+                );
+              }),
+            )}
+          </div>
+        </div>
+
+        <div className="pixelValueCard">
+          <h3>Pixel value</h3>
+
+          <div className="pixelValue">
+            {neighbourhood.center.toFixed(2)}
+          </div>
+
+          <p>
+            Therefore:
+          </p>
+
+          <div className="pixelEquation">
+            I({pixel.x}, {pixel.y}) ={" "}
+            <b>{neighbourhood.center.toFixed(2)}</b>
+          </div>
+
+          <p className="learningNote">
+            This single number is the input value that a filter can use
+            when calculating an output pixel.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 function FilterDetail({ filter }: { filter: Kernel }) {
   return (
@@ -347,6 +439,11 @@ export default function App() {
       </section>
 
       {!custom && <FilterDetail filter={selected} />}
+
+      <PixelInspector
+        image={source}
+        pixel={pixel}
+      />
 
       {!custom && (
         <ComparisonLab
