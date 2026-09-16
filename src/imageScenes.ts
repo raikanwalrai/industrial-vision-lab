@@ -1,4 +1,19 @@
-export type GrayImage = { width: number; height: number; data: Float32Array };
+export type GrayImage = {
+  width: number;
+  height: number;
+  data: Float32Array;
+};
+
+export type Scene = {
+  id: string;
+  label: string;
+  note: string;
+  category: string;
+  learningObjective: string;
+  whyUse: string;
+  experiment: string;
+  recommendedFilters: string[];
+};
 
 export const SIZE = 256;
 
@@ -14,7 +29,10 @@ function rect(img: GrayImage, x0: number, y0: number, x1: number, y1: number, v:
 
 export function makeScene(name: string): GrayImage {
   const img = blank();
-  if (name === "step") {
+
+  if (name === "constant") {
+    img.data.fill(128);
+  } else if (name === "step") {
     for (let y = 0; y < img.height; y++) for (let x = 0; x < img.width; x++) set(img, x, y, x < 128 ? 35 : 220);
   } else if (name === "ramp") {
     for (let y = 0; y < img.height; y++) for (let x = 0; x < img.width; x++) set(img, x, y, x);
@@ -61,11 +79,118 @@ export function makeScene(name: string): GrayImage {
   return img;
 }
 
-export const scenes = [
-  { id: "shapes", label: "Synthetic scene", note: "ideal edges, corners, shapes" },
-  { id: "step", label: "Step edge", note: "single ideal intensity transition" },
-  { id: "ramp", label: "Ramp", note: "smooth intensity change" },
-  { id: "checker", label: "Checkerboard", note: "high-frequency structure" },
-  { id: "corner", label: "Corner", note: "two perpendicular edges" },
-  { id: "noisy", label: "Noisy shapes", note: "tests smoothing and median filtering" },
+export const scenes: Scene[] = [
+  {
+    id: "shapes",
+    label: "Synthetic scene",
+    note: "ideal edges, corners, shapes",
+    category: "General playground",
+    learningObjective: "Explore how different filters respond to different image structures.",
+    whyUse: "This scene contains edges, corners, shapes, circles, and high-frequency structure.",
+    experiment: "Try several filter families and observe which structures each filter responds to.",
+    recommendedFilters: [
+      "Identity",
+      "Box 3×3",
+      "Gaussian σ≈1",
+      "Sobel X",
+      "Sobel Y",
+      "Laplacian 4-neighbour",
+      "Sharpen",
+    ],
+  },
+  {
+    id: "constant",
+    label: "Constant image",
+    note: "uniform intensity everywhere",
+    category: "Mathematical foundation",
+    learningObjective: "Understand constant images, kernel sums, and DC preservation or removal.",
+    whyUse: "Every pixel has the same value, so we can clearly see what a kernel does to uniform intensity.",
+    experiment: "Compare a smoothing filter with a derivative filter. What happens to a constant image?",
+    recommendedFilters: [
+      "Identity",
+      "Box 3×3",
+      "Gaussian σ≈1",
+      "Sobel X",
+      "Sobel Y",
+      "Laplacian 4-neighbour",
+    ],
+  },
+  {
+    id: "step",
+    label: "Step edge",
+    note: "single ideal intensity transition",
+    category: "Edges",
+    learningObjective: "Understand how derivative filters respond to sudden intensity changes.",
+    whyUse: "A step edge contains a sharp transition from dark to bright.",
+    experiment: "Compare Sobel X and Sobel Y. Which direction responds to the edge?",
+    recommendedFilters: [
+      "Sobel X",
+      "Sobel Y",
+      "Prewitt X",
+      "Prewitt Y",
+      "Second derivative X",
+      "Laplacian 4-neighbour",
+    ],
+  },
+  {
+    id: "ramp",
+    label: "Ramp",
+    note: "smooth intensity change",
+    category: "Derivatives",
+    learningObjective: "Understand the difference between first and second derivatives.",
+    whyUse: "A ramp changes gradually, making it useful for studying slope and change of slope.",
+    experiment: "Compare a first derivative with a second derivative on the same ramp.",
+    recommendedFilters: [
+      "Sobel X",
+      "Prewitt X",
+      "Second derivative X",
+      "Laplacian 4-neighbour",
+    ],
+  },
+  {
+    id: "checker",
+    label: "Checkerboard",
+    note: "high-frequency structure",
+    category: "High-frequency structure",
+    learningObjective: "Understand how smoothing and derivative filters respond to rapid local changes.",
+    whyUse: "The checkerboard contains repeated high-frequency intensity transitions.",
+    experiment: "Compare Box 3×3 and Box 9×9. How does neighbourhood size affect detail?",
+    recommendedFilters: [
+      "Box 3×3",
+      "Box 9×9",
+      "Gaussian σ≈1",
+      "Sobel X",
+      "Sobel Y",
+      "Sharpen",
+    ],
+  },
+  {
+    id: "corner",
+    label: "Corner",
+    note: "two perpendicular edges",
+    category: "Corners and structure",
+    learningObjective: "Understand how directional filters respond to different orientations.",
+    whyUse: "A corner contains intensity changes in more than one direction.",
+    experiment: "Compare Sobel X, Sobel Y, and the Laplacian around the corner.",
+    recommendedFilters: [
+      "Sobel X",
+      "Sobel Y",
+      "Laplacian 4-neighbour",
+      "Sharpen",
+    ],
+  },
+  {
+    id: "noisy",
+    label: "Noisy shapes",
+    note: "tests smoothing and later restoration methods",
+    category: "Noise and restoration",
+    learningObjective: "Understand why smoothing filters are useful when images contain unwanted variation.",
+    whyUse: "Random intensity variation makes it easier to observe the effect of smoothing.",
+    experiment: "Compare Box 3×3 and Gaussian. Which structures remain visible after smoothing?",
+    recommendedFilters: [
+      "Box 3×3",
+      "Box 9×9",
+      "Gaussian σ≈1",
+    ],
+  },
 ];
