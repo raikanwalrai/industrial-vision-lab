@@ -493,6 +493,281 @@ function SumOfProductsOutput({
   );
 }
 
+
+function FormulaAndNumericalCalculation({
+  image,
+  kernel,
+  pixel,
+}: {
+  image: GrayImage;
+  kernel: number[][];
+  pixel: { x: number; y: number };
+}) {
+  const calculation = patchCalculation(image, kernel, pixel.x, pixel.y);
+  const kh = kernel.length;
+  const kw = kernel[0].length;
+
+  return (
+    <section className="formulaCalculation panel">
+      <div className="sectionEyebrow">
+        SLICE 2.6 · FORMULA + NUMERICAL CALCULATION
+      </div>
+
+      <div className="formulaHeader">
+        <div>
+          <h2>Turn the picture into a formula</h2>
+          <p>
+            Everything we have done visually can now be written as one
+            mathematical rule for one output pixel.
+          </p>
+        </div>
+
+        <div className="formulaPixel">
+          <span>Selected pixel</span>
+          <b>({pixel.x}, {pixel.y})</b>
+        </div>
+      </div>
+
+      <div className="formulaMainCard">
+        <span className="experimentLabel">GENERAL RULE</span>
+        <div className="bigFormula">
+          g(x,y) = Σᵢ Σⱼ f(x+i, y+j) · h(j,i)
+        </div>
+        <p className="formulaNote">
+          For this lab, the kernel is used in the same orientation in which
+          it is displayed. This is the common image-processing
+          <b> cross-correlation convention</b>; a mathematical convolution
+          would flip the kernel by 180° first.
+        </p>
+      </div>
+
+      <div className="formulaSteps">
+        <article className="formulaStep">
+          <span>1</span>
+          <h3>Take the local patch</h3>
+          <p>
+            The selected output location determines a {kh} × {kw} image
+            neighbourhood.
+          </p>
+        </article>
+
+        <article className="formulaStep">
+          <span>2</span>
+          <h3>Multiply matching values</h3>
+          <p>
+            Each image value is multiplied by the kernel weight at the same
+            position.
+          </p>
+        </article>
+
+        <article className="formulaStep">
+          <span>3</span>
+          <h3>Add the products</h3>
+          <p>
+            The {kh * kw} products are added together. The result is one
+            output value.
+          </p>
+        </article>
+      </div>
+
+      <div className="numericalCalculationCard">
+        <span className="experimentLabel">NUMERICAL EXAMPLE</span>
+
+        <div className="calculationEquation">
+          {calculation.terms.map((term, index) => (
+            <span key={index}>
+              {term}
+              {index < calculation.terms.length - 1 ? "  +  " : ""}
+            </span>
+          ))}
+        </div>
+
+        <div className="numericalResult">
+          <span>g({pixel.x},{pixel.y})</span>
+          <b>{calculation.total.toFixed(2)}</b>
+        </div>
+      </div>
+
+      <div className="formulaMentalModel">
+        <span className="experimentLabel">MENTAL MODEL</span>
+        <p>
+          <b>Patch × Kernel → products → sum → one output pixel.</b>
+          Move the window and repeat this calculation to build the complete
+          filtered image.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function KernelStatisticsLab({
+  kernel,
+  filterName,
+}: {
+  kernel: number[][];
+  filterName: string;
+}) {
+  const flat = kernel.flat();
+  const sum = flat.reduce((a, b) => a + b, 0);
+  const sumSq = flat.reduce((a, b) => a + b * b, 0);
+  const noiseGain = Math.sqrt(sumSq);
+  const min = Math.min(...flat);
+  const max = Math.max(...flat);
+  const mean = sum / flat.length;
+
+  return (
+    <section className="kernelStatisticsLab panel">
+      <div className="sectionEyebrow">SLICE 2.7 · KERNEL STATISTICS</div>
+
+      <div className="statisticsHeader">
+        <div>
+          <h2>Read the kernel as a mathematical object</h2>
+          <p>
+            A kernel is not just a picture. Its weights tell us about
+            brightness preservation, cancellation, and sensitivity to noise.
+          </p>
+        </div>
+
+        <div className="statisticsFilter">{filterName}</div>
+      </div>
+
+      <div className="statisticsGrid">
+        <article className="statExplanation">
+          <span>Σ h</span>
+          <b>{sum.toFixed(4)}</b>
+          <p>
+            The sum of the weights. A sum near 1 commonly preserves the
+            constant/DC component; a sum near 0 commonly cancels constant
+            intensity.
+          </p>
+        </article>
+
+        <article className="statExplanation">
+          <span>Σ h²</span>
+          <b>{sumSq.toFixed(4)}</b>
+          <p>
+            The sum of squared weights. It is directly related to how white
+            noise variance is scaled by a linear filter.
+          </p>
+        </article>
+
+        <article className="statExplanation">
+          <span>√Σ h²</span>
+          <b>{noiseGain.toFixed(4)}</b>
+          <p>
+            A useful noise-gain measure for comparing how strongly a kernel
+            responds to independent equal-variance noise.
+          </p>
+        </article>
+
+        <article className="statExplanation">
+          <span>Range</span>
+          <b>{min.toFixed(3)} → {max.toFixed(3)}</b>
+          <p>
+            The smallest and largest weights show the strength and sign of
+            the kernel's individual contributions.
+          </p>
+        </article>
+      </div>
+
+      <div className="statisticsEquation">
+        <span className="experimentLabel">WHY THIS MATTERS</span>
+        <p>
+          If a constant image has value C, then the filter response is
+          <b> C × Σh</b>. This gives us a simple way to predict what a
+          kernel will do to a perfectly flat region.
+        </p>
+        <div className="constantResponseFormula">
+          flat image C → output = C × Σh
+        </div>
+        <div className="statisticsMean">
+          Mean kernel weight = {mean.toFixed(4)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RawVsDisplayResponse({
+  rawOutput,
+  pixel,
+}: {
+  rawOutput: GrayImage;
+  pixel: { x: number; y: number };
+}) {
+  const displayOutput = normalizeForDisplay(rawOutput);
+  const rawStats = statsImage(rawOutput);
+  const displayStats = statsImage(displayOutput);
+
+  const rawValue = rawOutput.data[pixel.y * rawOutput.width + pixel.x];
+  const displayValue =
+    displayOutput.data[pixel.y * displayOutput.width + pixel.x];
+
+  return (
+    <section className="rawVsDisplayResponse panel">
+      <div className="sectionEyebrow">
+        SLICE 2.8 · RAW vs DISPLAY-NORMALIZED RESPONSE
+      </div>
+
+      <div className="rawDisplayHeader">
+        <div>
+          <h2>Separate the mathematics from the picture</h2>
+          <p>
+            The filter first produces a raw numerical response. The canvas
+            then rescales that response to 0–255 so we can see it clearly.
+          </p>
+        </div>
+
+        <div className="rawDisplayPixel">
+          Pixel ({pixel.x}, {pixel.y})
+        </div>
+      </div>
+
+      <div className="rawDisplayFlow">
+        <div className="responseCard">
+          <span className="experimentLabel">RAW RESPONSE</span>
+          <b>{rawValue.toFixed(4)}</b>
+          <p>Actual value produced by the kernel calculation.</p>
+          <small>
+            range: {rawStats.min.toFixed(2)} → {rawStats.max.toFixed(2)}
+          </small>
+        </div>
+
+        <div className="responseArrow">→</div>
+
+        <div className="responseCard">
+          <span className="experimentLabel">DISPLAY VALUE</span>
+          <b>{displayValue.toFixed(2)}</b>
+          <p>Rescaled to the visible 0–255 range for the canvas.</p>
+          <small>
+            range: {displayStats.min.toFixed(2)} →{" "}
+            {displayStats.max.toFixed(2)}
+          </small>
+        </div>
+      </div>
+
+      <div className="normalizationFormula">
+        <span className="experimentLabel">DISPLAY NORMALIZATION</span>
+        <div>
+          display = (raw − raw<sub>min</sub>) × 255 /
+          (raw<sub>max</sub> − raw<sub>min</sub>)
+        </div>
+        <p>
+          This changes how the response is displayed; it does not change the
+          underlying raw filter calculation.
+        </p>
+      </div>
+
+      <div className="rawDisplayWarning">
+        <b>IMPORTANT:</b> A raw derivative response can be negative, zero,
+        or positive. Display normalization maps the range into visible
+        grayscale values, so the displayed brightness is not automatically
+        the original numerical response.
+      </div>
+    </section>
+  );
+}
+
 function KernelMatrixViewer({
   kernel,
   filterName,
@@ -897,6 +1172,22 @@ export default function App() {
       <SumOfProductsOutput
         image={source}
         kernel={activeKernel}
+        pixel={pixel}
+      />
+
+      <FormulaAndNumericalCalculation
+        image={source}
+        kernel={activeKernel}
+        pixel={pixel}
+      />
+
+      <KernelStatisticsLab
+        kernel={activeKernel}
+        filterName={custom ? "Custom kernel" : selected.name}
+      />
+
+      <RawVsDisplayResponse
+        rawOutput={output}
         pixel={pixel}
       />
 
