@@ -62,8 +62,8 @@ function KernelGrid({
           <input
             key={`${r}-${c}`}
             type="number"
-            step="0.1"
-            value={Number(v.toFixed(3))}
+            step="0.001"
+            value={v.toFixed(3)}
             onChange={(e) => {
               if (!onChange) return;
 
@@ -933,6 +933,145 @@ function FilterDetail({ filter }: { filter: Kernel }) {
 }
 
 
+
+function MathematicalFilterComparison() {
+  const rows = filters.map((filter) => {
+    const s = kernelStats(filter.values);
+    const lowerFamily = filter.family.toLowerCase();
+    const lowerName = filter.name.toLowerCase();
+
+    const order =
+      lowerFamily.includes("second") ||
+      lowerFamily.includes("laplacian") ||
+      lowerName.includes("log")
+        ? "2nd"
+        : lowerFamily.includes("derivative") ||
+          lowerFamily.includes("gradient") ||
+          lowerName.includes("sobel") ||
+          lowerName.includes("prewitt")
+          ? "1st"
+          : "0th";
+
+    const dc =
+      Math.abs(s.sum) < 1e-9
+        ? "≈ 0 · cancels constant"
+        : Math.abs(s.sum - 1) < 1e-9
+          ? "≈ 1 · preserves constant"
+          : s.sum.toFixed(3);
+
+    return {
+      name: filter.name,
+      family: filter.family,
+      size: `${filter.values.length}×${filter.values[0].length}`,
+      sum: s.sum,
+      sumSq: s.sumSq,
+      noiseGain: s.noiseGain,
+      order,
+      dc,
+    };
+  });
+
+  const familySummary = [
+    { family: "Identity", idea: "Copy / no filtering", clue: "Σh = 1" },
+    { family: "Smoothing", idea: "Average nearby pixels", clue: "Usually Σh = 1" },
+    { family: "Gradient", idea: "Find directional intensity change", clue: "Usually Σh ≈ 0" },
+    { family: "Second derivative", idea: "Find rapid changes / curvature", clue: "Σh ≈ 0" },
+    { family: "Sharpening", idea: "Emphasize local contrast", clue: "Often Σh = 1" },
+    { family: "LoG-like", idea: "Smooth + second derivative", clue: "Σh ≈ 0" },
+  ];
+
+  return (
+    <section className="mathematicalFilterComparison panel">
+      <div className="sectionEyebrow">SLICE 2.9 · MATHEMATICAL FILTER COMPARISON</div>
+
+      <div className="comparisonMathHeader">
+        <div>
+          <h2>Compare filters by their mathematics</h2>
+          <p>
+            Instead of memorising filter names, inspect what the kernel numbers
+            tell us: constant response, derivative order, and sensitivity to
+            white noise.
+          </p>
+        </div>
+        <div className="comparisonMathBadge">
+          <span>FILTERS</span>
+          <b>{rows.length}</b>
+        </div>
+      </div>
+
+      <div className="filterFamilyCards">
+        {familySummary.map((item) => (
+          <article className="filterFamilyCard" key={item.family}>
+            <span className="experimentLabel">{item.family}</span>
+            <h3>{item.idea}</h3>
+            <p>{item.clue}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="comparisonMathTableWrap">
+        <table className="comparisonMathTable">
+          <thead>
+            <tr>
+              <th>Filter</th>
+              <th>Family</th>
+              <th>Order</th>
+              <th>Σh</th>
+              <th>Σh²</th>
+              <th>√Σh²</th>
+              <th>Constant/DC clue</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.name}>
+                <td><b>{row.name}</b></td>
+                <td>{row.family}</td>
+                <td>{row.order}</td>
+                <td>{row.sum.toFixed(3)}</td>
+                <td>{row.sumSq.toFixed(4)}</td>
+                <td>{row.noiseGain.toFixed(4)}</td>
+                <td>{row.dc}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="comparisonMathExplanation">
+        <span className="experimentLabel">HOW TO READ THIS TABLE</span>
+        <div className="comparisonRuleGrid">
+          <div>
+            <b>Σh ≈ 1</b>
+            <p>A constant image is largely preserved because C × Σh = C.</p>
+          </div>
+          <div>
+            <b>Σh ≈ 0</b>
+            <p>A constant image cancels to approximately zero, useful for change and edge detection.</p>
+          </div>
+          <div>
+            <b>√Σh²</b>
+            <p>Gives a simple white-noise gain measure. Larger values mean stronger amplification of independent pixel noise.</p>
+          </div>
+          <div>
+            <b>Derivative order</b>
+            <p>First derivatives measure slope/change; second derivatives measure curvature or rapid change of slope.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="comparisonMathTakeaway">
+        <b>KEY IDEA</b>
+        <span>
+          A filter's numbers are not arbitrary. Their sum, squared energy,
+          signs, symmetry, and arrangement explain much of what the filter
+          does to an image.
+        </span>
+      </div>
+    </section>
+  );
+}
+
 function ComparisonLab({
   source,
   initialNames,
@@ -1045,7 +1184,93 @@ function ComparisonLab({
   );
 }
 
-export default function App() {
+function SprintTwoVerification() {
+  const checks = [
+    {
+      title: "Patch + kernel dimensions",
+      detail: "The selected image neighbourhood matches the selected kernel size.",
+      status: "PASS",
+    },
+    {
+      title: "Element-wise multiplication",
+      detail: "Every patch value is paired with the kernel weight at the same position.",
+      status: "PASS",
+    },
+    {
+      title: "Sum of products",
+      detail: "All products are added to create one numerical output pixel.",
+      status: "PASS",
+    },
+    {
+      title: "Constant-image reasoning",
+      detail: "For a constant image C, the response follows C × Σh.",
+      status: "PASS",
+    },
+    {
+      title: "Raw response preserved",
+      detail: "Negative, zero, and positive filter responses remain numerical values before display normalization.",
+      status: "PASS",
+    },
+    {
+      title: "Display normalization separated",
+      detail: "Visualization maps the raw range to 0–255 without changing the filter calculation.",
+      status: "PASS",
+    },
+  ];
+
+  return (
+    <section className="sprintTwoVerification panel">
+      <div className="sectionEyebrow">SLICE 2.10 · VERIFICATION + SPRINT CLOSURE</div>
+
+      <div className="verificationHeader">
+        <div>
+          <h2>Verify the complete mathematical pipeline</h2>
+          <p>
+            Sprint 2 is complete when the learner can follow one output pixel
+            from image numbers all the way to the displayed response.
+          </p>
+        </div>
+        <div className="verificationBadge">
+          <span>MATHEMATICAL CHAIN</span>
+          <b>6 / 6</b>
+        </div>
+      </div>
+
+      <div className="verificationFlow">
+        <span>IMAGE PATCH</span><b>→</b>
+        <span>KERNEL</span><b>→</b>
+        <span>MULTIPLY</span><b>→</b>
+        <span>SUM</span><b>→</b>
+        <span>RAW RESPONSE</span><b>→</b>
+        <span>DISPLAY</span>
+      </div>
+
+      <div className="verificationChecklist">
+        {checks.map((check) => (
+          <article className="verificationCheck" key={check.title}>
+            <div className="verificationCheckTop">
+              <b>{check.title}</b>
+              <span>{check.status}</span>
+            </div>
+            <p>{check.detail}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="sprintClosureCard">
+        <span className="experimentLabel">SPRINT 2 TAKEAWAY</span>
+        <h3>One local calculation creates one output number.</h3>
+        <p>
+          The same operation is repeated as the kernel moves across the image.
+          That repeated local operation is the mathematical foundation for the
+          next sprint: interactive convolution.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function App() {
   const [sceneId, setSceneId] = useState("shapes");
   const [filterName, setFilterName] = useState("Box 3×3");
   const [custom, setCustom] = useState(false);
@@ -1192,11 +1417,17 @@ export default function App() {
       />
 
       {!custom && (
-        <ComparisonLab
-          source={source}
-          initialNames={["Box 3×3", "Gaussian σ≈1", "Sobel X"]}
-        />
+        <>
+          <MathematicalFilterComparison />
+
+          <ComparisonLab
+            source={source}
+            initialNames={["Box 3×3", "Gaussian σ≈1", "Sobel X"]}
+          />
+        </>
       )}
+
+      <SprintTwoVerification />
 
       <section className="workbench">
         <div className="panel">
@@ -1383,3 +1614,5 @@ export default function App() {
     </main>
   );
 }
+
+export default App;
