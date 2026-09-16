@@ -279,6 +279,99 @@ function PatchKernelAlignment({
   );
 }
 
+function ElementWiseMultiplication({
+  image,
+  kernel,
+  pixel,
+}: {
+  image: GrayImage;
+  kernel: number[][];
+  pixel: { x: number; y: number };
+}) {
+  const radius = Math.floor(kernel.length / 2);
+  const neighbourhood = pixelNeighborhood(
+    image,
+    pixel.x,
+    pixel.y,
+    radius,
+  );
+
+  const rows = kernel.length;
+  const cols = kernel[0].length;
+
+  return (
+    <section className="elementWiseMultiplication panel">
+      <div className="sectionEyebrow">ELEMENT-WISE MULTIPLICATION</div>
+
+      <div className="elementWiseHeader">
+        <div>
+          <h2>Multiply each matching pair</h2>
+          <p>
+            Take one image value and the kernel weight at the same position.
+            Multiply them. Do this for every position in the patch.
+          </p>
+        </div>
+
+        <div className="elementWisePixel">
+          Pixel
+          <b>
+            ({pixel.x}, {pixel.y})
+          </b>
+        </div>
+      </div>
+
+      <div className="productMatrixCard">
+        <h3>Image value × kernel weight = product</h3>
+
+        <div
+          className="productMatrix"
+          style={{
+            gridTemplateColumns: `repeat(${cols}, minmax(70px, 1fr))`,
+          }}
+        >
+          {neighbourhood.values.flatMap((row, r) =>
+            row.map((value, c) => {
+              const weight = kernel[r][c];
+              const product = value * weight;
+              const center =
+                r === Math.floor(rows / 2) &&
+                c === Math.floor(cols / 2);
+
+              return (
+                <div
+                  className={`productCell ${
+                    center ? "productCenterCell" : ""
+                  }`}
+                  key={`${r}-${c}`}
+                >
+                  <span className="productPair">
+                    {value.toFixed(1)} × {weight.toFixed(3)}
+                  </span>
+                  <b>= {product.toFixed(2)}</b>
+                </div>
+              );
+            }),
+          )}
+        </div>
+      </div>
+
+      <div className="elementWiseExplanation">
+        <span className="experimentLabel">KEY IDEA</span>
+        <p>
+          Every image value has been multiplied by the kernel weight in the
+          same position. These products are the individual pieces that will
+          be added together in the next step.
+        </p>
+      </div>
+
+      <div className="elementWiseWarning">
+        <b>STOP HERE.</b> We have multiplied the matching pairs, but we have
+        <b> not added the products yet.</b>
+      </div>
+    </section>
+  );
+}
+
 
 function KernelMatrixViewer({
   kernel,
@@ -670,6 +763,12 @@ export default function App() {
       />
 
       <PatchKernelAlignment
+        image={source}
+        kernel={activeKernel}
+        pixel={pixel}
+      />
+
+      <ElementWiseMultiplication
         image={source}
         kernel={activeKernel}
         pixel={pixel}
