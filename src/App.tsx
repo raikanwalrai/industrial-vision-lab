@@ -1,3 +1,4 @@
+import AppShell from "./components/AppShell";
 import Sprint3 from "./Sprint3";
 import { useMemo, useState } from "react";
 import { filters, stats as kernelStats, type Kernel } from "./filters";
@@ -1306,7 +1307,8 @@ function App() {
   }
 
   return (
-    <main>
+    <AppShell>
+      <main>
       <header>
         <div className="eyebrow">ID6004W · INDUSTRIAL VISION</div>
         <h1>The Filter Zoo — Interactive Lab</h1>
@@ -1614,7 +1616,8 @@ function App() {
         Built as a Chapter 3 companion lab · Runs entirely in the
         browser · No image data is uploaded
       </footer>
-    </main>
+      </main>
+    </AppShell>
   );
 }
 
