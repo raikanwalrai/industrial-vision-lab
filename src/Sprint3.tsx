@@ -295,6 +295,70 @@ function scanPatch(
 }
 
 
+const convolutionTeachingKernel = [
+  [1, 2, 3],
+  [0, 1, 0],
+  [-1, -2, -3],
+];
+
+const convolutionTeachingPatch = [
+  [10, 20, 30],
+  [40, 50, 60],
+  [70, 80, 90],
+];
+
+
+function flipKernel180(kernel: number[][]) {
+  return kernel
+    .slice()
+    .reverse()
+    .map((row) => row.slice().reverse());
+}
+
+
+function calculateCorrelation(
+  patch: number[][],
+  kernel: number[][],
+) {
+  return patch.reduce(
+    (total, row, r) =>
+      total +
+      row.reduce(
+        (rowTotal, value, c) =>
+          rowTotal + value * kernel[r][c],
+        0,
+      ),
+    0,
+  );
+}
+
+
+function calculateTrueConvolution(
+  patch: number[][],
+  kernel: number[][],
+) {
+  const flipped = flipKernel180(kernel);
+
+  return patch.reduce(
+    (total, row, r) =>
+      total +
+      row.reduce(
+        (rowTotal, value, c) =>
+          rowTotal + value * flipped[r][c],
+        0,
+      ),
+    0,
+  );
+}
+
+
+function formatNumber(value: number) {
+  return Number.isInteger(value)
+    ? value.toString()
+    : value.toFixed(3);
+}
+
+
 function scanOutputValue(
   patch: number[][],
   kernel: number[][],
@@ -1859,6 +1923,255 @@ export default function Sprint3() {
           stride controls <em>how far we move</em>, padding controls
           <em> how much border we add</em>, and the formula tells us
           <em> how large the output will be</em> before we perform the scan.
+        </div>
+      </Section>
+
+      <Section number="3.10" title="Correlation vs true convolution">
+        <div className="s3-d-lab">
+          <div className="s3-d-intro">
+            <span className="s3-d-eyebrow">THE IMPORTANT DISTINCTION</span>
+            <h3>
+              The current lab uses the kernel as written.
+            </h3>
+            <p>
+              Technically, that operation is <strong>cross-correlation</strong>.
+              In mathematical convolution, we first rotate the kernel by
+              180° and then perform the same multiply-and-add calculation.
+            </p>
+          </div>
+
+          <div className="s3-d-flow">
+            <div className="s3-d-flow-card">
+              <span className="s3-d-step">1</span>
+              <div>
+                <strong>CORRELATION</strong>
+                <span>Use the kernel exactly as written.</span>
+              </div>
+            </div>
+
+            <div className="s3-d-flow-arrow">→</div>
+
+            <div className="s3-d-flow-card">
+              <span className="s3-d-step">2</span>
+              <div>
+                <strong>TRUE CONVOLUTION</strong>
+                <span>Rotate the kernel 180° first.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="s3-d-kernel-banner">
+            <div>
+              <span className="s3-d-eyebrow">TEACHING KERNEL</span>
+              <strong>
+                We deliberately use an asymmetric kernel.
+              </strong>
+              <p>
+                If the kernel were symmetric, the rotation could look like
+                nothing happened. This kernel makes the difference visible.
+              </p>
+            </div>
+
+            <code>
+              K = [1  2  3; 0  1  0; −1  −2  −3]
+            </code>
+          </div>
+
+          <div className="s3-d-comparison">
+            <article className="s3-d-card">
+              <div className="s3-d-card-heading">
+                <div>
+                  <span className="s3-d-eyebrow">CURRENT LAB OPERATION</span>
+                  <h4>Correlation</h4>
+                </div>
+                <span className="s3-d-badge">KERNEL AS WRITTEN</span>
+              </div>
+
+              <div className="s3-d-matrices">
+                <div className="s3-d-matrix-group">
+                  <span>IMAGE PATCH</span>
+                  <div className="s3-d-matrix">
+                    {convolutionTeachingPatch.flatMap(
+                      (row, r) =>
+                        row.map((value, c) => (
+                          <div
+                            className="s3-d-cell"
+                            key={`corr-patch-${r}-${c}`}
+                          >
+                            {formatNumber(value)}
+                          </div>
+                        )),
+                    )}
+                  </div>
+                </div>
+
+                <strong className="s3-d-times">×</strong>
+
+                <div className="s3-d-matrix-group">
+                  <span>KERNEL</span>
+                  <div className="s3-d-matrix">
+                    {convolutionTeachingKernel.flatMap((row, r) =>
+                      row.map((value, c) => (
+                        <div
+                          className="s3-d-cell kernel"
+                          key={`corr-kernel-${r}-${c}`}
+                        >
+                          {formatNumber(value)}
+                        </div>
+                      )),
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="s3-d-calculation">
+                <span>CALCULATION</span>
+
+                {convolutionTeachingPatch.map(
+                  (row, r) =>
+                    <div className="s3-d-calc-row" key={`corr-calc-${r}`}>
+                      {row.map((value, c) => (
+                        <span key={`corr-term-${r}-${c}`}>
+                          {formatNumber(value)} ×{" "}
+                          {formatNumber(convolutionTeachingKernel[r][c])}
+                        </span>
+                      ))}
+                    </div>,
+                )}
+
+                <div className="s3-d-sum">
+                  Σ products =
+                  <strong>
+                    {" "}
+                    {formatNumber(
+                      calculateCorrelation(
+                        convolutionTeachingPatch,
+                        convolutionTeachingKernel,
+                      ),
+                    )}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="s3-d-result">
+                <span>CORRELATION RESULT</span>
+                <strong>
+                  {formatNumber(
+                    calculateCorrelation(
+                      convolutionTeachingPatch,
+                      convolutionTeachingKernel,
+                    ),
+                  )}
+                </strong>
+              </div>
+            </article>
+
+            <div className="s3-d-rotate">
+              <div>↻</div>
+              <strong>ROTATE</strong>
+              <span>180°</span>
+            </div>
+
+            <article className="s3-d-card true">
+              <div className="s3-d-card-heading">
+                <div>
+                  <span className="s3-d-eyebrow">MATHEMATICAL DEFINITION</span>
+                  <h4>True Convolution</h4>
+                </div>
+                <span className="s3-d-badge">FLIPPED KERNEL</span>
+              </div>
+
+              <div className="s3-d-matrices">
+                <div className="s3-d-matrix-group">
+                  <span>SAME IMAGE PATCH</span>
+                  <div className="s3-d-matrix">
+                    {convolutionTeachingPatch.flatMap(
+                      (row, r) =>
+                        row.map((value, c) => (
+                          <div
+                            className="s3-d-cell"
+                            key={`true-patch-${r}-${c}`}
+                          >
+                            {formatNumber(value)}
+                          </div>
+                        )),
+                    )}
+                  </div>
+                </div>
+
+                <strong className="s3-d-times">×</strong>
+
+                <div className="s3-d-matrix-group">
+                  <span>180° ROTATED KERNEL</span>
+                  <div className="s3-d-matrix">
+                    {flipKernel180(convolutionTeachingKernel).flatMap(
+                      (row, r) =>
+                        row.map((value, c) => (
+                          <div
+                            className="s3-d-cell flipped"
+                            key={`true-kernel-${r}-${c}`}
+                          >
+                            {formatNumber(value)}
+                          </div>
+                        )),
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="s3-d-calculation">
+                <span>CALCULATION</span>
+
+                {convolutionTeachingPatch.map(
+                  (row, r) =>
+                    <div className="s3-d-calc-row" key={`true-calc-${r}`}>
+                      {row.map((value, c) => (
+                        <span key={`true-term-${r}-${c}`}>
+                          {formatNumber(value)} ×{" "}
+                          {formatNumber(
+                            flipKernel180(convolutionTeachingKernel)[r][c],
+                          )}
+                        </span>
+                      ))}
+                    </div>,
+                )}
+
+                <div className="s3-d-sum">
+                  Σ products =
+                  <strong>
+                    {" "}
+                    {formatNumber(
+                      calculateTrueConvolution(
+                        convolutionTeachingPatch,
+                        convolutionTeachingKernel,
+                      ),
+                    )}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="s3-d-result">
+                <span>TRUE CONVOLUTION RESULT</span>
+                <strong>
+                  {formatNumber(
+                    calculateTrueConvolution(
+                      convolutionTeachingPatch,
+                      convolutionTeachingKernel,
+                    ),
+                  )}
+                </strong>
+              </div>
+            </article>
+          </div>
+
+          <div className="s3-d-big-idea">
+            <strong>THE BIG IDEA</strong>
+            <p>
+              Both calculations use the <strong>same image patch</strong>.
+              The only change is the kernel orientation. Therefore an
+              asymmetric kernel can produce two different numerical results.
+            </p>
+          </div>
         </div>
       </Section>
 
