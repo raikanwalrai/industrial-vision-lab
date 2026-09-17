@@ -45,13 +45,196 @@ function drawGray(
   ctx.putImageData(pixels, 0, 0);
 }
 
+
+function drawIlluminationField(
+  canvas: HTMLCanvasElement,
+  field: GrayImage,
+) {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  const pixels = ctx.createImageData(field.width, field.height);
+
+  for (let i = 0; i < field.data.length; i++) {
+    // The mathematical illumination field is relative:
+    // approximately 0.35 ... 1.00.
+    //
+    // For display only, map it to normal 8-bit grayscale:
+    // 0.35 ... 1.00 -> approximately 89 ... 255.
+    const value = Math.max(
+      0,
+      Math.min(255, field.data[i] * 255),
+    );
+
+    const p = i * 4;
+    pixels.data[p] = value;
+    pixels.data[p + 1] = value;
+    pixels.data[p + 2] = value;
+    pixels.data[p + 3] = 255;
+  }
+
+  canvas.width = field.width;
+  canvas.height = field.height;
+  ctx.putImageData(pixels, 0, 0);
+}
+
+function makeIlluminationField(
+  width: number,
+  height: number,
+  strength: number,
+): GrayImage {
+  const data = new Float32Array(width * height);
+  const cx = width * 0.52;
+  const cy = height * 0.48;
+  const maxDist = Math.sqrt(cx * cx + cy * cy);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const dx = x - cx;
+      const dy = y - cy;
+      const distance = Math.sqrt(dx * dx + dy * dy) / maxDist;
+      const value = 1 - strength * Math.min(1, distance);
+
+      data[y * width + x] = Math.max(0.35, value);
+    }
+  }
+
+  return { width, height, data };
+}
+
+function makeEstimatedIlluminationField(
+  field: GrayImage,
+  estimationError: number,
+): GrayImage {
+  const data = new Float32Array(field.data.length);
+
+  for (let y = 0; y < field.height; y++) {
+    for (let x = 0; x < field.width; x++) {
+      const nx = x / Math.max(1, field.width - 1);
+      const ny = y / Math.max(1, field.height - 1);
+
+      // Deterministic spatial estimation error.
+      // At 0% error this becomes exactly 1.0,
+      // so estimated field = true field.
+      const pattern =
+        0.5 * Math.sin(2 * Math.PI * nx) +
+        0.5 * Math.cos(2 * Math.PI * ny);
+
+      const factor = 1 + estimationError * pattern;
+
+      data[y * field.width + x] = Math.max(
+        0.05,
+        field.data[y * field.width + x] * factor,
+      );
+    }
+  }
+
+  return {
+    width: field.width,
+    height: field.height,
+    data,
+  };
+}
+
+function applyIllumination(
+  image: GrayImage,
+  field: GrayImage,
+): GrayImage {
+  const data = new Float32Array(image.data.length);
+
+  for (let i = 0; i < image.data.length; i++) {
+    data[i] = Math.max(
+      0,
+      Math.min(255, image.data[i] * field.data[i]),
+    );
+  }
+
+  return {
+    width: image.width,
+    height: image.height,
+    data,
+  };
+}
+
+function correctIllumination(
+  image: GrayImage,
+  field: GrayImage,
+): GrayImage {
+  const data = new Float32Array(image.data.length);
+
+  for (let i = 0; i < image.data.length; i++) {
+    data[i] = Math.max(
+      0,
+      Math.min(
+        255,
+        image.data[i] / Math.max(field.data[i], 0.01),
+      ),
+    );
+  }
+
+  return {
+    width: image.width,
+    height: image.height,
+    data,
+  };
+}
+
 export default function Sprint5Page() {
   const [active, setActive] = useState("A");
   const [noiseKind, setNoiseKind] = useState<NoiseKind>("gaussian");
   const [strength, setStrength] = useState(18);
   const [seed, setSeed] = useState(42);
 
+
   const clean = useMemo(() => makeScene("shapes"), []);
+
+  const [illuminationStrength, setIlluminationStrength] = useState(0.55);
+
+  const [estimationError, setEstimationError] = useState(0);
+
+
+  const illuminationField = useMemo(
+    () =>
+      makeIlluminationField(
+        clean.width,
+        clean.height,
+        illuminationStrength,
+      ),
+    [clean, illuminationStrength],
+  );
+
+  const estimatedIlluminationField = useMemo(
+    () =>
+      makeEstimatedIlluminationField(
+        illuminationField,
+        estimationError,
+      ),
+    [illuminationField, estimationError],
+  );
+
+  const unevenIlluminated = useMemo(
+    () => applyIllumination(clean, illuminationField),
+    [clean, illuminationField],
+  );
+
+  const illuminationCorrected = useMemo(
+    () =>
+      correctIllumination(
+        unevenIlluminated,
+        estimatedIlluminationField,
+      ),
+    [unevenIlluminated, estimatedIlluminationField],
+  );
+
+  const illuminationMetrics = useMemo(
+    () =>
+      imageErrorMetrics(
+        clean,
+        illuminationCorrected,
+      ),
+    [clean, illuminationCorrected],
+  );
+
 
   const noisy = useMemo(() => {
     if (noiseKind === "gaussian") return addGaussianNoise(clean, strength, seed);
@@ -87,6 +270,11 @@ export default function Sprint5Page() {
   const meanRef = useRef<HTMLCanvasElement>(null);
   const gaussianRef = useRef<HTMLCanvasElement>(null);
   const medianRef = useRef<HTMLCanvasElement>(null);
+  const illuminationRef = useRef<HTMLCanvasElement>(null);
+  const backgroundRef = useRef<HTMLCanvasElement>(null);
+  const estimatedRef = useRef<HTMLCanvasElement>(null);
+  const correctedRef = useRef<HTMLCanvasElement>(null);
+
 
   useEffect(() => {
     if (cleanRef.current) drawGray(cleanRef.current, clean);
@@ -97,10 +285,43 @@ export default function Sprint5Page() {
     if (meanRef.current) drawGray(meanRef.current, meanRestored);
     if (gaussianRef.current) drawGray(gaussianRef.current, gaussianRestored);
     if (medianRef.current) drawGray(medianRef.current, medianRestored);
-  }, [clean, noisy, metrics.errorImage, meanRestored, gaussianRestored, medianRestored]);
+
+    if (illuminationRef.current) {
+      drawGray(illuminationRef.current, unevenIlluminated);
+    }
+
+    if (backgroundRef.current) {
+      drawIlluminationField(
+        backgroundRef.current,
+        illuminationField,
+      );
+    }
+
+    if (estimatedRef.current) {
+      drawIlluminationField(
+        estimatedRef.current,
+        estimatedIlluminationField,
+      );
+    }
+
+    if (correctedRef.current) {
+      drawGray(correctedRef.current, illuminationCorrected);
+    }
+  }, [
+    clean,
+    noisy,
+    metrics.errorImage,
+    meanRestored,
+    gaussianRestored,
+    medianRestored,
+    unevenIlluminated,
+    illuminationField,
+    estimatedIlluminationField,
+    illuminationCorrected,
+  ]);
 
   const current = GROUPS.find((g) => g[0] === active)!;
-  const live = active === "A" || active === "B" || active === "C" || active === "D";
+  const live = active === "A" || active === "B" || active === "C" || active === "D" || active === "E";
 
   return (
     <div className="s5-page">
@@ -573,6 +794,225 @@ export default function Sprint5Page() {
                 <small>Only the degradation condition changes.</small>
               </article>
             </div>
+          </div>
+        </section>
+      )}
+
+
+      {active === "E" && (
+        <section className="s5-illuminationLab">
+          <div className="s5-labHeader">
+            <div>
+              <div className="s5-label">GROUP E · ILLUMINATION LAB</div>
+              <h2>Separate object information from lighting variation</h2>
+              <p>
+                Start with a clean reference, apply a controlled spatial
+                illumination field, then divide by that known field to recover
+                a more uniform image.
+              </p>
+            </div>
+
+            <div className="s5-liveBadge">● CONTROLLED</div>
+          </div>
+
+          <div className="s5-illuminationModel">
+            <article>
+              <span>IMAGE FORMATION</span>
+              <strong>I(x,y) = R(x,y)L(x,y)</strong>
+              <small>
+                Observed intensity combines reflectance and illumination.
+              </small>
+            </article>
+
+            <article>
+              <span>KNOWN FIELD</span>
+              <strong>ĤL(x,y) ≈ L(x,y)</strong>
+              <small>
+                The estimated illumination may contain calibration error.
+              </small>
+            </article>
+
+            <article>
+              <span>CORRECTION</span>
+              <strong>R̂ = I / B</strong>
+              <small>
+                Divide out the estimated lighting variation.
+              </small>
+            </article>
+          </div>
+
+          <div className="s5-controls s5-illuminationControls">
+            <label>
+              <span>
+                ILLUMINATION STRENGTH ·{" "}
+                {Math.round(illuminationStrength * 100)}%
+              </span>
+
+              <input
+                type="range"
+                min={0}
+                max={80}
+                step={1}
+                value={Math.round(illuminationStrength * 100)}
+                onChange={(e) =>
+                  setIlluminationStrength(
+                    Number(e.target.value) / 100,
+                  )
+                }
+              />
+
+              <small>
+                Controls how strongly lighting varies across the image.
+              </small>
+            </label>
+
+            <label>
+              <span>
+                BACKGROUND ESTIMATION ERROR ·{" "}
+                {Math.round(estimationError * 100)}%
+              </span>
+
+              <input
+                type="range"
+                min={0}
+                max={20}
+                step={1}
+                value={Math.round(estimationError * 100)}
+                onChange={(e) =>
+                  setEstimationError(
+                    Number(e.target.value) / 100,
+                  )
+                }
+              />
+
+              <small>
+                Controls how different the estimated field is from the true field.
+              </small>
+            </label>
+          </div>
+
+          <div className="s5-imageGrid s5-illuminationGrid">
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle">
+                <span>01</span>
+                <strong>CLEAN REFERENCE</strong>
+              </div>
+              <canvas ref={cleanRef} />
+              <small>Ground truth: R(x,y)</small>
+            </article>
+
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle">
+                <span>02</span>
+                <strong>UNEVEN ILLUMINATION</strong>
+              </div>
+              <canvas ref={illuminationRef} />
+              <small>Observed image: R(x,y)L(x,y)</small>
+            </article>
+
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle">
+                <span>03</span>
+                <strong>TRUE ILLUMINATION FIELD</strong>
+              </div>
+              <canvas ref={backgroundRef} />
+              <small>Actual field L(x,y)</small>
+            </article>
+
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle">
+                <span>04</span>
+                <strong>ESTIMATED FIELD</strong>
+              </div>
+              <canvas ref={estimatedRef} />
+              <small>Estimated field ĤL(x,y)</small>
+            </article>
+
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle">
+                <span>05</span>
+                <strong>CORRECTED IMAGE</strong>
+              </div>
+              <canvas ref={correctedRef} />
+              <small>Corrected: I(x,y) / ĤL(x,y)</small>
+            </article>
+          </div>
+
+          <div className="s5-illuminationMetrics">
+            <article className="s5-metric">
+              <span>CORRECTED MSE</span>
+              <strong>{illuminationMetrics.mse.toFixed(3)}</strong>
+              <small>vs clean reference</small>
+            </article>
+
+            <article className="s5-metric">
+              <span>CORRECTED RMSE</span>
+              <strong>{illuminationMetrics.rmse.toFixed(3)}</strong>
+              <small>√MSE</small>
+            </article>
+
+            <article className="s5-metric">
+              <span>FIELD CENTER</span>
+              <strong>1.000</strong>
+              <small>relative illumination</small>
+            </article>
+
+            <article className="s5-metric">
+              <span>ESTIMATION ERROR</span>
+              <strong>
+                {Math.round(estimationError * 100)}%
+              </strong>
+              <small>difference in estimated field</small>
+            </article>
+          </div>
+
+          <div className="s5-illuminationLesson">
+            <article>
+              <div className="s5-label">STEP 1 · FORMATION</div>
+              <h3>Lighting changes what the camera sees.</h3>
+              <p>
+                The same object can produce different pixel values when
+                the illumination field changes. An inspection system
+                should distinguish object properties from lighting
+                conditions.
+              </p>
+              <strong>I = R × L</strong>
+            </article>
+
+            <article>
+              <div className="s5-label">STEP 2 · ESTIMATE</div>
+              <h3>Estimate the unwanted background field.</h3>
+              <p>
+                In a real inspection system the illumination field is not
+                perfectly known. It may be estimated from a background image,
+                reference image, or slowly varying surface.
+              </p>
+              <strong>ĤL ≈ L</strong>
+            </article>
+
+            <article>
+              <div className="s5-label">STEP 3 · CORRECT</div>
+              <h3>Divide by the estimated field.</h3>
+              <p>
+                If the estimate is imperfect, the corrected image will also
+                contain residual error. That is why MSE and RMSE matter.
+                Display values are clipped to the valid 0–255 range.
+              </p>
+              <strong>R̂ = I / ĤL</strong>
+            </article>
+          </div>
+
+          <div className="s5-illuminationWarning">
+            <div className="s5-label">INDUSTRIAL VISION NOTE</div>
+            <strong>
+              Correction is only as good as the illumination estimate.
+            </strong>
+            <p>
+              A poor background estimate can leave residual shading, create
+              halos, amplify noise, or hide genuine defects. Use the
+              estimation-error slider to see why calibration quality matters
+              in production inspection.
+            </p>
           </div>
         </section>
       )}

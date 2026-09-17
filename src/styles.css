@@ -6116,3 +6116,95 @@
   .s5-comparisonRow { grid-template-columns: 1fr 1fr 1fr; }
   .s5-comparisonRow span:nth-child(5) { grid-column: 1 / -1; }
 }
+/* Sprint 5 Group E — illumination / shading correction */
+.s5-illuminationLab {
+  margin-top: 12px;
+  padding: 24px;
+  border: 1px solid #30343a;
+  border-radius: 14px;
+  background: #17191b;
+}
+.s5-illuminationModel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+.s5-illuminationModel article {
+  padding: 15px;
+  border: 1px solid #2b2f34;
+  border-radius: 10px;
+  background: #111315;
+}
+.s5-illuminationModel span {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  opacity: .55;
+}
+.s5-illuminationModel strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 16px;
+}
+.s5-illuminationModel small {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.4;
+  opacity: .7;
+}
+.s5-illuminationGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.s5-illuminationMetrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.s5-illuminationLesson {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.s5-illuminationLesson article {
+  padding: 16px;
+  border-radius: 10px;
+  background: #1d2023;
+}
+.s5-illuminationLesson h3 { margin: 5px 0 8px; }
+.s5-illuminationLesson p { margin: 0 0 12px; line-height: 1.5; }
+.s5-illuminationLesson strong {
+  display: block;
+  padding: 9px 10px;
+  border-radius: 7px;
+  background: #111315;
+}
+.s5-illuminationWarning {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid #3a382e;
+  border-radius: 10px;
+  background: #1b1a16;
+}
+.s5-illuminationWarning strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 14px;
+}
+.s5-illuminationWarning p {
+  margin: 7px 0 0;
+  line-height: 1.5;
+  opacity: .8;
+}
+@media (max-width: 1000px) {
+  .s5-illuminationGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s5-illuminationModel,
+  .s5-illuminationLesson { grid-template-columns: 1fr; }
+}
+@media (max-width: 650px) {
+  .s5-illuminationGrid,
+  .s5-illuminationMetrics { grid-template-columns: 1fr; }
+}
