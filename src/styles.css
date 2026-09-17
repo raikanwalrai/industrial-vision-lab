@@ -4222,3 +4222,425 @@
     flex-wrap: wrap;
   }
 }
+
+
+/* ============================================================
+   SPRINT 4 GROUP A — CUSTOM KERNEL BUILDER
+   ============================================================ */
+
+.sprint4GroupA {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+
+.s4a-learningFlow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 30px;
+}
+
+.s4a-flowStep {
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 15px;
+  background: rgba(255,255,255,.035);
+}
+
+.s4a-flowStep > span {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.08);
+  font-size: .8rem;
+  font-weight: 800;
+}
+
+.s4a-flowStep b,
+.s4a-flowStep small {
+  display: block;
+}
+
+.s4a-flowStep small {
+  margin-top: 5px;
+  color: rgba(255,255,255,.58);
+  line-height: 1.45;
+}
+
+.s4a-flowArrow {
+  display: grid;
+  place-items: center;
+  padding: 0 3px;
+  font-size: 1.5rem;
+  opacity: .4;
+}
+
+.s4a-workbench,
+.s4a-response,
+.s4a-lessonNote {
+  margin-top: 26px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  background: rgba(255,255,255,.035);
+}
+
+.s4a-controls {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  padding: 24px 28px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.s4a-controlGroup label,
+.s4a-sectionLabel {
+  display: block;
+  margin-bottom: 9px;
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: #83b9d9;
+}
+
+.s4a-controlGroup select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 9px;
+  background: #181b1e;
+  color: #fff;
+}
+
+.s4a-presetRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.s4a-preset {
+  padding: 10px 13px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 9px;
+  background: rgba(255,255,255,.045);
+  color: rgba(255,255,255,.8);
+  cursor: pointer;
+}
+
+.s4a-preset:hover,
+.s4a-preset.active {
+  border-color: rgba(131,185,217,.65);
+  background: rgba(131,185,217,.12);
+  color: #fff;
+}
+
+.s4a-editor {
+  display: grid;
+  grid-template-columns: minmax(300px, .85fr) minmax(300px, 1.15fr);
+  gap: 28px;
+  padding: 28px;
+}
+
+.s4a-hint {
+  margin: -2px 0 18px;
+  color: rgba(255,255,255,.58);
+  line-height: 1.5;
+}
+
+.s4a-kernelGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(72px, 1fr));
+  gap: 8px;
+  max-width: 330px;
+}
+
+.s4a-kernelInput {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 16px 8px;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 10px;
+  background: #111416;
+  color: #fff;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.s4a-kernelInput:focus {
+  outline: 2px solid rgba(131,185,217,.6);
+  outline-offset: 1px;
+}
+
+.s4a-kernelInput.center {
+  border-color: rgba(255,176,0,.75);
+}
+
+.s4a-kernelStats {
+  display: flex;
+  gap: 10px;
+  max-width: 330px;
+  margin-top: 12px;
+}
+
+.s4a-kernelStats > div {
+  flex: 1;
+  padding: 12px;
+  border-radius: 9px;
+  background: rgba(255,255,255,.045);
+}
+
+.s4a-kernelStats span,
+.s4a-kernelStats b {
+  display: block;
+}
+
+.s4a-kernelStats span {
+  margin-bottom: 4px;
+  color: rgba(255,255,255,.5);
+  font-size: .72rem;
+}
+
+.s4a-mathCard {
+  padding: 22px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.17);
+}
+
+.s4a-miniEquation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  font-weight: 800;
+}
+
+.s4a-miniEquation b {
+  opacity: .4;
+}
+
+.s4a-mathCard p {
+  color: rgba(255,255,255,.68);
+  line-height: 1.65;
+}
+
+.s4a-rule {
+  display: grid;
+  gap: 5px;
+  margin-top: 20px;
+  padding: 15px;
+  border-left: 3px solid rgba(255,176,0,.7);
+  background: rgba(255,176,0,.045);
+}
+
+.s4a-rule span {
+  color: rgba(255,255,255,.62);
+  line-height: 1.5;
+}
+
+.s4a-visuals {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-top: 26px;
+}
+
+.s4a-imageCard {
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  background: rgba(255,255,255,.035);
+}
+
+.s4a-cardTitle {
+  margin-bottom: 12px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: #83b9d9;
+}
+
+.s4a-canvasWrap {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  min-height: 300px;
+  border-radius: 10px;
+  background: #080a0b;
+}
+
+.s4a-canvasWrap canvas {
+  display: block;
+  width: min(100%, 520px);
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.s4a-response {
+  padding: 28px;
+}
+
+.s4a-responseHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.s4a-responseHeader h2 {
+  margin: 6px 0 8px;
+}
+
+.s4a-responseHeader p {
+  margin: 0;
+  max-width: 650px;
+  color: rgba(255,255,255,.58);
+  line-height: 1.5;
+}
+
+.s4a-responseValue {
+  min-width: 170px;
+  padding: 15px 18px;
+  border-radius: 12px;
+  background: rgba(255,176,0,.08);
+  text-align: right;
+}
+
+.s4a-responseValue span,
+.s4a-responseValue b {
+  display: block;
+}
+
+.s4a-responseValue span {
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.55);
+}
+
+.s4a-responseValue b {
+  margin-top: 5px;
+  font-size: 1.7rem;
+}
+
+.s4a-calculation {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto minmax(150px, 1fr) auto minmax(240px, 1.7fr);
+  gap: 16px;
+  align-items: center;
+  margin-top: 26px;
+}
+
+.s4a-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  max-width: 230px;
+}
+
+.s4a-matrixCell {
+  display: grid;
+  min-height: 52px;
+  place-items: center;
+  border-radius: 7px;
+  background: rgba(255,255,255,.06);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .8rem;
+}
+
+.s4a-matrixCell.center {
+  outline: 2px solid rgba(255,176,0,.7);
+}
+
+.s4a-operator {
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  font-weight: 800;
+  opacity: .4;
+}
+
+.s4a-sumCard {
+  min-width: 0;
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.18);
+}
+
+.s4a-sumCard code {
+  display: block;
+  max-height: 100px;
+  overflow: auto;
+  color: rgba(255,255,255,.68);
+  font-size: .72rem;
+  line-height: 1.8;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.s4a-sumCard strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 1.4rem;
+}
+
+.s4a-lessonNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 18px 22px;
+}
+
+.s4a-lessonNote .statusDot {
+  margin-top: 6px;
+}
+
+.s4a-lessonNote div {
+  display: grid;
+  gap: 4px;
+}
+
+.s4a-lessonNote span:not(.statusDot) {
+  color: rgba(255,255,255,.62);
+  line-height: 1.5;
+}
+
+@media (max-width: 850px) {
+  .s4a-learningFlow {
+    grid-template-columns: 1fr;
+  }
+
+  .s4a-flowArrow {
+    transform: rotate(90deg);
+  }
+
+  .s4a-controls,
+  .s4a-editor,
+  .s4a-visuals {
+    grid-template-columns: 1fr;
+  }
+
+  .s4a-calculation {
+    grid-template-columns: 1fr;
+  }
+
+  .s4a-operator {
+    transform: rotate(90deg);
+  }
+
+  .s4a-responseHeader {
+    flex-direction: column;
+  }
+
+  .s4a-responseValue {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+  }
+}
