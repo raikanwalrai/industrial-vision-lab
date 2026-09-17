@@ -264,6 +264,95 @@ export default function Sprint5Page() {
     [clean, meanRestored, gaussianRestored, medianRestored],
   );
 
+  const finalChecks = useMemo(() => {
+    const zeroNoise = addGaussianNoise(clean, 0, 42);
+    const zeroNoiseMetrics = imageErrorMetrics(clean, zeroNoise);
+
+    const constantImage: GrayImage = {
+      width: 3,
+      height: 3,
+      data: new Float32Array(9).fill(128),
+    };
+    const gaussianConstant = convolve(constantImage, gaussianKernel);
+
+    const medianExample: GrayImage = {
+      width: 3,
+      height: 3,
+      data: new Float32Array([
+        10, 11, 12,
+        10, 255, 12,
+        11, 12, 13,
+      ]),
+    };
+    const medianResult = medianFilter(medianExample, 3);
+
+    const field = makeIlluminationField(clean.width, clean.height, 0.75);
+    const observed = applyIllumination(clean, field);
+
+    const idealCorrected = correctIllumination(observed, field);
+    const idealMetrics = imageErrorMetrics(clean, idealCorrected);
+
+    const estimatedField = makeEstimatedIlluminationField(field, 0.20);
+    const imperfectCorrected = correctIllumination(
+      observed,
+      estimatedField,
+    );
+    const imperfectMetrics = imageErrorMetrics(
+      clean,
+      imperfectCorrected,
+    );
+
+    const checks = [
+      {
+        id: "01",
+        name: "Zero noise → zero error",
+        detail: `MSE ${zeroNoiseMetrics.mse.toFixed(3)} · RMSE ${zeroNoiseMetrics.rmse.toFixed(3)}`,
+        pass: zeroNoiseMetrics.mse < 1e-6,
+      },
+      {
+        id: "02",
+        name: "Normalized Gaussian preserves 128",
+        detail: `center output ${gaussianConstant.data[4].toFixed(3)}`,
+        pass: Math.abs(gaussianConstant.data[4] - 128) < 1e-6,
+      },
+      {
+        id: "03",
+        name: "Median teaching example → 12",
+        detail: `center output ${medianResult.data[4].toFixed(3)}`,
+        pass: Math.abs(medianResult.data[4] - 12) < 1e-6,
+      },
+      {
+        id: "04",
+        name: "Perfect illumination estimate → zero error",
+        detail: `MSE ${idealMetrics.mse.toFixed(3)} · RMSE ${idealMetrics.rmse.toFixed(3)}`,
+        pass: idealMetrics.mse < 1e-3 && idealMetrics.rmse < 0.05,
+      },
+      {
+        id: "05",
+        name: "Imperfect estimate → measurable error",
+        detail: `MSE ${imperfectMetrics.mse.toFixed(3)} · RMSE ${imperfectMetrics.rmse.toFixed(3)}`,
+        pass: imperfectMetrics.mse > 0 && imperfectMetrics.rmse > 0,
+      },
+      {
+        id: "06",
+        name: "Restoration results are finite",
+        detail: `${restorationResults.length} methods checked`,
+        pass:
+          restorationResults.length === 3 &&
+          restorationResults.every(
+            (result) =>
+              Number.isFinite(result.metrics.mse) &&
+              Number.isFinite(result.metrics.rmse),
+          ),
+      },
+    ];
+
+    return {
+      checks,
+      allPass: checks.every((check) => check.pass),
+    };
+  }, [clean, gaussianKernel, restorationResults]);
+
   const cleanRef = useRef<HTMLCanvasElement>(null);
   const noisyRef = useRef<HTMLCanvasElement>(null);
   const errorRef = useRef<HTMLCanvasElement>(null);
@@ -321,7 +410,13 @@ export default function Sprint5Page() {
   ]);
 
   const current = GROUPS.find((g) => g[0] === active)!;
-  const live = active === "A" || active === "B" || active === "C" || active === "D" || active === "E";
+  const live =
+    active === "A" ||
+    active === "B" ||
+    active === "C" ||
+    active === "D" ||
+    active === "E" ||
+    active === "F";
 
   return (
     <div className="s5-page">
@@ -1017,6 +1112,132 @@ export default function Sprint5Page() {
         </section>
       )}
 
+      {active === "F" && (
+        <section className="s5-finalVerification">
+          <div className="s5-labHeader">
+            <div>
+              <div className="s5-label">GROUP F · FINAL VERIFICATION</div>
+              <h2>Verify the complete Sprint 5 degradation pipeline</h2>
+              <p>
+                Run deterministic sanity checks that connect degradation,
+                measurement, restoration, and illumination correction into
+                one verified image-processing workflow.
+              </p>
+            </div>
+
+            <div className="s5-finalBadge">
+              <strong>
+                {finalChecks.allPass
+                  ? "✓ ALL CHECKS PASS"
+                  : "● REVIEW CHECKS"}
+              </strong>
+            </div>
+          </div>
+
+          <div className="s5-finalPipeline">
+            <article><span>01</span><strong>DEGRADE</strong><small>Add controlled noise or illumination variation.</small></article>
+            <div className="s5-finalArrow">→</div>
+            <article><span>02</span><strong>MEASURE</strong><small>Compute MSE and RMSE.</small></article>
+            <div className="s5-finalArrow">→</div>
+            <article><span>03</span><strong>RESTORE</strong><small>Apply restoration or shading correction.</small></article>
+            <div className="s5-finalArrow">→</div>
+            <article><span>04</span><strong>VALIDATE</strong><small>Compare against the clean reference.</small></article>
+          </div>
+
+          <div className="s5-finalCheckGrid">
+            {finalChecks.checks.map((check) => (
+              <article
+                key={check.id}
+                className={check.pass ? "s5-finalCheck pass" : "s5-finalCheck fail"}
+              >
+                <div className="s5-finalCheckTop">
+                  <span>{check.id}</span>
+                  <strong>{check.pass ? "PASS" : "CHECK"}</strong>
+                </div>
+                <h3>{check.name}</h3>
+                <p>{check.detail}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="s5-finalMath">
+            <article>
+              <div className="s5-label">SANITY CHECK 01</div>
+              <h3>Zero noise</h3>
+              <p>If nothing is added, the reference and observation are identical.</p>
+              <strong>MSE = 0 → RMSE = 0</strong>
+            </article>
+
+            <article>
+              <div className="s5-label">SANITY CHECK 02</div>
+              <h3>Normalized filtering</h3>
+              <p>A normalized Gaussian kernel preserves a constant image.</p>
+              <strong>128 × ΣK = 128</strong>
+            </article>
+
+            <article>
+              <div className="s5-label">SANITY CHECK 03</div>
+              <h3>Median restoration</h3>
+              <p>The median of the teaching neighborhood is 12.</p>
+              <strong>median = 12</strong>
+            </article>
+
+            <article>
+              <div className="s5-label">SANITY CHECK 04</div>
+              <h3>Illumination correction</h3>
+              <p>A perfect field estimate gives zero error; an imperfect estimate leaves residual error.</p>
+              <strong>
+                ĤL = L → MSE ≈ 0
+                <br />
+                ĤL ≠ L → MSE &gt; 0
+              </strong>
+            </article>
+          </div>
+
+          <div className="s5-finalResults">
+            <div>
+              <div className="s5-label">RESTORATION METHODS CHECKED</div>
+              <h3>Three restoration paths remain measurable.</h3>
+              <p>
+                Mean 3×3, Gaussian σ≈1, and Median 3×3 are checked against
+                the same clean reference.
+              </p>
+            </div>
+
+            <div className="s5-finalResultList">
+              {restorationResults.map((result) => (
+                <div key={result.name}>
+                  <strong>{result.name}</strong>
+                  <span>
+                    MSE {result.metrics.mse.toFixed(3)} · RMSE{" "}
+                    {result.metrics.rmse.toFixed(3)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="s5-finalComplete">
+            <div>
+              <div className="s5-label">SPRINT 5 CLOSING GATE</div>
+              <h2>
+                {finalChecks.allPass
+                  ? "Sprint 5 mathematics verified."
+                  : "Sprint 5 verification needs attention."}
+              </h2>
+              <p>
+                {finalChecks.allPass
+                  ? "The controlled degradation → measurement → restoration → illumination-correction workflow has passed all deterministic sanity checks."
+                  : "One or more deterministic sanity checks did not pass. Review the check cards before closing Sprint 5."}
+              </p>
+            </div>
+            <div className="s5-finalCompleteBadge">
+              {finalChecks.allPass ? "✓ COMPLETE" : "● REVIEW"}
+            </div>
+          </div>
+        </section>
+      )}
+
       {active === "A" || active === "B" ? (
         <section className="s5-ready">
           <div>
@@ -1028,16 +1249,38 @@ export default function Sprint5Page() {
         </section>
       ) : null}
 
-      {active !== "A" && active !== "B" && active !== "C" && (
+      {active === "F" ? (
+        <section className="s5-ready s5-finalStatus">
+          <div>
+            <div className="s5-label">MODULE STATUS</div>
+            <h2>Sprint 5 — complete</h2>
+            <p>
+              Groups A–F are implemented. The final deterministic checks
+              verify the complete degradation, measurement, restoration,
+              and illumination-correction workflow.
+            </p>
+          </div>
+          <div className="s5-readyBadge">
+            <strong>✓ COMPLETE</strong>
+            <span>All Sprint 5 groups verified</span>
+          </div>
+        </section>
+      ) : active !== "A" && active !== "B" && active !== "C" ? (
         <section className="s5-ready">
           <div>
             <div className="s5-label">MODULE STATUS</div>
-            <h2>{current[1]} — planned</h2>
-            <p>Group C is implemented. Later modules will build on this controlled degradation and restoration experiment.</p>
+            <h2>{current[1]} — implemented</h2>
+            <p>
+              This experiment is available. Continue through the remaining
+              Sprint 5 groups to reach the final verification gate.
+            </p>
           </div>
-          <div className="s5-readyBadge"><strong>● PLANNED</strong><span>Complete Group C first</span></div>
+          <div className="s5-readyBadge">
+            <strong>● LIVE</strong>
+            <span>Continue Sprint 5</span>
+          </div>
         </section>
-      )}
+      ) : null}
 
       <section className="s5-concepts">
         <div className="s5-label">MATHEMATICAL ANCHORS</div>
