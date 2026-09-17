@@ -147,33 +147,63 @@ function calculateOutput(
 }
 
 
+function outputSize(
+  inputSize: number,
+  kernelSize: number,
+  stride: number,
+  padding: number,
+) {
+  return Math.floor(
+    (inputSize + 2 * padding - kernelSize) / stride,
+  ) + 1;
+}
+
+
 function scanImage(
   image: GrayImage,
   kernel: number[][],
   stride = 1,
+  padding = 0,
 ) {
   const k = kernel.length;
 
-  const outputWidth =
-    Math.floor((image.width - k) / stride) + 1;
+  const outputWidth = outputSize(
+    image.width,
+    k,
+    stride,
+    padding,
+  );
 
-  const outputHeight =
-    Math.floor((image.height - k) / stride) + 1;
+  const outputHeight = outputSize(
+    image.height,
+    k,
+    stride,
+    padding,
+  );
 
   const output = new Float32Array(outputWidth * outputHeight);
 
   for (let oy = 0; oy < outputHeight; oy++) {
     for (let ox = 0; ox < outputWidth; ox++) {
-      const startX = ox * stride;
-      const startY = oy * stride;
+      const startX = ox * stride - padding;
+      const startY = oy * stride - padding;
 
       let total = 0;
 
       for (let r = 0; r < k; r++) {
         for (let c = 0; c < k; c++) {
-          total +=
-            image.data[(startY + r) * image.width + (startX + c)] *
-            kernel[r][c];
+          const imageX = startX + c;
+          const imageY = startY + r;
+
+          const pixel =
+            imageX >= 0 &&
+            imageX < image.width &&
+            imageY >= 0 &&
+            imageY < image.height
+              ? image.data[imageY * image.width + imageX]
+              : 0;
+
+          total += pixel * kernel[r][c];
         }
       }
 
@@ -188,19 +218,29 @@ function scanImage(
   };
 }
 
+
 function scanPosition(
   image: GrayImage,
   kernel: number[][],
   step: number,
   stride = 1,
+  padding = 0,
 ) {
   const k = kernel.length;
 
-  const outputWidth =
-    Math.floor((image.width - k) / stride) + 1;
+  const outputWidth = outputSize(
+    image.width,
+    k,
+    stride,
+    padding,
+  );
 
-  const outputHeight =
-    Math.floor((image.height - k) / stride) + 1;
+  const outputHeight = outputSize(
+    image.height,
+    k,
+    stride,
+    padding,
+  );
 
   const totalPositions = outputWidth * outputHeight;
 
@@ -212,8 +252,8 @@ function scanPosition(
   const outputY = Math.floor(safeStep / outputWidth);
   const outputX = safeStep % outputWidth;
 
-  const inputX = outputX * stride;
-  const inputY = outputY * stride;
+  const inputX = outputX * stride - padding;
+  const inputY = outputY * stride - padding;
 
   return {
     step: safeStep,
@@ -227,6 +267,7 @@ function scanPosition(
   };
 }
 
+
 function scanPatch(
   image: GrayImage,
   kernel: number[][],
@@ -235,15 +276,24 @@ function scanPatch(
   const k = kernel.length;
 
   return Array.from({ length: k }, (_, r) =>
-    Array.from({ length: k }, (_, c) =>
-      image.data[
-        (position.inputY + r) * image.width +
-        position.inputX +
-        c
-      ],
-    ),
+    Array.from({ length: k }, (_, c) => {
+      const imageX = position.inputX + c;
+      const imageY = position.inputY + r;
+
+      if (
+        imageX < 0 ||
+        imageX >= image.width ||
+        imageY < 0 ||
+        imageY >= image.height
+      ) {
+        return 0;
+      }
+
+      return image.data[imageY * image.width + imageX];
+    }),
   );
 }
+
 
 function scanOutputValue(
   patch: number[][],
@@ -266,10 +316,14 @@ function PixelZoom({
   patch,
   x,
   y,
+  imageWidth,
+  imageHeight,
 }: {
   patch: number[][];
   x: number;
   y: number;
+  imageWidth: number;
+  imageHeight: number;
 }) {
   return (
     <div className="s3-pixel-zoom">
@@ -279,7 +333,7 @@ function PixelZoom({
           <strong>Current {patch.length} × {patch.length} patch</strong>
         </div>
 
-        <code>input ({x}, {y})</code>
+        <code>top-left ({x}, {y})</code>
       </div>
 
       <div
@@ -289,33 +343,56 @@ function PixelZoom({
         }}
       >
         {patch.flatMap((row, r) =>
-          row.map((value, c) => (
-            <div
-              className={
-                r === Math.floor(patch.length / 2) &&
-                c === Math.floor(patch.length / 2)
-                  ? "s3-pixel-cell current"
-                  : "s3-pixel-cell"
-              }
-              key={`${r}-${c}`}
-              title={`Pixel (${x + c}, ${y + r}) = ${value.toFixed(3)}`}
-            >
-              <span>{value.toFixed(0)}</span>
-              <small>
-                ({x + c},{y + r})
-              </small>
-            </div>
-          )),
+          row.map((value, c) => {
+            const imageX = x + c;
+            const imageY = y + r;
+
+            const isPadding =
+              imageX < 0 ||
+              imageX >= imageWidth ||
+              imageY < 0 ||
+              imageY >= imageHeight;
+
+            const isCenter =
+              r === Math.floor(patch.length / 2) &&
+              c === Math.floor(patch.length / 2);
+
+            return (
+              <div
+                className={[
+                  "s3-pixel-cell",
+                  isCenter ? "current" : "",
+                  isPadding ? "padding" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                key={`${r}-${c}`}
+                title={
+                  isPadding
+                    ? `Zero padding at (${imageX}, ${imageY})`
+                    : `Pixel (${imageX}, ${imageY}) = ${value.toFixed(3)}`
+                }
+              >
+                <span>{value.toFixed(0)}</span>
+                <small>
+                  {isPadding
+                    ? "PAD"
+                    : `(${imageX},${imageY})`}
+                </small>
+              </div>
+            );
+          }),
         )}
       </div>
 
       <div className="s3-pixel-zoom-note">
-        The orange cell is the patch center. Every number is an actual image
-        pixel used by the local calculation.
+        The orange cell is the patch center. Padding cells are outside the
+        original image and contribute zero.
       </div>
     </div>
   );
 }
+
 
 function OutputCanvas({
   image,
@@ -721,6 +798,8 @@ export default function Sprint3() {
   const [showAllProducts, setShowAllProducts] = useState(false);
   const [scanStep, setScanStep] = useState(0);
   const [isScanning, setIsScanning] = useState(false);
+  const [stride, setStride] = useState(1);
+  const [padding, setPadding] = useState(0);
 
   const kernel: Kernel =
     filters.find((item) => item.name === kernelName) ?? filters[0];
@@ -750,13 +829,34 @@ export default function Sprint3() {
   const kernelSize = kernel.values.length;
 
   const scan = useMemo(
-    () => scanImage(image, kernel.values, 1),
-    [image, kernel.values],
+    () => scanImage(image, kernel.values, stride, padding),
+    [image, kernel.values, stride, padding],
   );
 
   const scanInfo = useMemo(
-    () => scanPosition(image, kernel.values, scanStep, 1),
-    [image, kernel.values, scanStep],
+    () =>
+      scanPosition(
+        image,
+        kernel.values,
+        scanStep,
+        stride,
+        padding,
+      ),
+    [image, kernel.values, scanStep, stride, padding],
+  );
+
+  const calculatedOutputWidth = outputSize(
+    image.width,
+    kernelSize,
+    stride,
+    padding,
+  );
+
+  const calculatedOutputHeight = outputSize(
+    image.height,
+    kernelSize,
+    stride,
+    padding,
   );
 
   useEffect(() => {
@@ -790,6 +890,18 @@ export default function Sprint3() {
     () => scanOutputValue(scannedPatch, kernel.values),
     [scannedPatch, kernel.values],
   );
+
+  function changeStride(value: number) {
+    setStride(value);
+    setScanStep(0);
+    setIsScanning(false);
+  }
+
+  function changePadding(value: number) {
+    setPadding(value);
+    setScanStep(0);
+    setIsScanning(false);
+  }
 
   function move(dx: number, dy: number) {
     setX((current) => Math.max(0, Math.min(255, current + dx)));
@@ -1080,6 +1192,8 @@ export default function Sprint3() {
               patch={scannedPatch}
               x={scanInfo.inputX}
               y={scanInfo.inputY}
+              imageWidth={image.width}
+              imageHeight={image.height}
             />
           </div>
 
@@ -1394,6 +1508,357 @@ export default function Sprint3() {
           <strong>The big idea:</strong>
           convolution is the same local calculation repeated at every valid
           position of the image.
+        </div>
+      </Section>
+
+      <div className="s3-group-divider">
+        <span>GROUP C</span>
+        <strong>Stride → Padding → Output Size</strong>
+      </div>
+
+      <Section number="3.7" title="Stride: how far does the kernel jump?">
+        <div className="s3-c-lab">
+          <div className="s3-c-control-card">
+            <div className="s3-c-control-copy">
+              <span className="s3-c-eyebrow">STRIDE</span>
+              <h3>How far does the kernel jump?</h3>
+              <p>
+                After calculating one output pixel, the kernel moves by
+                <strong> S </strong> pixels before calculating the next one.
+              </p>
+            </div>
+
+            <div className="s3-c-choice-group">
+              <span>CHOOSE STRIDE</span>
+
+              <div className="s3-c-choice-row">
+                {[1, 2, 3].map((value) => (
+                  <button
+                    key={value}
+                    className={
+                      stride === value
+                        ? "s3-c-choice active"
+                        : "s3-c-choice"
+                    }
+                    onClick={() => changeStride(value)}
+                  >
+                    <strong>{value}</strong>
+                    <small>
+                      {value === 1
+                        ? "every pixel"
+                        : `jump ${value}`}
+                    </small>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="s3-c-live-value">
+              <span>CURRENT STRIDE</span>
+              <strong>{stride} px</strong>
+              <small>
+                {stride === 1
+                  ? "No positions are skipped."
+                  : `${stride - 1} position${
+                      stride - 1 === 1 ? "" : "s"
+                    } skipped between visits.`}
+              </small>
+            </div>
+          </div>
+
+          <div className="s3-c-stride-card">
+            <div className="s3-c-card-heading">
+              <div>
+                <span className="s3-c-eyebrow">KERNEL MOVEMENT</span>
+                <h3>Watch the jump</h3>
+              </div>
+
+              <code>
+                input x = {scanInfo.inputX}
+              </code>
+            </div>
+
+            <div className="s3-c-axis">
+              {Array.from({ length: 9 }, (_, position) => {
+                const isLanding = position % stride === 0;
+
+                return (
+                  <div
+                    key={position}
+                    className={
+                      isLanding
+                        ? "s3-c-axis-cell landing"
+                        : "s3-c-axis-cell"
+                    }
+                  >
+                    <span>{position}</span>
+                    {isLanding && <b />}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="s3-c-jump-label">
+              <span>0</span>
+              <div>
+                <b />
+                <span>
+                  stride = {stride} → move {stride} pixel
+                  {stride === 1 ? "" : "s"}
+                </span>
+                <b />
+              </div>
+              <span>{Math.min(stride * 2, 8)}</span>
+            </div>
+
+            <p className="s3-c-teaching-note">
+              Think of the kernel as a small window sliding across the
+              image. <strong>Stride controls how far that window moves</strong>
+              after every calculation.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section number="3.8" title="Padding: add a border around the image">
+        <div className="s3-c-lab">
+          <div className="s3-c-control-card">
+            <div className="s3-c-control-copy">
+              <span className="s3-c-eyebrow">PADDING</span>
+              <h3>What happens at the image boundary?</h3>
+              <p>
+                Padding surrounds the original image with zero-valued
+                pixels so the kernel can reach the boundary.
+              </p>
+            </div>
+
+            <div className="s3-c-choice-group">
+              <span>CHOOSE PADDING</span>
+
+              <div className="s3-c-choice-row">
+                {[0, 1, 2].map((value) => (
+                  <button
+                    key={value}
+                    className={
+                      padding === value
+                        ? "s3-c-choice active"
+                        : "s3-c-choice"
+                    }
+                    onClick={() => changePadding(value)}
+                  >
+                    <strong>{value}</strong>
+                    <small>
+                      {value === 0
+                        ? "no border"
+                        : `${value}-pixel border`}
+                    </small>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="s3-c-live-value">
+              <span>ZERO BORDER</span>
+              <strong>{padding} px</strong>
+              <small>
+                {padding === 0
+                  ? "The original image is unchanged."
+                  : `A ${padding}-pixel layer of zeros surrounds every side.`}
+              </small>
+            </div>
+          </div>
+
+          <div className="s3-c-padding-card">
+            <div className="s3-c-card-heading">
+              <div>
+                <span className="s3-c-eyebrow">PIXEL VIEW</span>
+                <h3>
+                  {padding === 0
+                    ? "Original image"
+                    : `Zero padding = ${padding}`}
+                </h3>
+              </div>
+
+              <code>
+                {3 + padding * 2} × {3 + padding * 2}
+              </code>
+            </div>
+
+            <div
+              className="s3-c-padding-grid"
+              style={{
+                gridTemplateColumns: `repeat(${3 + padding * 2}, 1fr)`,
+              }}
+            >
+              {Array.from({
+                length: (3 + padding * 2) ** 2,
+              }).map((_, index) => {
+                const size = 3 + padding * 2;
+                const row = Math.floor(index / size);
+                const col = index % size;
+
+                const inside =
+                  row >= padding &&
+                  row < padding + 3 &&
+                  col >= padding &&
+                  col < padding + 3;
+
+                const sourceX = col - padding;
+                const sourceY = row - padding;
+
+                const value = inside
+                  ? image.data[sourceY * image.width + sourceX]
+                  : 0;
+
+                return (
+                  <div
+                    key={index}
+                    className={
+                      inside
+                        ? "s3-c-padding-cell original"
+                        : "s3-c-padding-cell zero"
+                    }
+                  >
+                    <strong>{value.toFixed(0)}</strong>
+                    <small>{inside ? "IMAGE" : "PAD"}</small>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="s3-c-padding-legend">
+              <span>
+                <b className="image-key" />
+                Original image pixels
+              </span>
+
+              <span>
+                <b className="zero-key" />
+                Zero padding
+              </span>
+            </div>
+          </div>
+
+          <div className="s3-c-padding-explanation">
+            <div>
+              <span className="s3-c-eyebrow">THE IDEA</span>
+              <h3>We do not change the original pixels.</h3>
+            </div>
+
+            <div className="s3-c-step">
+              <strong>1</strong>
+              <p>
+                Start with the original image.
+              </p>
+            </div>
+
+            <div className="s3-c-step">
+              <strong>2</strong>
+              <p>
+                Add <b>{padding}</b> zero-valued pixel
+                {padding === 1 ? "" : "s"} around every side.
+              </p>
+            </div>
+
+            <div className="s3-c-step">
+              <strong>3</strong>
+              <p>
+                The kernel can now sit on the boundary while still
+                seeing a complete patch.
+              </p>
+            </div>
+
+            <div className="s3-c-padding-equation">
+              <span>PADDED WIDTH</span>
+              <strong>
+                {image.width} + 2({padding}) ={" "}
+                {image.width + 2 * padding}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      <Section number="3.9" title="Output size: predict the result before scanning">
+        <div className="s3-output-size-lab">
+          <div className="s3-output-size-formula">
+            <div className="s3-formula-title">
+              <span>THE OUTPUT-SIZE FORMULA</span>
+              <strong>
+                H<sub>out</sub> = ⌊(H + 2P − K) / S⌋ + 1
+              </strong>
+              <strong>
+                W<sub>out</sub> = ⌊(W + 2P − K) / S⌋ + 1
+              </strong>
+            </div>
+
+            <div className="s3-formula-substitution">
+              <span>YOUR CURRENT VALUES</span>
+
+              <code>
+                H<sub>out</sub> = ⌊({image.height} + 2×{padding} −{" "}
+                {kernelSize}) / {stride}⌋ + 1
+              </code>
+
+              <code>
+                W<sub>out</sub> = ⌊({image.width} + 2×{padding} −{" "}
+                {kernelSize}) / {stride}⌋ + 1
+              </code>
+            </div>
+          </div>
+
+          <div className="s3-output-size-result">
+            <span>OUTPUT IMAGE</span>
+            <strong>
+              {calculatedOutputWidth} × {calculatedOutputHeight}
+            </strong>
+          </div>
+        </div>
+
+        <div className="s3-output-size-examples">
+          <div>
+            <span>INPUT</span>
+            <strong>
+              {image.width} × {image.height}
+            </strong>
+          </div>
+
+          <b>+</b>
+
+          <div>
+            <span>PADDING</span>
+            <strong>2 × {padding}</strong>
+          </div>
+
+          <b>−</b>
+
+          <div>
+            <span>KERNEL</span>
+            <strong>{kernelSize} × {kernelSize}</strong>
+          </div>
+
+          <b>÷</b>
+
+          <div>
+            <span>STRIDE</span>
+            <strong>{stride}</strong>
+          </div>
+
+          <b>→</b>
+
+          <div className="highlight">
+            <span>OUTPUT</span>
+            <strong>
+              {calculatedOutputWidth} × {calculatedOutputHeight}
+            </strong>
+          </div>
+        </div>
+
+        <div className="s3-c-group-summary">
+          <strong>The big idea:</strong>
+          stride controls <em>how far we move</em>, padding controls
+          <em> how much border we add</em>, and the formula tells us
+          <em> how large the output will be</em> before we perform the scan.
         </div>
       </Section>
 
