@@ -5951,3 +5951,168 @@
   .s5-tableRow { grid-template-columns: 1fr 1fr 1fr; }
   .s5-tableRow span:last-child { grid-column: 1 / -1; }
 }
+
+
+/* Sprint 5 Group D — controlled comparison */
+.s5-comparisonLab {
+  margin-top: 12px;
+  padding: 24px;
+  border: 1px solid #30343a;
+  border-radius: 14px;
+  background: #17191b;
+}
+.s5-comparisonRules {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+.s5-comparisonRules article {
+  padding: 14px;
+  border: 1px solid #2b2f34;
+  border-radius: 10px;
+  background: #111315;
+}
+.s5-comparisonRules span {
+  display: block;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  opacity: .55;
+  margin-bottom: 7px;
+}
+.s5-comparisonRules strong,
+.s5-comparisonRules small { display: block; }
+.s5-comparisonRules strong { font-size: 11px; }
+.s5-comparisonRules small { margin-top: 5px; line-height: 1.4; opacity: .7; }
+.s5-comparisonControls {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.s5-comparisonControls button {
+  border: 1px solid #363b41;
+  border-radius: 8px;
+  padding: 10px 14px;
+  background: #111315;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+.s5-comparisonControls button.active {
+  border-color: #77b9e8;
+  background: #1d252c;
+}
+.s5-comparisonReadout {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.s5-comparisonReadout > div {
+  padding: 12px 14px;
+  border: 1px solid #2b2f34;
+  border-radius: 9px;
+  background: #111315;
+}
+.s5-comparisonReadout span,
+.s5-comparisonReadout strong { display: block; }
+.s5-comparisonReadout span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  opacity: .55;
+}
+.s5-comparisonReadout strong { margin-top: 5px; font-size: 14px; }
+.s5-comparisonTable {
+  margin-top: 12px;
+  border: 1px solid #2b2f34;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #111315;
+}
+.s5-comparisonHead,
+.s5-comparisonRow {
+  display: grid;
+  grid-template-columns: 1.25fr .7fr .7fr 1fr 1.8fr;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 14px;
+}
+.s5-comparisonHead {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  background: #1d2023;
+  opacity: .75;
+}
+.s5-comparisonRow {
+  border-top: 1px solid #292d32;
+  font-size: 12px;
+}
+.s5-comparisonRow span { opacity: .8; }
+.s5-comparisonLesson {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.s5-comparisonLesson > div {
+  padding: 16px;
+  border-radius: 10px;
+  background: #1d2023;
+}
+.s5-comparisonLesson h3 { margin: 5px 0 8px; }
+.s5-comparisonLesson p { margin: 0; line-height: 1.5; }
+.s5-comparisonFormula {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 9px;
+}
+.s5-comparisonFormula span {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  opacity: .6;
+}
+.s5-comparisonFormula strong { font-size: 15px; line-height: 1.5; }
+.s5-experimentMatrix {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid #2b2f34;
+  border-radius: 10px;
+}
+.s5-experimentMatrix h3 { margin: 5px 0 12px; }
+.s5-matrixGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.s5-matrixGrid article {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px;
+  background: #111315;
+  border-radius: 9px;
+}
+.s5-matrixGrid strong {
+  font-size: 10px;
+  opacity: .55;
+  text-transform: uppercase;
+}
+.s5-matrixGrid span { font-weight: 700; }
+.s5-matrixGrid small { line-height: 1.4; opacity: .7; }
+@media (max-width: 900px) {
+  .s5-comparisonReadout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s5-comparisonLesson,
+  .s5-comparisonRules,
+  .s5-matrixGrid { grid-template-columns: 1fr; }
+}
+@media (max-width: 650px) {
+  .s5-comparisonControls { flex-direction: column; }
+  .s5-comparisonHead { display: none; }
+  .s5-comparisonRow { grid-template-columns: 1fr 1fr 1fr; }
+  .s5-comparisonRow span:nth-child(5) { grid-column: 1 / -1; }
+}

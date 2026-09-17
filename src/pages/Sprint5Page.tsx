@@ -100,7 +100,7 @@ export default function Sprint5Page() {
   }, [clean, noisy, metrics.errorImage, meanRestored, gaussianRestored, medianRestored]);
 
   const current = GROUPS.find((g) => g[0] === active)!;
-  const live = active === "A" || active === "B" || active === "C";
+  const live = active === "A" || active === "B" || active === "C" || active === "D";
 
   return (
     <div className="s5-page">
@@ -419,6 +419,160 @@ export default function Sprint5Page() {
             <strong>Read the numbers and the pictures together.</strong> MSE/RMSE
             measures closeness to the clean reference; the images reveal what
             structure each restoration method preserves or smooths.
+          </div>
+        </section>
+      )}
+
+
+      {active === "D" && (
+        <section className="s5-comparisonLab">
+          <div className="s5-labHeader">
+            <div>
+              <div className="s5-label">GROUP D · CONTROLLED COMPARISON</div>
+              <h2>Change the degradation, not the experiment</h2>
+              <p>
+                Keep the clean reference and restoration methods fixed. Change
+                only the noise model and strength, then compare how the same
+                three restoration rules respond.
+              </p>
+            </div>
+            <div className="s5-liveBadge">● CONTROLLED</div>
+          </div>
+
+          <div className="s5-comparisonRules">
+            <article>
+              <span>01</span>
+              <strong>FIXED REFERENCE</strong>
+              <small>The same clean image is used for every trial.</small>
+            </article>
+            <article>
+              <span>02</span>
+              <strong>FIXED METHODS</strong>
+              <small>Mean, Gaussian, and median stay unchanged.</small>
+            </article>
+            <article>
+              <span>03</span>
+              <strong>CHANGE ONE FACTOR</strong>
+              <small>Noise type or strength is the experimental variable.</small>
+            </article>
+          </div>
+
+          <div className="s5-comparisonControls">
+            <button
+              className={noiseKind === "gaussian" ? "active" : ""}
+              onClick={() => setNoiseKind("gaussian")}
+            >
+              Gaussian noise
+            </button>
+            <button
+              className={noiseKind === "salt-pepper" ? "active" : ""}
+              onClick={() => setNoiseKind("salt-pepper")}
+            >
+              Salt-and-pepper noise
+            </button>
+          </div>
+
+          <div className="s5-comparisonReadout">
+            <div>
+              <span>NOISE MODEL</span>
+              <strong>
+                {noiseKind === "gaussian"
+                  ? `Gaussian · σ = ${strength}`
+                  : `Salt-and-pepper · ${strength}%`}
+              </strong>
+            </div>
+            <div>
+              <span>SEED</span>
+              <strong>{seed}</strong>
+            </div>
+            <div>
+              <span>INPUT MSE</span>
+              <strong>{metrics.mse.toFixed(3)}</strong>
+            </div>
+            <div>
+              <span>INPUT RMSE</span>
+              <strong>{metrics.rmse.toFixed(3)}</strong>
+            </div>
+          </div>
+
+          <div className="s5-comparisonTable">
+            <div className="s5-comparisonHead">
+              <span>METHOD</span><span>MSE</span><span>RMSE</span>
+              <span>CHANGE FROM NOISY</span><span>ROLE</span>
+            </div>
+
+            <div className="s5-comparisonRow">
+              <strong>Noisy input</strong>
+              <span>{metrics.mse.toFixed(3)}</span>
+              <span>{metrics.rmse.toFixed(3)}</span>
+              <span>Baseline</span>
+              <span>Degraded image</span>
+            </div>
+
+            {restorationResults.map((result) => {
+              const mseReduction =
+                metrics.mse === 0
+                  ? 0
+                  : ((metrics.mse - result.metrics.mse) / metrics.mse) * 100;
+
+              return (
+                <div className="s5-comparisonRow" key={result.name}>
+                  <strong>{result.name}</strong>
+                  <span>{result.metrics.mse.toFixed(3)}</span>
+                  <span>{result.metrics.rmse.toFixed(3)}</span>
+                  <span>{mseReduction.toFixed(1)}%</span>
+                  <span>
+                    {result.name.startsWith("Mean")
+                      ? "Equal-weight smoothing"
+                      : result.name.startsWith("Gaussian")
+                        ? "Weighted smoothing"
+                        : "Rank-based impulse removal"}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="s5-comparisonLesson">
+            <div>
+              <div className="s5-label">HOW TO READ THIS EXPERIMENT</div>
+              <h3>One number is not the whole story.</h3>
+              <p>
+                First record the noisy baseline. Then compare restored MSE and
+                RMSE with that same baseline. Lower error means the restored
+                image is numerically closer to the clean reference, but inspect
+                the image too: smoothing can remove useful edges.
+              </p>
+            </div>
+            <div className="s5-comparisonFormula">
+              <span>MSE REDUCTION</span>
+              <strong>
+                100 × (MSE<sub>noisy</sub> − MSE<sub>restored</sub>)
+                / MSE<sub>noisy</sub>
+              </strong>
+            </div>
+          </div>
+
+          <div className="s5-experimentMatrix">
+            <div className="s5-label">CONTROLLED EXPERIMENT MATRIX</div>
+            <h3>Run the same comparison under two noise models</h3>
+            <div className="s5-matrixGrid">
+              <article>
+                <strong>TRIAL 1</strong>
+                <span>Gaussian</span>
+                <small>Random additive variation</small>
+              </article>
+              <article>
+                <strong>TRIAL 2</strong>
+                <span>Salt-and-pepper</span>
+                <small>Impulse replacement with 0 / 255</small>
+              </article>
+              <article>
+                <strong>KEEP FIXED</strong>
+                <span>Reference + seed + filters</span>
+                <small>Only the degradation condition changes.</small>
+              </article>
+            </div>
           </div>
         </section>
       )}
