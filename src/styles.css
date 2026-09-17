@@ -3913,3 +3913,143 @@
     padding: 22px 16px 50px;
   }
 }
+
+/* ============================================================
+   Platform · Sprint 3.12.3 · Curriculum Navigation
+   ============================================================ */
+
+.navMenu {
+  position: relative;
+}
+
+.topNavLink.menuOpen {
+  color: #dce7ee;
+  background: #1b2329;
+}
+
+.navChevron {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: .55rem;
+  transform: translateY(-1px);
+}
+
+.learnMenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(720px, calc(100vw - 32px));
+  padding: 16px;
+  background: #15191d;
+  border: 1px solid #39434c;
+  border-radius: 10px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .45);
+  z-index: 100;
+}
+
+.learnMenuHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 4px 12px;
+  border-bottom: 1px solid #2a3239;
+  color: #dce4ea;
+}
+
+.learnMenuGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding-top: 10px;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.sprintMenuItem {
+  display: grid;
+  grid-template-columns: 34px 1fr 24px;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #2c343b;
+  border-radius: 7px;
+  background: #111519;
+  color: #dce4ea;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sprintMenuItem:hover {
+  border-color: #526979;
+  background: #192026;
+}
+
+.sprintMenuNumber {
+  color: #6f8492;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: .75rem;
+}
+
+.sprintMenuText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sprintMenuText b {
+  font-size: .76rem;
+}
+
+.sprintMenuText span {
+  color: #909ca6;
+  font-size: .72rem;
+  line-height: 1.35;
+}
+
+.sprintMenuStatus {
+  text-align: right;
+  color: #657986;
+  font-weight: 800;
+}
+
+.sprint-complete .sprintMenuStatus {
+  color: #94b4a3;
+}
+
+.sprint-current {
+  border-color: #536f82;
+}
+
+.sprint-current .sprintMenuStatus {
+  color: #8db0c6;
+}
+
+@media (max-width: 900px) {
+  .learnMenu {
+    position: fixed;
+    top: 72px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+  }
+
+  .learnMenuGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sprintMenuItem:disabled {
+  opacity: .62;
+  cursor: default;
+}
+
+.sprintMenuItem:disabled:hover {
+  border-color: #2c343b;
+  background: #111519;
+}
+
+.sprint-planned .sprintMenuStatus {
+  color: #59656d;
+}
