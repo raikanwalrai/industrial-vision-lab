@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { curriculum, type Sprint } from "../navigation";
+import { curriculum, navigateTo, type Sprint } from "../navigation";
 
 type AppShellProps = {
   children: ReactNode;
@@ -66,16 +66,26 @@ export default function AppShell({ children }: AppShellProps) {
   function handleSprintSelect(sprint: Sprint) {
     setLearnOpen(false);
 
-    if (sprint.number === 3) {
-      document
-        .querySelector(".s3-lab")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (sprint.number === 1) {
+      navigateTo("/");
       return;
     }
 
-    document
-      .querySelector(".appContent")
-      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (sprint.number === 2) {
+      navigateTo("/");
+
+      window.setTimeout(() => {
+        document
+          .querySelector("#sprint-2-verification")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+
+      return;
+    }
+
+    if (sprint.number === 3) {
+      navigateTo("/learn/sprint-3");
+    }
   }
 
   return (

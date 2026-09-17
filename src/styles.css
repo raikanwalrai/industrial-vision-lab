@@ -4053,3 +4053,30 @@
 .sprint-planned .sprintMenuStatus {
   color: #59656d;
 }
+
+/* ============================================================
+   Platform · Sprint 3.12.4 · Learning Page
+   ============================================================ */
+
+.learningPage {
+  width: 100%;
+}
+
+.learningPageHeader {
+  max-width: 1000px;
+  margin-bottom: 28px;
+}
+
+.learningPageHeader h1 {
+  margin: .2rem 0 .7rem;
+}
+
+.learningPageHeader p {
+  max-width: 800px;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.learningPageContent {
+  width: 100%;
+}

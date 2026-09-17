@@ -1,6 +1,7 @@
+import Sprint3Page from "./pages/Sprint3Page";
 import AppShell from "./components/AppShell";
 import Sprint3 from "./Sprint3";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { filters, stats as kernelStats, type Kernel } from "./filters";
 import { makeScene, scenes, type GrayImage } from "./imageScenes";
 import {
@@ -1273,6 +1274,20 @@ function SprintTwoVerification() {
 }
 
 function App() {
+  const [path, setPath] = useState(window.location.pathname);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setPath(window.location.pathname);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
   const [sceneId, setSceneId] = useState("shapes");
   const [filterName, setFilterName] = useState("Box 3×3");
   const [custom, setCustom] = useState(false);
@@ -1292,6 +1307,14 @@ function App() {
   const so = statsImage(output);
   const calc = patchCalculation(source, activeKernel, pixel.x, pixel.y);
   const scene = scenes.find((s) => s.id === sceneId)!;
+
+  if (path === "/learn/sprint-3") {
+    return (
+      <AppShell>
+        <Sprint3Page />
+      </AppShell>
+    );
+  }
 
   function chooseFilter(name: string) {
     setFilterName(name);
@@ -1430,7 +1453,9 @@ function App() {
         </>
       )}
 
-      <SprintTwoVerification />
+      <div id="sprint-2-verification">
+        <SprintTwoVerification />
+      </div>
 
       <section className="workbench">
         <div className="panel">
@@ -1610,7 +1635,6 @@ function App() {
         </p>
       </section>
 
-      <Sprint3 />
 
       <footer>
         Built as a Chapter 3 companion lab · Runs entirely in the

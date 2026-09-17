@@ -29,3 +29,8 @@ export const curriculum: Sprint[] = [
   { number: 20, title: "3D Human Pose + Industrial Capstone", status: "planned" },
   { number: 21, title: "Learning Platform + Research Evaluation", status: "planned" },
 ];
+
+export function navigateTo(path: string) {
+  window.history.pushState({}, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
