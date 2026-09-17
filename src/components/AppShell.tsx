@@ -75,10 +75,15 @@ export default function AppShell({ children }: AppShellProps) {
       navigateTo("/");
 
       window.setTimeout(() => {
-        document
-          .querySelector("#sprint-2-verification")
-          ?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 50);
+        const target = document.getElementById("sprint-2-verification");
+
+        if (target) {
+          target.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 150);
 
       return;
     }
