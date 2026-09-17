@@ -433,6 +433,198 @@ export default function Sprint4Page() {
         </div>
       </section>
 
+
+      <section className="s4c-sharpening">
+        <div className="s4c-header">
+          <div>
+            <div className="s4a-sectionLabel">SPRINT 4 · GROUP C</div>
+            <h2>Sharpening &amp; Image Enhancement</h2>
+            <p>
+              Sharpening makes transitions and fine structures stand out.
+              The key idea is to strengthen local differences rather than
+              simply making every pixel brighter.
+            </p>
+          </div>
+
+          <div className="s4c-ideaBadge">
+            <span>ENHANCEMENT IDEA</span>
+            <strong>ORIGINAL + DETAIL</strong>
+          </div>
+        </div>
+
+        <div className="s4c-presets">
+          <button
+            className="s4c-presetInfo"
+            onClick={() => selectPreset("Identity")}
+          >
+            <b>Identity</b>
+            <span>No enhancement — a useful baseline.</span>
+          </button>
+
+          <button
+            className="s4c-presetInfo"
+            onClick={() => selectPreset("Sharpen")}
+          >
+            <b>Sharpen</b>
+            <span>Strong center, negative neighbours.</span>
+          </button>
+
+          <button
+            className="s4c-presetInfo"
+            onClick={() => selectPreset("Blur")}
+          >
+            <b>Blur</b>
+            <span>A comparison filter that smooths differences.</span>
+          </button>
+        </div>
+
+        <div className="s4c-kernelComparison">
+          <div className="s4c-kernelExplanation">
+            <div className="s4a-sectionLabel">SHARPEN KERNEL</div>
+
+            <div className="s4a-matrix">
+              {PRESETS.Sharpen.flatMap((row, r) =>
+                row.map((value, c) => (
+                  <div
+                    key={`sharp-${r}-${c}`}
+                    className={
+                      r === 1 && c === 1
+                        ? "s4a-matrixCell center"
+                        : "s4a-matrixCell"
+                    }
+                  >
+                    {format(value)}
+                  </div>
+                )),
+              )}
+            </div>
+          </div>
+
+          <div className="s4c-sharpFormula">
+            <div className="s4a-sectionLabel">WHY THE SIGNS MATTER</div>
+
+            <div className="s4c-signRow">
+              <span className="positive">+</span>
+              <span className="negative">−</span>
+              <span className="zero">0</span>
+            </div>
+
+            <p>
+              The positive center keeps the current pixel. Negative neighbour
+              weights subtract nearby pixels. Large local differences can
+              therefore become more visible.
+            </p>
+          </div>
+
+          <div className="s4c-example">
+            <div className="s4a-sectionLabel">SIMPLE LOCAL EXAMPLE</div>
+
+            <div className="s4c-edgeRow">
+              <div>
+                <span>FLAT</span>
+                <b>50 · 50 · 50</b>
+              </div>
+
+              <div>
+                <span>TRANSITION</span>
+                <b>50 · 50 · 200</b>
+              </div>
+
+              <div>
+                <span>DETAIL</span>
+                <b>50 · 200 · 200</b>
+              </div>
+            </div>
+
+            <p>
+              When nearby pixels differ strongly, neighbour subtraction
+              creates a stronger response.
+            </p>
+          </div>
+        </div>
+
+        <div className="s4c-controlledPatch">
+          <div>
+            <div className="s4a-sectionLabel">CONTROLLED 3 × 3 PATCH</div>
+            <p>
+              Use this simple patch to see why sharpening can strengthen a
+              local peak while leaving a flat region unchanged.
+            </p>
+          </div>
+
+          <div className="s4c-controlledMatrix">
+            <span>50</span><span>50</span><span>50</span>
+            <span>50</span><strong>100</strong><span>50</span>
+            <span>50</span><span>50</span><span>50</span>
+          </div>
+
+          <div className="s4c-controlledEquation">
+            <div>
+              <span>IDENTITY</span>
+              <b>100</b>
+            </div>
+            <div>
+              <span>SHARPEN</span>
+              <b>5(100) − 4(50) = 300</b>
+            </div>
+          </div>
+        </div>
+
+        <div className="s4c-responseCompare">
+          <div className="s4c-responseCard">
+            <span>IDENTITY RESPONSE</span>
+            <strong>100</strong>
+            <small>Center pixel only.</small>
+          </div>
+
+          <div className="s4c-responseCard accent">
+            <span>SHARPEN RESPONSE</span>
+            <strong>300</strong>
+            <small>
+              5(100) − 50 − 50 − 50 − 50 = 300
+            </small>
+          </div>
+
+          <div className="s4c-responseCard">
+            <span>SHARPEN SUM</span>
+            <strong>{formatKernelSum(PRESETS.Sharpen)}</strong>
+            <small>This sharpen kernel preserves overall DC level.</small>
+          </div>
+        </div>
+
+        <div className="s4c-experiment">
+          <div>
+            <div className="s4a-sectionLabel">CONTROLLED EXPERIMENT</div>
+            <h3>Same image. Different mathematical rule.</h3>
+            <p>
+              Use the Group A preset controls above. Keep the input image
+              fixed and compare the visual response.
+            </p>
+          </div>
+
+          <div className="s4c-experimentSteps">
+            <span>01</span>
+            <b>Select Identity</b>
+            <small>Record the baseline response.</small>
+
+            <span>02</span>
+            <b>Select Sharpen</b>
+            <small>Look closely at boundaries and fine structures.</small>
+
+            <span>03</span>
+            <b>Change the centre</b>
+            <small>Increase 5 and observe the stronger local response.</small>
+          </div>
+        </div>
+
+        <div className="s4c-lesson">
+          <b>Group C lesson: </b>
+          sharpening changes the local weighting so existing transitions and
+          fine detail become more prominent; it does not invent new image
+          information.
+        </div>
+      </section>
+
       <section className="s4b-normalization">
         <div className="s4b-header">
           <div>

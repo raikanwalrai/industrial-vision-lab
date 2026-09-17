@@ -4925,3 +4925,367 @@
     flex-wrap: wrap;
   }
 }
+
+/* ============================================================
+   SPRINT 4 GROUP C — SHARPENING + ENHANCEMENT
+   ============================================================ */
+
+.s4c-sharpening {
+  margin-top: 28px;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  background: rgba(255,255,255,.035);
+}
+
+.s4c-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.s4c-header h2 {
+  margin: 6px 0 8px;
+}
+
+.s4c-header p {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(255,255,255,.62);
+  line-height: 1.65;
+}
+
+.s4c-ideaBadge {
+  min-width: 190px;
+  padding: 15px;
+  border-radius: 12px;
+  background: rgba(255,176,0,.07);
+  text-align: center;
+}
+
+.s4c-ideaBadge span,
+.s4c-ideaBadge strong {
+  display: block;
+}
+
+.s4c-ideaBadge span {
+  font-size: .64rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.48);
+}
+
+.s4c-ideaBadge strong {
+  margin-top: 7px;
+  font-size: .9rem;
+}
+
+.s4c-presets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.s4c-presetInfo {
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 11px;
+  background: rgba(0,0,0,.15);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.s4c-presetInfo:hover {
+  border-color: rgba(131,185,217,.45);
+  background: rgba(131,185,217,.06);
+}
+
+.s4c-presetInfo b,
+.s4c-presetInfo span {
+  display: block;
+}
+
+.s4c-presetInfo b {
+  margin-bottom: 5px;
+}
+
+.s4c-presetInfo span {
+  color: rgba(255,255,255,.55);
+  line-height: 1.45;
+}
+
+.s4c-kernelComparison {
+  display: grid;
+  grid-template-columns: minmax(160px, .7fr) minmax(220px, 1fr) minmax(280px, 1.35fr);
+  gap: 16px;
+  align-items: stretch;
+  margin-top: 20px;
+}
+
+.s4c-kernelExplanation,
+.s4c-sharpFormula,
+.s4c-example {
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.16);
+}
+
+.s4c-kernelExplanation .s4a-matrix {
+  max-width: 190px;
+}
+
+.s4c-sharpFormula p,
+.s4c-example p {
+  color: rgba(255,255,255,.6);
+  line-height: 1.55;
+}
+
+.s4c-signRow {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.s4c-signRow span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 9px;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.s4c-signRow .positive {
+  background: rgba(112,190,120,.1);
+}
+
+.s4c-signRow .negative {
+  background: rgba(225,110,110,.1);
+}
+
+.s4c-signRow .zero {
+  background: rgba(255,255,255,.06);
+}
+
+.s4c-edgeRow {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.s4c-edgeRow > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.04);
+}
+
+.s4c-edgeRow span {
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.45);
+}
+
+.s4c-edgeRow b {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .78rem;
+}
+
+.s4c-responseCompare {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.s4c-responseCard {
+  padding: 16px;
+  border-radius: 11px;
+  background: rgba(0,0,0,.17);
+}
+
+.s4c-responseCard.accent {
+  background: rgba(255,176,0,.07);
+}
+
+.s4c-responseCard span,
+.s4c-responseCard strong,
+.s4c-responseCard small {
+  display: block;
+}
+
+.s4c-responseCard span {
+  font-size: .64rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.47);
+}
+
+.s4c-responseCard strong {
+  margin: 7px 0 4px;
+  font-size: 1.3rem;
+}
+
+.s4c-responseCard small {
+  color: rgba(255,255,255,.52);
+  line-height: 1.4;
+}
+
+.s4c-experiment {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 20px;
+  align-items: start;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+}
+
+.s4c-experiment h3 {
+  margin: 5px 0 7px;
+}
+
+.s4c-experiment p {
+  margin: 0;
+  color: rgba(255,255,255,.58);
+  line-height: 1.5;
+}
+
+.s4c-experimentSteps {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 5px 10px;
+  align-items: center;
+}
+
+.s4c-experimentSteps span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 7px;
+  background: rgba(255,255,255,.08);
+  font-size: .67rem;
+  font-weight: 800;
+}
+
+.s4c-experimentSteps b {
+  font-size: .82rem;
+}
+
+.s4c-experimentSteps small {
+  grid-column: 2;
+  margin-bottom: 7px;
+  color: rgba(255,255,255,.5);
+}
+
+.s4c-lesson {
+  margin-top: 18px;
+  padding: 15px 17px;
+  border-left: 3px solid rgba(255,176,0,.65);
+  background: rgba(255,176,0,.05);
+  color: rgba(255,255,255,.65);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .s4c-header {
+    flex-direction: column;
+  }
+
+  .s4c-presets,
+  .s4c-kernelComparison,
+  .s4c-responseCompare,
+  .s4c-experiment {
+    grid-template-columns: 1fr;
+  }
+
+  .s4c-ideaBadge {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* Sprint 4 Group C — controlled sharpening example */
+
+.s4c-controlledPatch {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto minmax(260px, 1.25fr);
+  gap: 22px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+}
+
+.s4c-controlledPatch p {
+  margin: 0;
+  color: rgba(255,255,255,.58);
+  line-height: 1.5;
+}
+
+.s4c-controlledMatrix {
+  display: grid;
+  grid-template-columns: repeat(3, 48px);
+  gap: 5px;
+}
+
+.s4c-controlledMatrix span,
+.s4c-controlledMatrix strong {
+  display: grid;
+  width: 48px;
+  height: 42px;
+  place-items: center;
+  border-radius: 7px;
+  background: rgba(255,255,255,.07);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .78rem;
+}
+
+.s4c-controlledMatrix strong {
+  outline: 2px solid rgba(255,176,0,.7);
+  background: rgba(255,176,0,.08);
+}
+
+.s4c-controlledEquation {
+  display: grid;
+  gap: 9px;
+}
+
+.s4c-controlledEquation > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: center;
+  padding: 10px 13px;
+  border-radius: 8px;
+  background: rgba(0,0,0,.17);
+}
+
+.s4c-controlledEquation span {
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.48);
+}
+
+.s4c-controlledEquation b {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .78rem;
+}
+
+@media (max-width: 900px) {
+  .s4c-controlledPatch {
+    grid-template-columns: 1fr;
+  }
+}
