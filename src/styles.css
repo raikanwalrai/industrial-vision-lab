@@ -5895,3 +5895,37 @@
 .s5-concepts{margin-top:16px;padding:22px}.s5-concepts h2{margin:6px 0 0}.s5-conceptGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:17px}.s5-conceptGrid article{padding:16px;border-radius:10px;background:rgba(0,0,0,.15)}.s5-conceptGrid span,.s5-conceptGrid strong,.s5-conceptGrid p{display:block}.s5-conceptGrid span{font-size:.62rem;color:rgba(255,255,255,.4);font-weight:800}.s5-conceptGrid strong{margin-top:7px}.s5-conceptGrid p{margin:6px 0 0;color:rgba(255,255,255,.52);line-height:1.5}
 .s5-ready{display:flex;justify-content:space-between;gap:25px;align-items:center;margin-top:16px;padding:22px;background:rgba(255,176,0,.045)}.s5-ready h2{margin:6px 0 7px}.s5-ready p{max-width:760px;margin:0;color:rgba(255,255,255,.58);line-height:1.55}.s5-readyBadge{min-width:150px;padding:14px;border-radius:10px;background:rgba(120,220,160,.07);text-align:center}.s5-readyBadge strong,.s5-readyBadge span{display:block}.s5-readyBadge strong{font-size:.72rem}.s5-readyBadge span{margin-top:5px;color:rgba(255,255,255,.48);font-size:.62rem}
 @media(max-width:950px){.s5-hero,.s5-ready{flex-direction:column}.s5-heroBadge,.s5-readyBadge{width:100%;box-sizing:border-box}.s5-introGrid,.s5-groupGrid,.s5-conceptGrid{grid-template-columns:1fr}.s5-pipelineRow{display:grid;grid-template-columns:1fr}.s5-pipelineItem{display:block}.s5-pipelineItem>b{display:block;text-align:center;transform:rotate(90deg);padding:5px}}
+
+/* Sprint 5 Groups A+B — noise generation and measurement */
+.s5-noiseLab { margin-top: 12px; padding: 24px; border: 1px solid #30343a; border-radius: 14px; background: #17191b; }
+.s5-labHeader { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; }
+.s5-labHeader h2 { margin: 4px 0 8px; }
+.s5-labHeader p { max-width: 760px; margin: 0; }
+.s5-liveBadge { padding: 9px 12px; border-radius: 9px; background: #20251f; border: 1px solid #3c4937; font-size: 10px; font-weight: 800; letter-spacing: .08em; white-space: nowrap; }
+.s5-controls { display: grid; grid-template-columns: 1.1fr 1.5fr 1fr; gap: 12px; margin: 20px 0; }
+.s5-controls label { display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #2b2f34; border-radius: 10px; background: #111315; }
+.s5-controls label > span { font-size: 10px; font-weight: 800; letter-spacing: .08em; }
+.s5-controls select, .s5-controls input[type="number"] { width: 100%; box-sizing: border-box; border: 1px solid #383d43; border-radius: 7px; padding: 8px 10px; background: #1a1d20; color: inherit; }
+.s5-controls input[type="range"] { width: 100%; accent-color: #77b9e8; }
+.s5-imageGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.s5-imageCard { min-width: 0; padding: 12px; border: 1px solid #2c3035; border-radius: 11px; background: #111315; }
+.s5-imageTitle { display: flex; gap: 9px; align-items: center; margin-bottom: 10px; font-size: 11px; }
+.s5-imageTitle span { font-size: 9px; opacity: .55; }
+.s5-imageCard canvas { display: block; width: 100%; aspect-ratio: 1; image-rendering: pixelated; border-radius: 6px; background: #08090a; }
+.s5-imageCard small { display: block; margin-top: 9px; line-height: 1.4; opacity: .7; }
+.s5-metricsGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.s5-metric { padding: 15px; border: 1px solid #2b2f34; border-radius: 10px; background: #111315; }
+.s5-metric span { display: block; font-size: 9px; font-weight: 800; letter-spacing: .08em; opacity: .7; }
+.s5-metric strong { display: block; margin: 6px 0 3px; font-size: 22px; }
+.s5-metric small { opacity: .6; }
+.s5-explainGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+.s5-explainCard { padding: 16px; border: 1px solid #2b2f34; border-radius: 10px; background: #1d2023; }
+.s5-explainCard h3 { margin: 5px 0 8px; }
+.s5-explainCard p { margin: 0; line-height: 1.55; }
+@media (max-width: 900px) {
+  .s5-imageGrid, .s5-explainGrid { grid-template-columns: 1fr; }
+  .s5-metricsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .s5-controls { grid-template-columns: 1fr; }
+  .s5-labHeader { flex-direction: column; }
+}
+@media (max-width: 560px) { .s5-metricsGrid { grid-template-columns: 1fr; } }

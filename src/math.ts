@@ -71,3 +71,43 @@ export function pixelNeighborhood(
     values,
   };
 }
+
+export function imageErrorMetrics(reference: GrayImage, observed: GrayImage) {
+  if (reference.width !== observed.width || reference.height !== observed.height) {
+    throw new Error("Images must have identical dimensions.");
+  }
+
+  const error = new Float32Array(reference.data.length);
+  let sum = 0;
+  let sumSquared = 0;
+
+  for (let i = 0; i < reference.data.length; i++) {
+    const e = observed.data[i] - reference.data[i];
+    error[i] = e;
+    sum += e;
+    sumSquared += e * e;
+  }
+
+  const n = error.length;
+  const meanError = sum / n;
+  const mse = sumSquared / n;
+
+  let variance = 0;
+  for (const e of error) {
+    const centered = e - meanError;
+    variance += centered * centered;
+  }
+  variance /= n;
+
+  return {
+    meanError,
+    variance,
+    mse,
+    rmse: Math.sqrt(mse),
+    errorImage: {
+      width: reference.width,
+      height: reference.height,
+      data: error,
+    },
+  };
+}
