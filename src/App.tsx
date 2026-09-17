@@ -1,4 +1,5 @@
 import Sprint3Page from "./pages/Sprint3Page";
+import Sprint4Page from "./pages/Sprint4Page";
 import AppShell from "./components/AppShell";
 import Sprint3 from "./Sprint3";
 import { useEffect, useMemo, useState } from "react";
@@ -1312,6 +1313,14 @@ function App() {
     return (
       <AppShell>
         <Sprint3Page />
+      </AppShell>
+    );
+  }
+
+  if (path === "/learn/sprint-4") {
+    return (
+      <AppShell>
+        <Sprint4Page />
       </AppShell>
     );
   }

@@ -9,8 +9,8 @@ export type Sprint = {
 export const curriculum: Sprint[] = [
   { number: 1, title: "Filter Zoo", status: "complete" },
   { number: 2, title: "Filter Mathematics", status: "complete" },
-  { number: 3, title: "Interactive Convolution", status: "current" },
-  { number: 4, title: "Custom Kernels + Enhancement", status: "planned" },
+  { number: 3, title: "Interactive Convolution", status: "complete" },
+  { number: 4, title: "Custom Kernels + Enhancement", status: "current" },
   { number: 5, title: "Noise + Restoration + Illumination", status: "planned" },
   { number: 6, title: "Colour + Image Formation", status: "planned" },
   { number: 7, title: "Derivatives + Edges + Scale", status: "planned" },
