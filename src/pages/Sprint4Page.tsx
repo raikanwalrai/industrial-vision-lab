@@ -137,12 +137,27 @@ function calculateResponse(patch: number[][], kernel: Kernel) {
   );
 }
 
+function normalizeKernel(kernel: Kernel) {
+  const sum = kernel.flat().reduce((total, value) => total + value, 0);
+
+  if (Math.abs(sum) < 0.000001) {
+    return null;
+  }
+
+  return kernel.map((row) => row.map((value) => value / sum));
+}
+
+function formatKernelSum(kernel: Kernel) {
+  return kernel.flat().reduce((sum, value) => sum + value, 0);
+}
+
 export default function Sprint4Page() {
   const [sceneName, setSceneName] = useState("shapes");
   const [presetName, setPresetName] = useState("Identity");
   const [kernel, setKernel] = useState<Kernel>(() =>
     PRESETS.Identity.map((row) => [...row]),
   );
+  const [useNormalizedOutput, setUseNormalizedOutput] = useState(false);
 
   const source = useMemo(
     () => makeScene(sceneName),
@@ -154,6 +169,23 @@ export default function Sprint4Page() {
     [source, kernel],
   );
 
+  const normalizedKernel = useMemo(
+    () => normalizeKernel(kernel),
+    [kernel],
+  );
+
+  const normalizedOutput = useMemo(
+    () =>
+      normalizedKernel
+        ? convolve(source, normalizedKernel)
+        : output,
+    [source, normalizedKernel, output],
+  );
+
+  const displayedOutput = useNormalizedOutput
+    ? normalizedOutput
+    : output;
+
   const patch = useMemo(
     () => getCenterPatch(source),
     [source],
@@ -162,6 +194,14 @@ export default function Sprint4Page() {
   const response = useMemo(
     () => calculateResponse(patch, kernel),
     [patch, kernel],
+  );
+
+  const normalizedResponse = useMemo(
+    () =>
+      normalizedKernel
+        ? calculateResponse(patch, normalizedKernel)
+        : null,
+    [patch, normalizedKernel],
   );
 
   const kernelSum = useMemo(
@@ -305,7 +345,14 @@ export default function Sprint4Page() {
 
       <section className="s4a-visuals">
         <CanvasImage image={source} title="INPUT IMAGE" />
-        <CanvasImage image={output} title="CUSTOM KERNEL RESPONSE" />
+        <CanvasImage
+          image={displayedOutput}
+          title={
+            useNormalizedOutput
+              ? "NORMALIZED KERNEL RESPONSE"
+              : "CUSTOM KERNEL RESPONSE"
+          }
+        />
       </section>
 
       <section className="s4a-response">
@@ -383,6 +430,176 @@ export default function Sprint4Page() {
             </code>
             <strong>{format(response)}</strong>
           </div>
+        </div>
+      </section>
+
+      <section className="s4b-normalization">
+        <div className="s4b-header">
+          <div>
+            <div className="s4a-sectionLabel">SPRINT 4 · GROUP B</div>
+            <h2>Kernel Sum &amp; Normalization</h2>
+            <p>
+              The same shape of kernel can behave very differently depending
+              on the sum of its coefficients. For smoothing, we often want
+              the weights to add up to 1 so a constant image keeps the same
+              brightness.
+            </p>
+          </div>
+
+          <div className="s4b-formula">
+            <span>normalized kernel</span>
+            <b>=</b>
+            <span>kernel ÷ kernel sum</span>
+          </div>
+        </div>
+
+        <div className="s4b-experiment">
+          <div className="s4b-statCard">
+            <span>RAW KERNEL SUM</span>
+            <strong>{format(kernelSum)}</strong>
+            <small>
+              S = Σ Kᵢⱼ
+            </small>
+          </div>
+
+          <div className="s4b-statCard">
+            <span>NORMALIZED SUM</span>
+            <strong>
+              {normalizedKernel ? format(formatKernelSum(normalizedKernel)) : "—"}
+            </strong>
+            <small>
+              {normalizedKernel
+                ? "The weights now add to 1."
+                : "Cannot normalize a zero-sum kernel."}
+            </small>
+          </div>
+
+          <button
+            className={
+              useNormalizedOutput
+                ? "s4b-toggle active"
+                : "s4b-toggle"
+            }
+            onClick={() => setUseNormalizedOutput((current) => !current)}
+          >
+            {useNormalizedOutput
+              ? "Showing normalized output"
+              : "Show normalized output"}
+          </button>
+        </div>
+
+        <div className="s4b-matrices">
+          <div className="s4b-matrixCard">
+            <div className="s4a-sectionLabel">RAW KERNEL</div>
+            <div className="s4a-matrix">
+              {kernel.flatMap((row, r) =>
+                row.map((value, c) => (
+                  <div
+                    key={`raw-${r}-${c}`}
+                    className={
+                      r === 1 && c === 1
+                        ? "s4a-matrixCell center"
+                        : "s4a-matrixCell"
+                    }
+                  >
+                    {format(value)}
+                  </div>
+                )),
+              )}
+            </div>
+            <div className="s4b-matrixCaption">
+              Sum = {format(kernelSum)}
+            </div>
+          </div>
+
+          <div className="s4b-arrow">÷</div>
+
+          <div className="s4b-sumBox">
+            <span>KERNEL SUM</span>
+            <strong>{format(kernelSum)}</strong>
+            <small>
+              Every coefficient is divided by this number.
+            </small>
+          </div>
+
+          <div className="s4b-arrow">→</div>
+
+          <div className="s4b-matrixCard">
+            <div className="s4a-sectionLabel">NORMALIZED KERNEL</div>
+            {normalizedKernel ? (
+              <>
+                <div className="s4a-matrix">
+                  {normalizedKernel.flatMap((row, r) =>
+                    row.map((value, c) => (
+                      <div
+                        key={`normalized-${r}-${c}`}
+                        className={
+                          r === 1 && c === 1
+                            ? "s4a-matrixCell center"
+                            : "s4a-matrixCell"
+                        }
+                      >
+                        {format(value)}
+                      </div>
+                    )),
+                  )}
+                </div>
+                <div className="s4b-matrixCaption">
+                  Sum = {format(formatKernelSum(normalizedKernel))}
+                </div>
+              </>
+            ) : (
+              <div className="s4b-zeroWarning">
+                This kernel has sum 0, so it cannot be normalized by division.
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="s4b-responseCompare">
+          <div>
+            <span>RAW RESPONSE</span>
+            <strong>{format(response)}</strong>
+          </div>
+          <div>
+            <span>NORMALIZED RESPONSE</span>
+            <strong>
+              {normalizedResponse === null ? "—" : format(normalizedResponse)}
+            </strong>
+          </div>
+          <div>
+            <span>WHY IT MATTERS</span>
+            <p>
+              If the kernel sum is larger than 1, a constant image can become
+              brighter. If it is 1, the weighted average preserves a constant
+              value.
+            </p>
+          </div>
+        </div>
+
+        <div className="s4b-constantTest">
+          <div>
+            <div className="s4a-sectionLabel">SANITY CHECK · CONSTANT IMAGE</div>
+            <h3>What should happen to a flat image?</h3>
+            <p>
+              Suppose every pixel is 128. With a normalized kernel whose
+              coefficients sum to 1:
+            </p>
+          </div>
+
+          <div className="s4b-constantEquation">
+            <span>128</span>
+            <b>×</b>
+            <span>ΣK = 1</span>
+            <b>→</b>
+            <strong>128</strong>
+          </div>
+        </div>
+
+        <div className="s4b-lesson">
+          <b>Group B lesson:</b>
+          normalization changes the scale of the response without changing
+          the relative pattern of the weights.
         </div>
       </section>
 

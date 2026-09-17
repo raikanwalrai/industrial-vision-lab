@@ -4644,3 +4644,284 @@
     text-align: left;
   }
 }
+
+
+/* ============================================================
+   SPRINT 4 GROUP B — KERNEL SUM + NORMALIZATION
+   ============================================================ */
+
+.s4b-normalization {
+  margin-top: 28px;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  background: rgba(255,255,255,.035);
+}
+
+.s4b-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.s4b-header h2 {
+  margin: 6px 0 8px;
+}
+
+.s4b-header p {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(255,255,255,.62);
+  line-height: 1.65;
+}
+
+.s4b-formula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 245px;
+  padding: 17px;
+  border-radius: 12px;
+  background: rgba(131,185,217,.07);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .78rem;
+}
+
+.s4b-formula b {
+  opacity: .45;
+}
+
+.s4b-experiment {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.s4b-statCard {
+  padding: 16px;
+  border-radius: 11px;
+  background: rgba(0,0,0,.17);
+}
+
+.s4b-statCard span,
+.s4b-statCard strong,
+.s4b-statCard small {
+  display: block;
+}
+
+.s4b-statCard span {
+  font-size: .67rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.5);
+}
+
+.s4b-statCard strong {
+  margin-top: 6px;
+  font-size: 1.45rem;
+}
+
+.s4b-statCard small {
+  margin-top: 4px;
+  color: rgba(255,255,255,.5);
+}
+
+.s4b-toggle {
+  align-self: stretch;
+  padding: 0 18px;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 10px;
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.82);
+  cursor: pointer;
+}
+
+.s4b-toggle:hover,
+.s4b-toggle.active {
+  border-color: rgba(131,185,217,.6);
+  background: rgba(131,185,217,.1);
+  color: #fff;
+}
+
+.s4b-matrices {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) auto minmax(150px, .75fr) auto minmax(150px, 1fr);
+  gap: 15px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.s4b-matrixCard {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.14);
+}
+
+.s4b-matrixCard .s4a-matrix {
+  max-width: 220px;
+}
+
+.s4b-matrixCaption {
+  margin-top: 9px;
+  color: rgba(255,255,255,.54);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .72rem;
+}
+
+.s4b-arrow {
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  font-weight: 800;
+  opacity: .42;
+}
+
+.s4b-sumBox {
+  padding: 18px;
+  border-radius: 12px;
+  background: rgba(255,176,0,.06);
+  text-align: center;
+}
+
+.s4b-sumBox span,
+.s4b-sumBox strong,
+.s4b-sumBox small {
+  display: block;
+}
+
+.s4b-sumBox span {
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.48);
+}
+
+.s4b-sumBox strong {
+  margin: 7px 0;
+  font-size: 1.5rem;
+}
+
+.s4b-sumBox small {
+  color: rgba(255,255,255,.52);
+  line-height: 1.45;
+}
+
+.s4b-zeroWarning {
+  padding: 24px 8px;
+  color: rgba(255,176,0,.9);
+  line-height: 1.5;
+}
+
+.s4b-responseCompare {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.s4b-responseCompare > div {
+  padding: 16px;
+  border-radius: 11px;
+  background: rgba(0,0,0,.17);
+}
+
+.s4b-responseCompare span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.48);
+}
+
+.s4b-responseCompare strong {
+  font-size: 1.25rem;
+}
+
+.s4b-responseCompare p {
+  margin: 0;
+  color: rgba(255,255,255,.62);
+  line-height: 1.5;
+}
+
+.s4b-constantTest {
+  display: flex;
+  justify-content: space-between;
+  gap: 25px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+}
+
+.s4b-constantTest h3 {
+  margin: 5px 0 7px;
+}
+
+.s4b-constantTest p {
+  margin: 0;
+  color: rgba(255,255,255,.58);
+  line-height: 1.5;
+}
+
+.s4b-constantEquation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.1rem;
+}
+
+.s4b-constantEquation b {
+  opacity: .4;
+}
+
+.s4b-constantEquation strong {
+  font-size: 1.45rem;
+}
+
+.s4b-lesson {
+  margin-top: 18px;
+  padding: 15px 17px;
+  border-left: 3px solid rgba(131,185,217,.6);
+  background: rgba(131,185,217,.05);
+  color: rgba(255,255,255,.65);
+  line-height: 1.5;
+}
+
+@media (max-width: 850px) {
+  .s4b-header,
+  .s4b-constantTest {
+    flex-direction: column;
+  }
+
+  .s4b-formula {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .s4b-experiment,
+  .s4b-matrices,
+  .s4b-responseCompare {
+    grid-template-columns: 1fr;
+  }
+
+  .s4b-arrow {
+    transform: rotate(90deg);
+  }
+
+  .s4b-toggle {
+    min-height: 48px;
+  }
+
+  .s4b-constantEquation {
+    flex-wrap: wrap;
+  }
+}
