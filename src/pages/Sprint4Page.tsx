@@ -151,6 +151,30 @@ function formatKernelSum(kernel: Kernel) {
   return kernel.flat().reduce((sum, value) => sum + value, 0);
 }
 
+function subtractImages(a: GrayImage, b: GrayImage): GrayImage {
+  const data = new Float32Array(a.data.length);
+
+  for (let i = 0; i < data.length; i++) {
+    data[i] = a.data[i] - b.data[i];
+  }
+
+  return { width: a.width, height: a.height, data };
+}
+
+function addScaledImage(
+  original: GrayImage,
+  detail: GrayImage,
+  scale: number,
+): GrayImage {
+  const data = new Float32Array(original.data.length);
+
+  for (let i = 0; i < data.length; i++) {
+    data[i] = original.data[i] + scale * detail.data[i];
+  }
+
+  return { width: original.width, height: original.height, data };
+}
+
 export default function Sprint4Page() {
   const [sceneName, setSceneName] = useState("shapes");
   const [presetName, setPresetName] = useState("Identity");
@@ -158,6 +182,7 @@ export default function Sprint4Page() {
     PRESETS.Identity.map((row) => [...row]),
   );
   const [useNormalizedOutput, setUseNormalizedOutput] = useState(false);
+  const [highBoost, setHighBoost] = useState(1);
 
   const source = useMemo(
     () => makeScene(sceneName),
@@ -185,6 +210,21 @@ export default function Sprint4Page() {
   const displayedOutput = useNormalizedOutput
     ? normalizedOutput
     : output;
+
+  const blurredImage = useMemo(
+    () => convolve(source, PRESETS.Blur),
+    [source],
+  );
+
+  const detailImage = useMemo(
+    () => subtractImages(source, blurredImage),
+    [source, blurredImage],
+  );
+
+  const highBoostImage = useMemo(
+    () => addScaledImage(source, detailImage, highBoost),
+    [source, detailImage, highBoost],
+  );
 
   const patch = useMemo(
     () => getCenterPatch(source),
@@ -433,6 +473,189 @@ export default function Sprint4Page() {
         </div>
       </section>
 
+
+      <section className="s4d-enhancement">
+        <div className="s4d-header">
+          <div>
+            <div className="s4a-sectionLabel">SPRINT 4 · GROUP D</div>
+            <h2>Unsharp Masking &amp; High-Boost</h2>
+            <p>
+              Build enhancement as a sequence: blur the image, subtract the
+              blur to isolate detail, then add some of that detail back.
+            </p>
+          </div>
+
+          <div className="s4d-equationBadge">
+            <span>CORE EQUATION</span>
+            <strong>I + k(I − B)</strong>
+          </div>
+        </div>
+
+        <div className="s4d-chain">
+          <div className="s4d-chainCard">
+            <span>01</span>
+            <b>Original</b>
+            <small>I</small>
+          </div>
+
+          <div className="s4d-arrow">→</div>
+
+          <div className="s4d-chainCard">
+            <span>02</span>
+            <b>Blur</b>
+            <small>B = blur(I)</small>
+          </div>
+
+          <div className="s4d-arrow">→</div>
+
+          <div className="s4d-chainCard">
+            <span>03</span>
+            <b>Detail mask</b>
+            <small>D = I − B</small>
+          </div>
+
+          <div className="s4d-arrow">→</div>
+
+          <div className="s4d-chainCard highlight">
+            <span>04</span>
+            <b>Enhanced</b>
+            <small>I + kD</small>
+          </div>
+        </div>
+
+        <div className="s4d-math">
+          <div className="s4d-mathCard">
+            <div className="s4a-sectionLabel">UNSHARP MASKING</div>
+
+            <div className="s4d-bigFormula">
+              <span>D = I − B</span>
+              <b>→</b>
+              <span>I<sub>unsharp</sub> = I + D</span>
+            </div>
+
+            <p>
+              Blur removes fine detail. Subtracting the blur from the original
+              leaves a detail mask. Adding that mask back enhances transitions.
+            </p>
+          </div>
+
+          <div className="s4d-mathCard">
+            <div className="s4a-sectionLabel">HIGH-BOOST</div>
+
+            <div className="s4d-bigFormula">
+              <span>I<sub>enhanced</sub></span>
+              <b>=</b>
+              <span>I + kD</span>
+            </div>
+
+            <p>
+              The parameter <b>k</b> controls how strongly detail is added back.
+            </p>
+
+            <div className="s4d-sliderRow">
+              <label htmlFor="s4d-boost">
+                <span>DETAIL STRENGTH</span>
+                <strong>{highBoost.toFixed(1)}×</strong>
+              </label>
+
+              <input
+                id="s4d-boost"
+                type="range"
+                min="0"
+                max="3"
+                step="0.5"
+                value={highBoost}
+                onChange={(event) =>
+                  setHighBoost(Number(event.target.value))
+                }
+              />
+
+              <div className="s4d-sliderLabels">
+                <span>0×</span>
+                <span>1× unsharp</span>
+                <span>3×</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="s4d-images">
+          <CanvasImage image={source} title="01 · ORIGINAL IMAGE" />
+          <CanvasImage image={blurredImage} title="02 · BLURRED IMAGE" />
+          <CanvasImage image={detailImage} title="03 · DETAIL MASK" />
+
+          <CanvasImage
+            image={highBoostImage}
+            title={"04 · HIGH-BOOST · k = " + highBoost.toFixed(1)}
+          />
+        </div>
+
+        <div className="s4d-localExample">
+          <div>
+            <div className="s4a-sectionLabel">WORKED NUMERICAL EXAMPLE</div>
+            <h3>Follow the signal through every stage</h3>
+            <p>
+              Suppose the original local value is 100 and the blurred value is
+              80. Their difference is the detail signal.
+            </p>
+          </div>
+
+          <div className="s4d-localSteps">
+            <div>
+              <span>ORIGINAL</span>
+              <b>I = 100</b>
+            </div>
+
+            <div>
+              <span>BLURRED</span>
+              <b>B = 80</b>
+            </div>
+
+            <div>
+              <span>DETAIL</span>
+              <b>D = I − B = 20</b>
+            </div>
+
+            <div>
+              <span>UNSHARP</span>
+              <b>100 + 1(20) = 120</b>
+            </div>
+
+            <div>
+              <span>HIGH-BOOST</span>
+              <b>100 + 2(20) = 140</b>
+            </div>
+          </div>
+        </div>
+
+        <div className="s4d-compare">
+          <div className="s4d-compareCard">
+            <span>k = 0</span>
+            <strong>Original</strong>
+            <small>No detail is added.</small>
+          </div>
+
+          <div className="s4d-compareCard">
+            <span>k = 1</span>
+            <strong>Unsharp</strong>
+            <small>Add the detail mask once.</small>
+          </div>
+
+          <div className="s4d-compareCard">
+            <span>k &gt; 1</span>
+            <strong>High-Boost</strong>
+            <small>Add the detail more strongly.</small>
+          </div>
+        </div>
+
+        <div className="s4d-lesson">
+          <b>Group D lesson:</b>
+          sharpening can be understood as
+          <strong>blur → subtract → extract detail → add detail back</strong>.
+          High-boost filtering controls how much of that detail is returned to
+          the image.
+        </div>
+      </section>
 
       <section className="s4c-sharpening">
         <div className="s4c-header">

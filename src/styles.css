@@ -5289,3 +5289,320 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   SPRINT 4 GROUP D — UNSHARP MASKING + HIGH-BOOST
+   ============================================================ */
+
+.s4d-enhancement {
+  margin-top: 28px;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  background: rgba(255,255,255,.035);
+}
+
+.s4d-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.s4d-header h2 {
+  margin: 6px 0 8px;
+}
+
+.s4d-header p {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(255,255,255,.62);
+  line-height: 1.65;
+}
+
+.s4d-equationBadge {
+  min-width: 210px;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255,176,0,.07);
+  text-align: center;
+}
+
+.s4d-equationBadge span,
+.s4d-equationBadge strong {
+  display: block;
+}
+
+.s4d-equationBadge span {
+  font-size: .64rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.48);
+}
+
+.s4d-equationBadge strong {
+  margin-top: 7px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.s4d-chain {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+  gap: 10px;
+  align-items: stretch;
+  margin-top: 22px;
+}
+
+.s4d-chainCard {
+  padding: 16px;
+  border-radius: 11px;
+  background: rgba(0,0,0,.16);
+}
+
+.s4d-chainCard.highlight {
+  background: rgba(255,176,0,.07);
+}
+
+.s4d-chainCard span,
+.s4d-chainCard b,
+.s4d-chainCard small {
+  display: block;
+}
+
+.s4d-chainCard span {
+  margin-bottom: 7px;
+  font-size: .64rem;
+  font-weight: 800;
+  color: rgba(255,255,255,.45);
+}
+
+.s4d-chainCard small {
+  margin-top: 4px;
+  color: rgba(255,255,255,.5);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .7rem;
+}
+
+.s4d-arrow {
+  display: grid;
+  place-items: center;
+  opacity: .4;
+  font-size: 1.25rem;
+}
+
+.s4d-math {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.s4d-mathCard {
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.16);
+}
+
+.s4d-bigFormula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 15px 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.s4d-bigFormula b {
+  opacity: .4;
+}
+
+.s4d-mathCard p {
+  color: rgba(255,255,255,.6);
+  line-height: 1.55;
+}
+
+.s4d-sliderRow {
+  margin-top: 18px;
+}
+
+.s4d-sliderRow label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.s4d-sliderRow label span {
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+  color: rgba(255,255,255,.48);
+}
+
+.s4d-sliderRow label strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.s4d-sliderRow input {
+  width: 100%;
+}
+
+.s4d-sliderLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  color: rgba(255,255,255,.42);
+  font-size: .65rem;
+}
+
+.s4d-images {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.s4d-images .s4a-imageCard {
+  padding: 12px;
+}
+
+.s4d-images .s4a-canvasWrap {
+  min-height: 190px;
+}
+
+.s4d-images .s4a-cardTitle {
+  font-size: .62rem;
+}
+
+.s4d-localExample {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 20px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.04);
+}
+
+.s4d-localExample h3 {
+  margin: 5px 0 7px;
+}
+
+.s4d-localExample p {
+  margin: 0;
+  color: rgba(255,255,255,.58);
+  line-height: 1.5;
+}
+
+.s4d-localSteps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.s4d-localSteps > div {
+  padding: 11px 13px;
+  border-radius: 8px;
+  background: rgba(0,0,0,.16);
+}
+
+.s4d-localSteps span,
+.s4d-localSteps b {
+  display: block;
+}
+
+.s4d-localSteps span {
+  margin-bottom: 5px;
+  font-size: .6rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  color: rgba(255,255,255,.44);
+}
+
+.s4d-localSteps b {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .72rem;
+}
+
+.s4d-compare {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.s4d-compareCard {
+  padding: 15px;
+  border-radius: 10px;
+  background: rgba(0,0,0,.16);
+}
+
+.s4d-compareCard span,
+.s4d-compareCard strong,
+.s4d-compareCard small {
+  display: block;
+}
+
+.s4d-compareCard span {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: .7rem;
+  color: rgba(255,255,255,.48);
+}
+
+.s4d-compareCard strong {
+  margin: 5px 0 4px;
+}
+
+.s4d-compareCard small {
+  color: rgba(255,255,255,.52);
+}
+
+.s4d-lesson {
+  margin-top: 18px;
+  padding: 15px 17px;
+  border-left: 3px solid rgba(255,176,0,.65);
+  background: rgba(255,176,0,.05);
+  color: rgba(255,255,255,.64);
+  line-height: 1.55;
+}
+
+.s4d-lesson strong {
+  color: rgba(255,255,255,.86);
+}
+
+@media (max-width:1000px) {
+  .s4d-chain {
+    grid-template-columns: 1fr;
+  }
+
+  .s4d-arrow {
+    transform: rotate(90deg);
+  }
+
+  .s4d-images {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width:750px) {
+  .s4d-header,
+  .s4d-math,
+  .s4d-localExample {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .s4d-equationBadge {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .s4d-images,
+  .s4d-compare,
+  .s4d-localSteps {
+    grid-template-columns: 1fr;
+  }
+}
