@@ -3812,3 +3812,104 @@
     font-size: 8px;
   }
 }
+
+/* ============================================================
+   Platform · Sprint 3.12 · Application Shell
+   ============================================================ */
+
+.appShell {
+  min-height: 100vh;
+  background: #101214;
+}
+
+.topNav {
+  min-height: 76px;
+  padding: 14px 34px;
+  border-bottom: 1px solid #2d3339;
+  background: #121519;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandMark {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #526979;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: #a9c3d4;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+.brandName {
+  color: #e7edf2;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.brandSubtitle {
+  color: #7f8b95;
+  font-size: .72rem;
+  margin-top: 2px;
+}
+
+.topNavLinks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.topNavLink {
+  border: 0;
+  background: transparent;
+  color: #8e9aa5;
+  padding: 10px 13px;
+  border-radius: 6px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+
+.topNavLink:hover,
+.topNavLink.active {
+  color: #dce7ee;
+  background: #1b2329;
+}
+
+.appContent {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 34px 60px;
+}
+
+@media (max-width: 900px) {
+  .topNav {
+    padding: 14px 16px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .topNavLinks {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .topNavLink {
+    flex: 0 0 auto;
+  }
+
+  .appContent {
+    padding: 22px 16px 50px;
+  }
+}
