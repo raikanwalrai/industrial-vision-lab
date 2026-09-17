@@ -1018,6 +1018,142 @@ export default function Sprint4Page() {
         </div>
       </section>
 
+      <section className="s4e-verification">
+        <div className="s4e-header">
+          <div>
+            <div className="s4a-sectionLabel">SPRINT 4 · GROUP E</div>
+            <h2>Final Verification</h2>
+            <p>
+              One last controlled pass: verify the kernel mathematics, the
+              enhancement equations, and the constant-image sanity check.
+            </p>
+          </div>
+
+          <div className="s4e-status">
+            <span>SPRINT 4</span>
+            <strong>VERIFICATION LAB</strong>
+          </div>
+        </div>
+
+        <div className="s4e-grid">
+          <div className="s4e-card">
+            <div className="s4a-sectionLabel">01 · KERNEL SUMS</div>
+
+            <div className="s4e-check">
+              <span>IDENTITY</span>
+              <strong>{format(formatKernelSum(PRESETS.Identity))}</strong>
+              <b>{formatKernelSum(PRESETS.Identity) === 1 ? "PASS" : "CHECK"}</b>
+            </div>
+
+            <div className="s4e-check">
+              <span>BLUR</span>
+              <strong>{format(formatKernelSum(PRESETS.Blur))}</strong>
+              <b>{Math.abs(formatKernelSum(PRESETS.Blur) - 1) < 1e-9 ? "PASS" : "CHECK"}</b>
+            </div>
+
+            <div className="s4e-check">
+              <span>SHARPEN</span>
+              <strong>{format(formatKernelSum(PRESETS.Sharpen))}</strong>
+              <b>{formatKernelSum(PRESETS.Sharpen) === 1 ? "PASS" : "CHECK"}</b>
+            </div>
+          </div>
+
+          <div className="s4e-card">
+            <div className="s4a-sectionLabel">02 · ENHANCEMENT MATH</div>
+
+            <div className="s4e-equation">
+              <span>DETAIL</span>
+              <strong>100 − 80 = 20</strong>
+              <b>PASS</b>
+            </div>
+
+            <div className="s4e-equation">
+              <span>UNSHARP · k = 1</span>
+              <strong>100 + 1(20) = 120</strong>
+              <b>PASS</b>
+            </div>
+
+            <div className="s4e-equation">
+              <span>HIGH-BOOST · k = 2</span>
+              <strong>100 + 2(20) = 140</strong>
+              <b>PASS</b>
+            </div>
+          </div>
+
+          <div className="s4e-card">
+            <div className="s4a-sectionLabel">03 · CONSTANT IMAGE</div>
+
+            <div className="s4e-constant">
+              <div className="s4e-constantNumber">128</div>
+              <div className="s4e-constantOperator">×</div>
+              <div className="s4e-constantNumber">ΣK = 1</div>
+              <div className="s4e-constantOperator">→</div>
+              <div className="s4e-constantResult">128</div>
+            </div>
+
+            <p>
+              A normalized smoothing kernel should preserve a perfectly flat
+              image.
+            </p>
+
+            <div className="s4e-pass">PASS · CONSTANT VALUE PRESERVED</div>
+          </div>
+        </div>
+
+        <div className="s4e-flow">
+          <div className="s4a-sectionLabel">END-TO-END CONCEPT CHECK</div>
+
+          <div className="s4e-flowRow">
+            <div>
+              <span>A</span>
+              <strong>Design</strong>
+              <small>Choose kernel coefficients.</small>
+            </div>
+
+            <b>→</b>
+
+            <div>
+              <span>B</span>
+              <strong>Normalize</strong>
+              <small>Control the kernel sum.</small>
+            </div>
+
+            <b>→</b>
+
+            <div>
+              <span>C</span>
+              <strong>Sharpen</strong>
+              <small>Strengthen local differences.</small>
+            </div>
+
+            <b>→</b>
+
+            <div>
+              <span>D</span>
+              <strong>Enhance</strong>
+              <small>Extract and add detail.</small>
+            </div>
+          </div>
+        </div>
+
+        <div className="s4e-result">
+          <div>
+            <div className="s4a-sectionLabel">SPRINT 4 RESULT</div>
+            <h3>Custom kernels are mathematical rules for changing image response.</h3>
+            <p>
+              You can now move from choosing a filter to designing one,
+              understanding its coefficients, controlling its scale, and
+              building enhancement from blur and detail.
+            </p>
+          </div>
+
+          <div className="s4e-complete">
+            <strong>✓ COMPLETE</strong>
+            <span>Groups A · B · C · D · E</span>
+          </div>
+        </div>
+      </section>
+
       <section className="s4a-lessonNote">
         <span className="statusDot" />
         <div>
