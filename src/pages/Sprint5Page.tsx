@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { addGaussianNoise, addSaltPepperNoise, makeScene, type GrayImage } from "../imageScenes";
-import { imageErrorMetrics } from "../math";
+import { convolve, imageErrorMetrics, medianFilter, meanFilter } from "../math";
+import { filters } from "../filters";
 
 type NoiseKind = "gaussian" | "salt-pepper";
 
@@ -13,15 +14,25 @@ const GROUPS = [
   ["F", "Final Verification", "Verify the mathematics and complete the degradation pipeline."],
 ] as const;
 
-function drawGray(canvas: HTMLCanvasElement, image: GrayImage, mode: "gray" | "error") {
+function drawGray(
+  canvas: HTMLCanvasElement,
+  image: GrayImage,
+  mode: "gray" | "error" = "gray",
+) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
+
   const pixels = ctx.createImageData(image.width, image.height);
 
   for (let i = 0; i < image.data.length; i++) {
     let value = image.data[i];
-    if (mode === "error") value = 128 + value * 2.5;
+
+    if (mode === "error") {
+      value = 128 + value * 2.5;
+    }
+
     value = Math.max(0, Math.min(255, value));
+
     const p = i * 4;
     pixels.data[p] = value;
     pixels.data[p + 1] = value;
@@ -47,19 +58,49 @@ export default function Sprint5Page() {
     return addSaltPepperNoise(clean, strength / 100, 0.5, seed);
   }, [clean, noiseKind, strength, seed]);
 
-  const metrics = useMemo(() => imageErrorMetrics(clean, noisy), [clean, noisy]);
+  const noisyMetrics = useMemo(() => imageErrorMetrics(clean, noisy), [clean, noisy]);
+  const metrics = noisyMetrics;
+
+  const meanRestored = useMemo(() => meanFilter(noisy, 3), [noisy]);
+  const gaussianKernel = useMemo(
+    () => filters.find((item) => item.name === "Gaussian σ≈1")!.values,
+    [],
+  );
+  const gaussianRestored = useMemo(
+    () => convolve(noisy, gaussianKernel),
+    [noisy, gaussianKernel],
+  );
+  const medianRestored = useMemo(() => medianFilter(noisy, 3), [noisy]);
+
+  const restorationResults = useMemo(
+    () => [
+      { name: "Mean 3×3", metrics: imageErrorMetrics(clean, meanRestored) },
+      { name: "Gaussian σ≈1", metrics: imageErrorMetrics(clean, gaussianRestored) },
+      { name: "Median 3×3", metrics: imageErrorMetrics(clean, medianRestored) },
+    ],
+    [clean, meanRestored, gaussianRestored, medianRestored],
+  );
 
   const cleanRef = useRef<HTMLCanvasElement>(null);
   const noisyRef = useRef<HTMLCanvasElement>(null);
   const errorRef = useRef<HTMLCanvasElement>(null);
+  const meanRef = useRef<HTMLCanvasElement>(null);
+  const gaussianRef = useRef<HTMLCanvasElement>(null);
+  const medianRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    if (cleanRef.current) drawGray(cleanRef.current, clean, "gray");
-    if (noisyRef.current) drawGray(noisyRef.current, noisy, "gray");
-    if (errorRef.current) drawGray(errorRef.current, metrics.errorImage, "error");
-  }, [clean, noisy, metrics.errorImage]);
+    if (cleanRef.current) drawGray(cleanRef.current, clean);
+    if (noisyRef.current) drawGray(noisyRef.current, noisy);
+    if (errorRef.current) {
+      drawGray(errorRef.current, metrics.errorImage, "error");
+    }
+    if (meanRef.current) drawGray(meanRef.current, meanRestored);
+    if (gaussianRef.current) drawGray(gaussianRef.current, gaussianRestored);
+    if (medianRef.current) drawGray(medianRef.current, medianRestored);
+  }, [clean, noisy, metrics.errorImage, meanRestored, gaussianRestored, medianRestored]);
 
   const current = GROUPS.find((g) => g[0] === active)!;
+  const live = active === "A" || active === "B" || active === "C";
 
   return (
     <div className="s5-page">
@@ -93,12 +134,11 @@ export default function Sprint5Page() {
             and how restoration can recover useful information.</strong>
           </p>
         </div>
-
         <div className="s5-introCard s5-modelCard">
           <div className="s5-label">CORE MODEL</div>
           <div className="s5-equation">I<sub>noisy</sub> = I + N</div>
-          <div className="s5-equation">D = I<sub>noisy</sub> − I</div>
-          <div className="s5-equation">MSE = (1/N) Σ(I<sub>noisy</sub> − I)<sup>2</sup></div>
+          <div className="s5-equation">Ĩ = restore(I<sub>noisy</sub>)</div>
+          <div className="s5-equation">MSE = (1/N) Σ(Ĩ − I)<sup>2</sup></div>
           <div className="s5-equation">RMSE = √MSE</div>
         </div>
       </section>
@@ -130,7 +170,7 @@ export default function Sprint5Page() {
             <h2>Six controlled experiments</h2>
           </div>
           <div className="s5-current">
-            GROUP {active} · {active === "A" || active === "B" ? "ACTIVE" : "PLANNED"}
+            GROUP {active} · {live ? "ACTIVE" : "PLANNED"}
           </div>
         </div>
 
@@ -151,9 +191,7 @@ export default function Sprint5Page() {
         <div className="s5-focus">
           <div className="s5-focusNumber">{current[0]}</div>
           <div>
-            <div className="s5-label">
-              {active === "A" || active === "B" ? "CURRENT EXPERIMENT" : "NEXT EXPERIMENT"}
-            </div>
+            <div className="s5-label">{live ? "CURRENT EXPERIMENT" : "NEXT EXPERIMENT"}</div>
             <h3>{current[1]}</h3>
             <p>{current[2]}</p>
           </div>
@@ -255,14 +293,155 @@ export default function Sprint5Page() {
         </section>
       )}
 
-      {active !== "A" && active !== "B" && (
+
+
+      {active === "C" && (
+        <section className="s5-restorationLab">
+          <div className="s5-labHeader">
+            <div>
+              <div className="s5-label">GROUP C · RESTORATION LAB</div>
+              <h2>Restore the same noisy image three different ways</h2>
+              <p>
+                Nothing about the degradation changes. Mean, Gaussian, and
+                median filters receive exactly the same noisy image and are
+                evaluated against exactly the same clean reference.
+              </p>
+            </div>
+            <div className="s5-liveBadge">● SAME INPUT</div>
+          </div>
+
+          <div className="s5-controls">
+            <label>
+              <span>NOISE TYPE</span>
+              <select value={noiseKind} onChange={(e) => setNoiseKind(e.target.value as NoiseKind)}>
+                <option value="gaussian">Gaussian</option>
+                <option value="salt-pepper">Salt-and-pepper</option>
+              </select>
+            </label>
+            <label>
+              <span>{noiseKind === "gaussian" ? "SIGMA" : "NOISY PIXEL %"} · {strength}</span>
+              <input
+                type="range"
+                min={0}
+                max={noiseKind === "gaussian" ? 60 : 30}
+                value={strength}
+                onChange={(e) => setStrength(Number(e.target.value))}
+              />
+            </label>
+            <label>
+              <span>SEED · {seed}</span>
+              <input
+                type="number"
+                min={0}
+                max={999999}
+                value={seed}
+                onChange={(e) => setSeed(Number(e.target.value) || 0)}
+              />
+            </label>
+          </div>
+
+          <div className="s5-restorationGrid">
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle"><span>01</span><strong>CLEAN</strong></div>
+              <canvas ref={cleanRef} />
+              <small>Reference image I</small>
+            </article>
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle"><span>02</span><strong>NOISY</strong></div>
+              <canvas ref={noisyRef} />
+              <small>Same input for all restorations</small>
+            </article>
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle"><span>03</span><strong>MEAN 3×3</strong></div>
+              <canvas ref={meanRef} />
+              <small>Equal-weight local average</small>
+            </article>
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle"><span>04</span><strong>GAUSSIAN</strong></div>
+              <canvas ref={gaussianRef} />
+              <small>Centre-weighted local average</small>
+            </article>
+            <article className="s5-imageCard">
+              <div className="s5-imageTitle"><span>05</span><strong>MEDIAN 3×3</strong></div>
+              <canvas ref={medianRef} />
+              <small>Middle value after sorting</small>
+            </article>
+          </div>
+
+          <div className="s5-restorationTable">
+            <div className="s5-tableHead">
+              <span>METHOD</span><span>MSE</span><span>RMSE</span><span>IDEA</span>
+            </div>
+            <div className="s5-tableRow">
+              <strong>Noisy input</strong>
+              <span>{noisyMetrics.mse.toFixed(3)}</span>
+              <span>{noisyMetrics.rmse.toFixed(3)}</span>
+              <span>Before restoration</span>
+            </div>
+            {restorationResults.map((result) => (
+              <div className="s5-tableRow" key={result.name}>
+                <strong>{result.name}</strong>
+                <span>{result.metrics.mse.toFixed(3)}</span>
+                <span>{result.metrics.rmse.toFixed(3)}</span>
+                <span>
+                  {result.name.startsWith("Mean")
+                    ? "Equal weights"
+                    : result.name.startsWith("Gaussian")
+                      ? "Centre weighted"
+                      : "Rank-based"}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="s5-manualGrid">
+            <div className="s5-explainCard">
+              <div className="s5-label">MEAN FILTER</div>
+              <h3>Average the neighbourhood</h3>
+              <p>For a 3×3 window, add the nine pixel values and divide by 9. Every pixel receives the same weight.</p>
+              <div className="s5-equation">Ĩ = (1/9) Σ I<sub>window</sub></div>
+            </div>
+            <div className="s5-explainCard">
+              <div className="s5-label">GAUSSIAN FILTER</div>
+              <h3>Give nearby pixels different weights</h3>
+              <p>The centre gets more influence than farther neighbours. The existing normalized Gaussian kernel is reused here.</p>
+              <div className="s5-equation">Ĩ = Σ G(i,j) I(x+i,y+j)</div>
+            </div>
+            <div className="s5-explainCard">
+              <div className="s5-label">MEDIAN FILTER</div>
+              <h3>Sort, then take the middle</h3>
+              <p>For salt-and-pepper noise, extreme values such as 255 can be pushed out by ranking instead of averaging.</p>
+              <div className="s5-equation">[10,11,12,10,255,12,11,12,13] → 12</div>
+            </div>
+          </div>
+
+          <div className="s5-restorationNote">
+            <strong>Read the numbers and the pictures together.</strong> MSE/RMSE
+            measures closeness to the clean reference; the images reveal what
+            structure each restoration method preserves or smooths.
+          </div>
+        </section>
+      )}
+
+      {active === "A" || active === "B" ? (
+        <section className="s5-ready">
+          <div>
+            <div className="s5-label">MODULE STATUS</div>
+            <h2>Groups A + B — implemented</h2>
+            <p>Select Group C to compare restoration filters using the same controlled noisy image.</p>
+          </div>
+          <div className="s5-readyBadge"><strong>● READY</strong><span>Group C available</span></div>
+        </section>
+      ) : null}
+
+      {active !== "A" && active !== "B" && active !== "C" && (
         <section className="s5-ready">
           <div>
             <div className="s5-label">MODULE STATUS</div>
             <h2>{current[1]} — planned</h2>
-            <p>Groups A and B are now implemented. This module will consume the same controlled noisy image when its restoration slice is built.</p>
+            <p>Group C is implemented. Later modules will build on this controlled degradation and restoration experiment.</p>
           </div>
-          <div className="s5-readyBadge"><strong>● PLANNED</strong><span>Complete A + B first</span></div>
+          <div className="s5-readyBadge"><strong>● PLANNED</strong><span>Complete Group C first</span></div>
         </section>
       )}
 
