@@ -1,237 +1,1270 @@
 
+
 /* =========================================================
    SPRINT 6 GROUP E — IMAGE FORMATION
+   Clean Group A-style teaching UI
    ========================================================= */
 
 .s6e-lab{
-  display:flex;
-  flex-direction:column;
-  gap:24px;
-}
-
-.s6e-equationFlow{
   display:grid;
-  grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;
-  gap:12px;
-  align-items:center;
-  padding:20px;
+  gap:16px;
+  padding:18px;
   border:1px solid var(--line);
   border-radius:14px;
   background:var(--panel);
+  box-sizing:border-box;
+}
+
+.s6e-lab h2{
+  margin:2px 0 0;
+}
+
+.s6e-lab > p{
+  margin:0;
+  line-height:1.5;
+}
+
+/* ---------- FORMATION PIPELINE ---------- */
+
+.s6e-equationFlow{
+  display:grid;
+  grid-template-columns:
+    minmax(0,1fr) auto
+    minmax(0,1fr) auto
+    minmax(0,1fr) auto
+    minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+  box-sizing:border-box;
 }
 
 .s6e-equationFlow > div:not(.s6e-arrow){
-  display:flex;
-  flex-direction:column;
-  gap:6px;
+  min-width:0;
+  display:grid;
+  gap:4px;
 }
 
 .s6e-equationFlow span{
-  font-size:11px;
-  letter-spacing:.12em;
-  opacity:.65;
+  font-size:.62rem;
+  letter-spacing:.07em;
+  font-weight:900;
+  opacity:.7;
+  white-space:nowrap;
 }
 
 .s6e-equationFlow code{
-  font-size:20px;
+  font-size:.9rem;
   font-weight:700;
+  white-space:nowrap;
 }
 
 .s6e-arrow{
-  font-size:24px;
-  opacity:.6;
+  font-size:1rem;
+  opacity:.65;
+  text-align:center;
 }
+
+/* ---------- CONTROLS ---------- */
 
 .s6e-controls{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
 }
 
 .s6e-controlGroup{
-  padding:16px;
+  min-width:0;
+  padding:12px;
   border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--panel);
+  border-radius:10px;
+  background:var(--surface);
+  box-sizing:border-box;
 }
 
 .s6e-controlGroup label{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  margin-top:10px;
+  display:grid;
+  gap:7px;
+  margin-top:6px;
 }
 
 .s6e-controlGroup label span{
   font-family:monospace;
+  font-size:.78rem;
   font-weight:700;
 }
 
 .s6e-controlGroup input[type="range"]{
   width:100%;
+  min-width:0;
 }
+
+/* ---------- THREE SYNCHRONIZED IMAGES ---------- */
 
 .s6e-visualGrid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  width:100%;
+  min-width:0;
 }
 
 .s6e-imageCard{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  padding:14px;
+  min-width:0;
+  width:100%;
+  display:grid;
+  gap:7px;
+  padding:10px;
   border:1px solid var(--line);
-  border-radius:14px;
-  background:var(--panel);
+  border-radius:10px;
+  background:var(--surface);
+  box-sizing:border-box;
+}
+
+.s6e-imageCard .s6a-imageLabel{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.s6e-imageCard .s6a-canvas{
+  display:block;
+  width:100%;
+  height:auto;
+  aspect-ratio:1 / 1;
+  object-fit:contain;
+  border-radius:7px;
+  min-width:0;
 }
 
 .s6e-imageCard small{
-  opacity:.65;
-  line-height:1.4;
+  font-size:.68rem;
+  line-height:1.35;
+  opacity:.7;
 }
+
+/* ---------- PIXEL VALUES ---------- */
 
 .s6e-pixelGrid{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
 }
 
 .s6e-pixelCard{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  min-height:90px;
-  padding:16px;
+  min-width:0;
+  min-height:74px;
+  display:grid;
+  align-content:start;
+  gap:5px;
+  padding:11px;
   border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--panel);
+  border-radius:9px;
+  background:var(--surface);
+  box-sizing:border-box;
 }
 
 .s6e-pixelCard code{
-  font-size:15px;
+  font-size:.76rem;
   font-weight:700;
+  overflow-wrap:anywhere;
 }
 
 .s6e-pixelCard b{
-  font-size:22px;
+  font-size:1rem;
 }
 
 .s6e-pixelCard small{
+  font-size:.65rem;
   opacity:.6;
 }
 
+/* ---------- PIXEL MATH ---------- */
+
 .s6e-mathPanel{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-  padding:22px;
+  grid-template-columns:1.1fr .9fr;
+  gap:14px;
+  align-items:center;
+  padding:14px;
   border:1px solid var(--line);
-  border-radius:14px;
-  background:var(--panel);
+  border-radius:10px;
+  background:var(--surface);
+  box-sizing:border-box;
 }
 
 .s6e-mathPanel h3{
-  margin:6px 0;
+  margin:4px 0 0;
+  font-size:1rem;
+}
+
+.s6e-mathPanel p{
+  margin:7px 0 0;
+  font-size:.78rem;
+  line-height:1.45;
 }
 
 .s6e-formula{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:10px;
+  display:grid;
+  gap:6px;
+  min-width:0;
 }
 
 .s6e-formula code{
   display:block;
-  padding:10px 12px;
-  border-radius:8px;
-  background:var(--surface);
-  font-size:15px;
+  min-width:0;
+  padding:7px 9px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:var(--panel);
+  font-size:.72rem;
+  overflow-wrap:anywhere;
 }
 
+/* ---------- VERIFICATION ---------- */
+
 .s6e-verification{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+  display:grid;
+  gap:8px;
 }
 
 .s6e-checkGrid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
 }
 
 .s6e-checkGrid > div{
+  min-width:0;
   display:grid;
   grid-template-columns:auto 1fr;
-  column-gap:12px;
-  row-gap:8px;
-  padding:16px;
+  column-gap:8px;
+  row-gap:5px;
+  padding:10px;
   border:1px solid var(--line);
-  border-radius:12px;
-  background:var(--panel);
+  border-radius:9px;
+  background:var(--surface);
+  box-sizing:border-box;
 }
 
 .s6e-checkGrid span{
   grid-row:span 2;
   font-family:monospace;
+  font-size:.7rem;
   opacity:.5;
 }
 
 .s6e-checkGrid b{
-  font-size:14px;
+  font-size:.68rem;
+  line-height:1.3;
 }
 
 .s6e-checkGrid strong{
-  font-size:12px;
-  letter-spacing:.08em;
+  font-size:.62rem;
+  letter-spacing:.07em;
 }
 
+/* ---------- TEACHING NOTE ---------- */
+
 .s6e-teachingNote{
-  padding:18px 20px;
+  padding:13px 15px;
   border-left:3px solid currentColor;
+  border-radius:8px;
+  background:var(--surface);
+}
+
+.s6e-teachingNote p{
+  margin:6px 0 0;
+  font-size:.75rem;
+  line-height:1.5;
+}
+
+/*
+   Deliberately no responsive rule changes the three-image grid.
+   Group E is a pipeline comparison and the three views stay
+   side-by-side, matching the Group A teaching pattern.
+*/
+
+/* =========================================================
+   GROUP E — FINAL SECTION / CARD COMPOSITION
+   Keep the working layout and interaction.
+   Only improve visual grouping.
+   ========================================================= */
+
+/* Main teaching sections */
+.s6e-lab > .s6e-equationFlow,
+.s6e-lab > .s6e-controls,
+.s6e-lab > .s6e-visualGrid,
+.s6e-lab > .s6e-pixelGrid,
+.s6e-lab > .s6e-mathPanel,
+.s6e-lab > .s6e-verification,
+.s6e-lab > .s6e-teachingNote{
+  box-sizing:border-box;
+}
+
+/* ---------------------------------------------------------
+   IMAGE FORMATION EQUATION
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-equationFlow{
+  margin-top:4px;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+}
+
+/* ---------------------------------------------------------
+   CONTROL SECTION
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-controls{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+  box-sizing:border-box;
+}
+
+.s6e-lab > .s6e-controls .s6e-controlGroup{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+  padding:10px;
+}
+
+/* ---------------------------------------------------------
+   THREE IMAGE SECTION
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-visualGrid{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:12px !important;
+
+  box-sizing:border-box;
+}
+
+/* Individual image cards */
+.s6e-lab > .s6e-visualGrid .s6e-imageCard{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+  padding:9px;
+  box-sizing:border-box;
+}
+
+/* Make the image labels clearly part of their cards */
+.s6e-lab > .s6e-visualGrid .s6a-imageLabel{
+  padding:2px 2px 5px;
+}
+
+/* ---------------------------------------------------------
+   PIXEL INFORMATION SECTION
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-pixelGrid{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+
+  box-sizing:border-box;
+}
+
+.s6e-lab > .s6e-pixelGrid .s6e-pixelCard{
+  border:1px solid var(--line);
   border-radius:8px;
   background:var(--panel);
 }
 
+/* ---------------------------------------------------------
+   SELECTED PIXEL / MATHEMATICAL WALKTHROUGH
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-mathPanel{
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+}
+
+/* ---------------------------------------------------------
+   VERIFICATION SECTION
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-verification{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--surface);
+  box-sizing:border-box;
+}
+
+.s6e-lab > .s6e-verification .s6e-checkGrid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+
+.s6e-lab > .s6e-verification .s6e-checkGrid > div{
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:var(--panel);
+}
+
+/* ---------------------------------------------------------
+   TEACHING NOTE
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-teachingNote{
+  padding:13px 15px;
+  border:1px solid var(--line);
+  border-left:3px solid currentColor;
+  border-radius:10px;
+  background:var(--surface);
+}
+
+/* ---------------------------------------------------------
+   SPACING BETWEEN MAJOR GROUP E SECTIONS
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-equationFlow,
+.s6e-lab > .s6e-controls,
+.s6e-lab > .s6e-visualGrid,
+.s6e-lab > .s6e-pixelGrid,
+.s6e-lab > .s6e-mathPanel,
+.s6e-lab > .s6e-verification,
+.s6e-lab > .s6e-teachingNote{
+  margin-bottom:2px;
+}
+
+
+/* =========================================================
+   GROUP E — FINAL POLISH
+   ========================================================= */
+
+.s6e-lab{
+  gap:18px !important;
+}
+
+/* ---------------------------------------------------------
+   FORMATION EQUATION — clear teaching panel
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-equationFlow{
+  padding:16px 18px !important;
+  min-height:72px;
+  border-radius:10px !important;
+  background:var(--surface) !important;
+  border:1px solid var(--line) !important;
+}
+
+.s6e-lab > .s6e-equationFlow > div:not(.s6e-arrow){
+  padding:4px 8px;
+  border-radius:6px;
+  background:var(--panel);
+}
+
+.s6e-lab > .s6e-equationFlow span{
+  font-size:.64rem !important;
+}
+
+.s6e-lab > .s6e-equationFlow code{
+  font-size:.92rem !important;
+}
+
+/* ---------------------------------------------------------
+   CONTROLS — one coherent panel
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-controls{
+  padding:14px !important;
+  gap:12px !important;
+  border-radius:10px !important;
+  background:var(--surface) !important;
+}
+
+.s6e-lab > .s6e-controls .s6e-controlGroup{
+  min-height:76px;
+  display:grid;
+  align-content:start;
+  gap:4px;
+  padding:11px !important;
+  border-radius:8px !important;
+  background:var(--panel) !important;
+}
+
+/* ---------------------------------------------------------
+   IMAGE FORMATION — three proper cards
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-visualGrid{
+  padding:14px !important;
+  gap:14px !important;
+  border-radius:10px !important;
+  background:var(--surface) !important;
+}
+
+.s6e-lab > .s6e-visualGrid .s6e-imageCard{
+  padding:10px !important;
+  gap:8px !important;
+  border-radius:8px !important;
+  background:var(--panel) !important;
+}
+
+.s6e-lab > .s6e-visualGrid .s6a-imageLabel{
+  padding:2px 3px 5px !important;
+  font-size:.66rem;
+}
+
+.s6e-lab > .s6e-visualGrid .s6a-canvas{
+  border:1px solid var(--line);
+  border-radius:6px;
+}
+
+/* ---------------------------------------------------------
+   PIXEL VALUES — four information cards
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-pixelGrid{
+  padding:14px !important;
+  gap:12px !important;
+  border-radius:10px !important;
+  background:var(--surface) !important;
+}
+
+.s6e-lab > .s6e-pixelGrid .s6e-pixelCard{
+  min-height:82px;
+  padding:12px !important;
+  border-radius:8px !important;
+  background:var(--panel) !important;
+}
+
+/* ---------------------------------------------------------
+   SELECTED PIXEL — stronger teaching section
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-mathPanel{
+  padding:16px !important;
+  border-radius:10px !important;
+  background:var(--surface) !important;
+}
+
+.s6e-lab > .s6e-mathPanel h3{
+  font-size:.9rem;
+  letter-spacing:.02em;
+}
+
+.s6e-lab > .s6e-mathPanel code{
+  padding:9px 11px !important;
+  border-radius:7px !important;
+}
+
+/* ---------------------------------------------------------
+   VERIFICATION — proper three-card section
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-verification{
+  padding:14px !important;
+  border-radius:10px !important;
+  background:var(--surface) !important;
+}
+
+.s6e-lab > .s6e-verification .s6e-checkGrid{
+  gap:12px !important;
+}
+
+.s6e-lab > .s6e-verification .s6e-checkGrid > div{
+  min-height:62px;
+  padding:11px !important;
+  border-radius:8px !important;
+  background:var(--panel) !important;
+}
+
+/* ---------------------------------------------------------
+   WHAT TO NOTICE
+   --------------------------------------------------------- */
+
+.s6e-lab > .s6e-teachingNote{
+  padding:14px 16px !important;
+  border-radius:10px !important;
+  background:var(--surface) !important;
+}
+
+/* ---------------------------------------------------------
+   CONSISTENT SECTION HEADINGS
+   --------------------------------------------------------- */
+
+.s6e-lab .sectionEyebrow{
+  margin-bottom:2px;
+}
+
+/* Keep the three image comparison horizontal */
+.s6e-lab .s6e-visualGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+}
+
+/* Keep the four control/pixel cards horizontal */
+.s6e-lab .s6e-controls{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+}
+
+.s6e-lab .s6e-pixelGrid{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+}
+
+.s6e-lab .s6e-checkGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+}
+
+
+/* =========================================================
+   GROUP E FINAL — GROUP A STYLE STRUCTURAL LAYOUT
+   ========================================================= */
+
+/* Main Group E laboratory */
+.s6e-lab{
+  border:1px solid #30363d !important;
+  border-radius:16px !important;
+  background:#171a1e !important;
+  padding:24px !important;
+  display:grid !important;
+  gap:18px !important;
+}
+
+/* ---------------------------------------------------------
+   MODEL PANEL
+   --------------------------------------------------------- */
+
+.s6e-modelPanel{
+  border:1px solid #30363d;
+  border-radius:12px;
+  background:#111418;
+  padding:17px;
+  display:grid;
+  gap:14px;
+}
+
+.s6e-equationFlow{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:14px !important;
+  flex-wrap:nowrap !important;
+  border:1px solid #35414d !important;
+  border-radius:10px !important;
+  background:#101317 !important;
+  padding:15px 16px !important;
+  overflow-x:auto;
+}
+
+.s6e-equationFlow > div:not(.s6e-arrow){
+  flex:1 1 0;
+  min-width:90px;
+  display:grid;
+  gap:4px;
+}
+
+.s6e-equationFlow span{
+  color:#aeb6c2 !important;
+  font-size:.68rem !important;
+  font-weight:800 !important;
+  letter-spacing:.08em !important;
+  white-space:nowrap;
+}
+
+.s6e-equationFlow code{
+  color:#dce6ef !important;
+  font-size:.9rem !important;
+  font-weight:800 !important;
+  white-space:nowrap;
+}
+
+.s6e-arrow{
+  flex:0 0 auto;
+  color:#82a9c1;
+  font-size:1.05rem;
+  font-weight:900;
+}
+
+/* Four controls inside the same model panel */
+.s6e-modelPanel .s6e-controls{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+.s6e-modelPanel .s6e-controlGroup{
+  min-width:0;
+  border:1px solid #30363d !important;
+  border-radius:9px !important;
+  background:#171a1e !important;
+  padding:11px !important;
+  display:grid;
+  gap:5px;
+}
+
+.s6e-controlGroup label{
+  display:grid !important;
+  gap:7px !important;
+  color:#c4ccd5 !important;
+  font-size:.72rem !important;
+  font-weight:800 !important;
+}
+
+.s6e-controlGroup label span{
+  font-family:monospace;
+  font-size:.76rem;
+  color:#dce6ef;
+}
+
+/* ---------------------------------------------------------
+   IMAGE WORKSPACE
+   --------------------------------------------------------- */
+
+.s6e-imageSection{
+  border:1px solid #30363d;
+  border-radius:12px;
+  background:#111418;
+  padding:17px;
+  display:grid;
+  gap:12px;
+}
+
+.s6e-sectionIntro{
+  margin:0;
+  color:#aeb6c2;
+  font-size:.78rem;
+  line-height:1.5;
+}
+
+.s6e-imageSection .s6e-visualGrid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:12px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+}
+
+.s6e-imageSection .s6e-imageCard{
+  min-width:0 !important;
+  border:1px solid #30363d !important;
+  border-radius:10px !important;
+  background:#0e1114 !important;
+  padding:10px !important;
+  display:grid;
+  gap:8px;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+
+.s6e-imageSection .s6a-imageLabel{
+  margin-bottom:0 !important;
+  padding:1px 2px 3px;
+}
+
+.s6e-imageSection .s6a-canvas{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:auto !important;
+  aspect-ratio:1 / 1 !important;
+  border-radius:8px !important;
+  background:#080a0d;
+}
+
+.s6e-imageSection .s6e-imageCard small{
+  color:#8995a1;
+  font-size:.67rem;
+  line-height:1.4;
+}
+
+/* ---------------------------------------------------------
+   SELECTED PIXEL VALUES
+   --------------------------------------------------------- */
+
+.s6e-pixelSection{
+  border:1px solid #30363d;
+  border-radius:12px;
+  background:#111418;
+  padding:17px;
+  display:grid;
+  gap:12px;
+}
+
+.s6e-pixelSection .s6e-pixelGrid{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  gap:10px !important;
+}
+
+.s6e-pixelSection .s6e-pixelCard{
+  min-width:0;
+  min-height:82px;
+  border:1px solid #30363d !important;
+  border-radius:9px !important;
+  background:#171a1e !important;
+  padding:12px !important;
+  display:grid;
+  align-content:start;
+  gap:6px;
+  box-sizing:border-box;
+}
+
+.s6e-pixelCard code{
+  color:#dce6ef;
+  font-size:.72rem;
+  overflow-wrap:anywhere;
+}
+
+.s6e-pixelCard b{
+  color:#f2f4f6;
+  font-size:1rem;
+}
+
+.s6e-pixelCard small{
+  color:#8995a1;
+  font-size:.65rem;
+}
+
+/* ---------------------------------------------------------
+   MATHEMATICAL WALKTHROUGH
+   --------------------------------------------------------- */
+
+.s6e-mathPanel{
+  border:1px solid #30363d !important;
+  border-radius:12px !important;
+  background:#111418 !important;
+  padding:18px !important;
+  display:grid !important;
+  grid-template-columns:1.2fr .8fr !important;
+  gap:20px !important;
+  align-items:center;
+}
+
+.s6e-mathPanel h3{
+  margin:4px 0 7px;
+  color:#dce3e9;
+  font-size:1rem;
+}
+
+.s6e-mathPanel p{
+  margin:0;
+  color:#aeb6c2;
+  font-size:.76rem;
+  line-height:1.5;
+}
+
+.s6e-mathPanel .s6e-mathExplanation{
+  margin-top:10px;
+  max-width:680px;
+}
+
+.s6e-formula{
+  display:grid !important;
+  gap:7px !important;
+  min-width:0;
+}
+
+.s6e-formula code{
+  display:block;
+  border:1px solid #30363d !important;
+  border-radius:7px !important;
+  background:#171a1e !important;
+  color:#dce6ef !important;
+  padding:8px 10px !important;
+  font-size:.7rem !important;
+  overflow-wrap:anywhere;
+}
+
+/* ---------------------------------------------------------
+   VERIFICATION
+   --------------------------------------------------------- */
+
+.s6e-verification{
+  border:1px solid #3b4650 !important;
+  border-radius:12px !important;
+  background:#12161a !important;
+  padding:17px !important;
+}
+
+.s6e-verification .s6e-checkGrid{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:9px !important;
+  margin-top:12px;
+}
+
+.s6e-verification .s6e-checkGrid > div{
+  min-width:0;
+  min-height:72px;
+  display:grid;
+  gap:7px;
+  border:1px solid #30363d !important;
+  border-radius:9px !important;
+  background:#0e1114 !important;
+  padding:12px !important;
+}
+
+.s6e-verification .s6e-checkGrid span{
+  color:#7f8a96;
+  font-size:.62rem;
+}
+
+.s6e-verification .s6e-checkGrid b{
+  color:#dce3e9;
+  font-size:.7rem;
+  line-height:1.3;
+}
+
+.s6e-verification .s6e-checkGrid strong{
+  color:#91d0a9;
+  font-size:.65rem;
+}
+
+/* ---------------------------------------------------------
+   WHAT TO NOTICE
+   --------------------------------------------------------- */
+
+.s6e-teachingNote{
+  border:1px solid #30363d !important;
+  border-left:3px solid #6093c5 !important;
+  border-radius:10px !important;
+  background:#111418 !important;
+  padding:14px 16px !important;
+}
+
 .s6e-teachingNote p{
-  margin:8px 0 0;
-  line-height:1.6;
+  margin:5px 0 0;
+  color:#c4ccd5;
+  font-size:.75rem;
+  line-height:1.5;
 }
 
+/* ---------------------------------------------------------
+   IMPORTANT:
+   Do NOT collapse the three image views into one column.
+   They represent one visual comparison pipeline.
+   --------------------------------------------------------- */
+
+.s6e-imageSection .s6e-visualGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+}
+
+/* Keep Group E's four control cards together. */
+.s6e-modelPanel .s6e-controls{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+}
+
+/* Keep Group E's four selected-pixel cards together. */
+.s6e-pixelSection .s6e-pixelGrid{
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+}
+
+/* Keep verification cards together. */
+.s6e-verification .s6e-checkGrid{
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+}
+
+
+/* ============================================================
+   GROUP E · INTERACTIVE EXPERIMENT
+   ============================================================ */
+
+.s6e-actionBar{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:18px;
+ margin-top:16px;
+ padding:16px;
+ border:1px solid #30353d;
+ border-radius:10px;
+ background:#111419;
+}
+
+.s6e-actionBar>div{
+ display:flex;
+ flex-direction:column;
+ gap:5px;
+}
+
+.s6e-actionBar b{
+ font-size:14px;
+ color:#f1f4f7;
+}
+
+.s6e-actionBar span{
+ font-size:11px;
+ color:#8f98a3;
+}
+
+.s6e-resetButton{
+ flex:0 0 auto;
+ padding:9px 13px;
+ border:1px solid #59636f;
+ border-radius:6px;
+ background:#181d23;
+ color:#dce2e8;
+ font-size:10px;
+ font-weight:700;
+ letter-spacing:.06em;
+ cursor:pointer;
+}
+
+.s6e-resetButton:hover{
+ border-color:#9ba6b2;
+ background:#20262d;
+}
+
+.s6e-liveCalculation{
+ display:grid;
+ grid-template-columns:1.15fr .85fr;
+ gap:16px;
+ margin-top:16px;
+ padding:16px;
+ border:1px solid #30353d;
+ border-radius:10px;
+ background:#111419;
+}
+
+.s6e-livePipeline{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ flex-wrap:wrap;
+ margin-top:15px;
+}
+
+.s6e-livePipeline>div{
+ flex:1 1 120px;
+ padding:10px;
+ border:1px solid #30353d;
+ border-radius:7px;
+ background:#0f1216;
+}
+
+.s6e-livePipeline span{
+ display:block;
+ margin-bottom:5px;
+ font-size:9px;
+ font-weight:700;
+ letter-spacing:.08em;
+ color:#8f98a3;
+}
+
+.s6e-livePipeline code{
+ font-size:11px;
+ color:#e5e9ed;
+}
+
+.s6e-livePipeline>b{
+ font-size:17px;
+ color:#8e98a2;
+}
+
+.s6e-liveMath{
+ display:flex;
+ flex-direction:column;
+ gap:7px;
+ padding:14px;
+ border:1px solid #30353d;
+ border-radius:8px;
+ background:#0f1216;
+}
+
+.s6e-liveMath>code{
+ padding:8px;
+ border-radius:5px;
+ background:#181c22;
+ color:#e5e9ed;
+ font-size:10px;
+}
+
+.s6e-liveMath>strong{
+ margin-top:4px;
+ padding:10px;
+ border:1px solid #4b5560;
+ border-radius:6px;
+ font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:11px;
+ color:#f1f4f7;
+}
+
+.s6e-causeEffect{
+ display:grid;
+ grid-template-columns:1.4fr .8fr;
+ gap:16px;
+ margin-top:16px;
+ padding:16px;
+ border:1px solid #30353d;
+ border-radius:10px;
+ background:#111419;
+}
+
+.s6e-causeEffect p{
+ margin:7px 0;
+ font-size:11px;
+ line-height:1.5;
+ color:#aab2bb;
+}
+
+.s6e-causeEquation{
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ gap:7px;
+ padding-left:16px;
+ border-left:1px solid #30353d;
+}
+
+.s6e-causeEquation span{
+ font-size:9px;
+ font-weight:700;
+ letter-spacing:.08em;
+ color:#7f8994;
+}
+
+.s6e-causeEquation code{
+ font-size:14px;
+ color:#f0f3f6;
+}
+
+.s6e-causeEquation b{
+ font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+ font-size:12px;
+ color:#e0e6eb;
+}
+
+@media(max-width:700px){
+
+ .s6e-actionBar{
+  flex-direction:column;
+  align-items:stretch;
+ }
+
+ .s6e-resetButton{
+  width:100%;
+ }
+
+ .s6e-liveCalculation{
+  grid-template-columns:1fr;
+ }
+
+ .s6e-causeEffect{
+  grid-template-columns:1fr;
+ }
+
+ .s6e-causeEquation{
+  padding-left:0;
+  padding-top:14px;
+  border-left:0;
+  border-top:1px solid #30353d;
+ }
+
+}
+
+
+
+/* =========================================================
+   SPRINT 6 · GROUP F · COLOUR + ILLUMINATION LAB
+   ========================================================= */
+.s6f-lab{border:1px solid #30363d;border-radius:16px;background:#171a1e;padding:24px;display:flex;flex-direction:column;gap:18px}
+.s6f-lab h2{margin:4px 0 0;font-size:clamp(1.45rem,2.4vw,2.1rem);line-height:1.15}
+.s6f-lab h3{margin:0 0 7px}
+.s6f-lab p{margin:0;color:#aeb6c2;line-height:1.55}
+.s6f-equationFlow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:12px;align-items:center;padding:18px;border:1px solid #30363d;border-radius:12px;background:#111418}
+.s6f-equationFlow>div:not(.s6f-arrow){display:grid;gap:6px}
+.s6f-equationFlow span{font-size:.66rem;letter-spacing:.12em;opacity:.65}
+.s6f-equationFlow code{font-size:1.05rem;font-weight:800}
+.s6f-arrow{font-size:1.4rem;opacity:.6}
+.s6f-controls{display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:14px;padding:18px;border:1px solid #30363d;border-radius:12px;background:#111418}
+.s6f-controlIntro{display:grid;gap:6px}
+.s6f-sliders{display:grid;gap:10px}
+.s6f-sliders label,.s6f-pixelControls label{display:grid;gap:7px;color:#c4ccd5;font-size:.72rem;font-weight:800}
+.s6f-sliders input,.s6f-pixelControls input{width:100%}
+.s6f-presets{display:grid;gap:8px}
+.s6f-presetGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.s6f-presetGrid button{border:1px solid #3d444c;background:#16191d;color:#edf1f5;padding:8px 9px;border-radius:7px;cursor:pointer;font-size:.68rem;font-weight:800}
+.s6f-presetGrid button:hover{background:#426e9a;border-color:#6093c5}
+.s6f-pixelControls{display:grid;grid-template-columns:1.4fr .8fr .8fr;gap:14px;align-items:end;padding:17px;border:1px solid #30363d;border-radius:12px;background:#111418}
+.s6f-visualGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.s6f-imageCard{min-width:0;padding:13px;border:1px solid #30363d;border-radius:12px;background:#111418;overflow:hidden}
+.s6f-imageCard small{display:block;margin-top:8px;color:#8995a1;line-height:1.45}
+.s6f-imageCard canvas{display:block;width:100%;height:auto;border-radius:8px;background:#050505}
+.s6f-pixelGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.s6f-pixelCard{min-width:0;display:grid;gap:8px;padding:14px;border:1px solid #30363d;border-radius:11px;background:#111418}
+.s6f-pixelCard code{font-size:.78rem;font-weight:800;overflow-wrap:anywhere}
+.s6f-pixelCard small{color:#8995a1}
+.s6f-calculation,.s6f-comparison,.s6f-causeEffect,.s6f-verification,.s6f-teachingNote{padding:18px;border:1px solid #30363d;border-radius:12px;background:#111418}
+.s6f-calculationGrid{display:grid;gap:8px;margin-top:12px}
+.s6f-calculationGrid code{padding:10px 12px;border:1px solid #35414d;border-radius:8px;background:#0e1114}
+.s6f-exampleGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+.s6f-exampleGrid div{display:grid;gap:7px;padding:12px;border:1px solid #30363d;border-radius:9px;background:#0e1114}
+.s6f-exampleGrid span,.s6f-causeGrid span{font-size:.64rem;letter-spacing:.08em;color:#8995a1;font-weight:900}
+.s6f-exampleGrid code{font-size:.7rem}
+.s6f-exampleGrid b{font-family:monospace}
+.s6f-causeGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.s6f-causeGrid div{display:grid;gap:6px;padding:12px;border:1px solid #30363d;border-radius:9px;background:#0e1114}
+.s6f-causeGrid b{font-size:.75rem}
+.s6f-causeGrid small{color:#8995a1;line-height:1.45}
+.s6f-checkGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}
+.s6f-checkGrid div{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:7px;padding:12px;border:1px solid #30363d;border-radius:9px;background:#0e1114}
+.s6f-checkGrid span{grid-row:span 2;font-family:monospace;opacity:.5}
+.s6f-checkGrid b{font-size:.72rem}
+.s6f-checkGrid strong{font-size:.65rem;color:#91d0a9}
+.s6f-teachingNote{border-left:3px solid currentColor}
+.s6f-teachingNote p{margin-top:7px}
 @media(max-width:950px){
-  .s6e-controls{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .s6e-visualGrid{
-    grid-template-columns:1fr;
-  }
-
-  .s6e-pixelGrid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .s6e-checkGrid{
-    grid-template-columns:1fr;
-  }
+ .s6f-controls,.s6f-pixelControls{grid-template-columns:1fr}
+ .s6f-visualGrid{grid-template-columns:1fr}
+ .s6f-pixelGrid{grid-template-columns:repeat(2,1fr)}
+ .s6f-exampleGrid{grid-template-columns:repeat(2,1fr)}
+ .s6f-checkGrid{grid-template-columns:repeat(2,1fr)}
 }
-
 @media(max-width:650px){
-  .s6e-equationFlow{
-    grid-template-columns:1fr;
-  }
-
-  .s6e-arrow{
-    text-align:center;
-  }
-
-  .s6e-controls,
-  .s6e-pixelGrid,
-  .s6e-mathPanel{
-    grid-template-columns:1fr;
-  }
+ .s6f-equationFlow{grid-template-columns:1fr}
+ .s6f-arrow{text-align:center}
+ .s6f-pixelGrid,.s6f-exampleGrid,.s6f-causeGrid,.s6f-checkGrid{grid-template-columns:1fr}
+ .s6f-presetGrid{grid-template-columns:repeat(2,1fr)}
 }
 
+
+/* Sprint 6 — Group G: Final Verification & Integration */
+.s6g-lab{display:flex;flex-direction:column;gap:14px}
+.s6g-hero,.s6g-controls,.s6g-pixel,.s6g-verification,.s6g-learning{border:1px solid var(--border,#303844);background:var(--panel,#151a20);border-radius:10px;padding:16px}
+.s6g-hero{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+.s6g-hero h2{margin:5px 0 7px;font-size:24px}.s6g-hero p{margin:0;max-width:850px;line-height:1.5;color:var(--muted,#9ca7b3)}
+.s6g-badge,.s6g-coordinate{border:1px solid #55735f;border-radius:999px;padding:4px 9px;font-size:10px;font-weight:800;letter-spacing:.08em;white-space:nowrap}
+.s6g-pipeline{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:8px;align-items:stretch}
+.s6g-pipeline>div:not(.s6g-arrow){border:1px solid var(--border,#303844);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:4px;background:#11161b}
+.s6g-pipeline b{font-size:10px;color:#9aa7b4}.s6g-pipeline strong{font-size:13px}.s6g-pipeline span{font-size:11px;color:var(--muted,#9ca7b3)}.s6g-arrow{display:grid;place-items:center;color:#8793a0;font-size:18px}
+.s6g-equation{border:1px solid var(--border,#303844);border-radius:8px;padding:14px;text-align:center;font-size:19px;background:#10151a}.s6g-equation b{padding:0 9px;color:#8f9aa7}
+.s6g-control-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.s6g-control-head h3,.s6g-section-title h3{margin:4px 0 12px;font-size:16px}
+.s6g-slider-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.s6g-slider-grid label{border:1px solid var(--border,#303844);border-radius:8px;padding:10px;display:grid;grid-template-columns:1fr auto;gap:7px}.s6g-slider-grid label span{font-size:11px;font-weight:700}.s6g-slider-grid output{font-size:11px}.s6g-slider-grid input{grid-column:1/-1;width:100%}
+.s6g-presets{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.s6g-presets button,.s6g-controls .s6-reset{background:#171d24;border:1px solid #3b4652;color:#dce3ea;border-radius:6px;padding:6px 10px;font-size:10px;font-weight:800;cursor:pointer}
+.s6g-images{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.s6g-images article{border:1px solid var(--border,#303844);border-radius:9px;padding:10px;background:#11161b}.s6g-images h3{font-size:10px;margin:0 0 8px}.s6g-images canvas{display:block;width:100%;height:auto;aspect-ratio:4/3;border-radius:5px;background:#080b0e}.s6g-images p{font-size:10px;color:var(--muted,#9ca7b3);margin:7px 0 0;line-height:1.4}
+.s6g-pixel-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:7px}.s6g-pixel-grid>div{border:1px solid var(--border,#303844);border-radius:7px;padding:8px;background:#10151a}.s6g-pixel-grid span{display:block;font-size:8px;color:#8f9aa7}.s6g-pixel-grid b{display:block;font-size:14px;margin-top:4px}
+.s6g-calculation{display:grid;gap:6px;margin-top:9px}.s6g-calculation div{border:1px solid #29333e;border-radius:6px;padding:8px;background:#0d1217;overflow:auto}.s6g-calculation code{font-size:11px}
+.s6g-check-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.s6g-check{border:1px solid var(--border,#303844);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px;background:#10151a}.s6g-check strong{font-size:10px;line-height:1.35}.s6g-pass,.s6g-fail{align-self:flex-start;border-radius:999px;padding:3px 7px;font-size:9px;font-weight:900}.s6g-pass{border:1px solid #3c6a4b;color:#78c78d;background:#102117}.s6g-fail{border:1px solid #714141;color:#e38b8b;background:#211313}
+.s6g-learning-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.s6g-learning-grid>div{border:1px solid var(--border,#303844);border-radius:8px;padding:10px;background:#10151a}.s6g-learning-grid b{display:block;font-size:10px}.s6g-learning-grid span{display:block;margin-top:5px;font-size:10px;line-height:1.4;color:var(--muted,#9ca7b3)}.s6g-final-statement{margin-top:9px;border-left:3px solid #61707e;padding:9px 11px;background:#11171d;font-size:11px;line-height:1.5}
+@media (max-width:900px){.s6g-pipeline{grid-template-columns:1fr}.s6g-arrow{transform:rotate(90deg);min-height:20px}.s6g-images{grid-template-columns:1fr}.s6g-check-grid{grid-template-columns:1fr 1fr}.s6g-learning-grid{grid-template-columns:1fr 1fr}.s6g-pixel-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:560px){.s6g-slider-grid{grid-template-columns:1fr}.s6g-check-grid,.s6g-learning-grid{grid-template-columns:1fr}}
