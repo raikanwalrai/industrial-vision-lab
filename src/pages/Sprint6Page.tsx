@@ -1,6 +1,7 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import {colorImageStats,recombinationMatchesPixel,rgbChannelSum,rgbToHex} from "../colorMath";
 import {createRGBScene,extractChannel,getRGBPixel,recombineRGB,reconstructFromChannels} from "../colorScenes";
+import {hsvHueLabel,rgbToGrayscale,rgbToHsl,rgbToHsv} from "../colorSpaceMath";
 const groups=[
  ["A","RGB Fundamentals","Understand colour pixels, channels, and RGB vectors."],
  ["B","Channel Separation","Separate, inspect, and recombine R, G, and B channels."],
@@ -82,6 +83,10 @@ function drawReconstructedRGB(
 function Channel({title,im,ch}:{title:string;im:ReturnType<typeof createRGBScene>;ch:"r"|"g"|"b"}){const ref=useRef<HTMLCanvasElement>(null);useEffect(()=>{draw(ref.current,im.width,im.height,extractChannel(im,ch));},[im,ch]);return <div className="s6a-imageCard"><div className="s6a-imageLabel">{title}</div><canvas ref={ref} className="s6a-canvas"/><div className="s6a-channelHint">Bright = more {ch.toUpperCase()} · Dark = less {ch.toUpperCase()}</div></div>}
 export default function Sprint6Page(){
  const[active,setActive]=useState("A"),[x,setX]=useState(128),[y,setY]=useState(88),[r,setR]=useState(220),[g,setG]=useState(100),[b,setB]=useState(40);
+  const groupCRgb=useMemo(()=>({r,g,b}),[r,g,b]);
+  const groupCGray=useMemo(()=>rgbToGrayscale(groupCRgb),[groupCRgb]);
+  const groupCHsv=useMemo(()=>rgbToHsv(groupCRgb),[groupCRgb]);
+  const groupCHsl=useMemo(()=>rgbToHsl(groupCRgb),[groupCRgb]);
  const im=useMemo(()=>createRGBScene(),[]),px=useMemo(()=>getRGBPixel(im,x,y),[im,x,y]),manual=useMemo(()=>recombineRGB(r,g,b),[r,g,b]),stats=useMemo(()=>colorImageStats(im),[im]),ref=useRef<HTMLCanvasElement>(null);
  const rChannel=useMemo(()=>extractChannel(im,"r"),[im]);
  const gChannel=useMemo(()=>extractChannel(im,"g"),[im]);
@@ -189,7 +194,32 @@ export default function Sprint6Page(){
      <div><span>ROUND-TRIP</span><b>{reconstructionStats.differing===0?"EXACT":"CHECK"}</b></div>
     </div>
    </div>
-</section>:<section className="s6-gate"><div className="sectionEyebrow">GROUP {active} · PLANNED</div><h2>{group[1]}</h2><p>{group[2]}</p><div className="s6-gateStatus">→ IMPLEMENTED IN A FUTURE VERIFIED SLICE</div></section>}
+</section>:active==="C"?<section className="s6c-lab">
+   <div className="sectionEyebrow">GROUP C · COLOUR SPACES</div>
+   <h2>One colour can be described in different ways</h2>
+   <p>RGB stores red, green, and blue intensities. Other colour spaces reorganize the same colour into components that describe brightness, hue, saturation, or lightness.</p>
+   <div className="s6c-controls">
+    <div className="s6c-controlIntro"><div className="sectionEyebrow">CHOOSE ONE RGB COLOUR</div><h3>Change R, G, and B</h3><p>The same colour is converted live into grayscale, HSV, and HSL.</p></div>
+    <div className="s6c-sliders">
+     <label><span>R = {r}</span><input type="range" min="0" max="255" value={r} onChange={e=>setR(Number(e.target.value))}/></label>
+     <label><span>G = {g}</span><input type="range" min="0" max="255" value={g} onChange={e=>setG(Number(e.target.value))}/></label>
+     <label><span>B = {b}</span><input type="range" min="0" max="255" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
+    </div>
+    <div className="s6c-sourceColour"><div className="sectionEyebrow">RGB</div><div className="s6c-swatch" style={{background:rgbToHex(groupCRgb)}}/><code>[ {r}, {g}, {b} ]ᵀ</code></div>
+   </div>
+   <div className="s6c-representations">
+    <div className="s6c-card"><div className="sectionEyebrow">GRAYSCALE</div><h3>One intensity value</h3><div className="s6c-graySwatch" style={{background:`rgb(${groupCGray},${groupCGray},${groupCGray})`}}/><code>Y = 0.2126R + 0.7152G + 0.0722B</code><b>{groupCGray.toFixed(1)}</b></div>
+    <div className="s6c-card"><div className="sectionEyebrow">HSV</div><h3>Hue · Saturation · Value</h3><div className="s6c-metricGrid"><div><span>H</span><b>{groupCHsv.h.toFixed(1)}°</b></div><div><span>S</span><b>{groupCHsv.s.toFixed(1)}%</b></div><div><span>V</span><b>{groupCHsv.v.toFixed(1)}%</b></div></div><p>Hue ≈ {hsvHueLabel(groupCHsv.h)} · Value is the largest normalized RGB channel.</p></div>
+    <div className="s6c-card"><div className="sectionEyebrow">HSL</div><h3>Hue · Saturation · Lightness</h3><div className="s6c-metricGrid"><div><span>H</span><b>{groupCHsl.h.toFixed(1)}°</b></div><div><span>S</span><b>{groupCHsl.s.toFixed(1)}%</b></div><div><span>L</span><b>{groupCHsl.l.toFixed(1)}%</b></div></div><p>Lightness is the midpoint of the largest and smallest normalized RGB channels.</p></div>
+   </div>
+   <div className="s6c-math"><div><div className="sectionEyebrow">THE MATHEMATICAL IDEA</div><h3>Same colour, different coordinates</h3><p>RGB, HSV, and HSL describe the selected colour using different coordinates.</p></div><div className="s6c-formulas"><code>RGB → Y = 0.2126R + 0.7152G + 0.0722B</code><code>RGB → HSV = (H,S,V)</code><code>RGB → HSL = (H,S,L)</code></div></div>
+   <div className="s6c-verification"><div className="sectionEyebrow">GROUP C VERIFICATION</div><div className="s6c-checkGrid">
+    <div><span>01</span><b>RGB values remain in 0–255</b><strong>{r>=0&&r<=255&&g>=0&&g<=255&&b>=0&&b<=255?"PASS":"REVIEW"}</strong></div>
+    <div><span>02</span><b>Grayscale value is finite</b><strong>{Number.isFinite(groupCGray)?"PASS":"REVIEW"}</strong></div>
+    <div><span>03</span><b>HSV components are bounded</b><strong>{groupCHsv.h>=0&&groupCHsv.h<=360&&groupCHsv.s>=0&&groupCHsv.s<=100&&groupCHsv.v>=0&&groupCHsv.v<=100?"PASS":"REVIEW"}</strong></div>
+    <div><span>04</span><b>HSL components are bounded</b><strong>{groupCHsl.h>=0&&groupCHsl.h<=360&&groupCHsl.s>=0&&groupCHsl.s<=100&&groupCHsl.l>=0&&groupCHsl.l<=100?"PASS":"REVIEW"}</strong></div>
+   </div></div>
+  </section>:<section className="s6-gate"><div className="sectionEyebrow">GROUP {active} · PLANNED</div><h2>{group[1]}</h2><p>{group[2]}</p><div className="s6-gateStatus">→ IMPLEMENTED IN A FUTURE VERIFIED SLICE</div></section>}
   <section className="s6-foundation"><div><div className="sectionEyebrow">SPRINT 6 FOUNDATION</div><h2>From one intensity value to a colour vector</h2><p>Earlier sprints represented a pixel with one grayscale intensity. Sprint 6 begins by treating colour as three coordinated channels.</p></div><div className="s6-equation"><div className="s6-equationLabel">GRAYSCALE</div><code>I(x,y)</code><div className="s6-arrow">→</div><div className="s6-equationLabel">RGB</div><code>[ R(x,y), G(x,y), B(x,y) ]ᵀ</code></div></section>
  </div>
 }
