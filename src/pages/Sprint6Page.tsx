@@ -1,5 +1,6 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import {colorImageStats,recombinationMatchesPixel,rgbChannelSum,rgbToHex} from "../colorMath";
+import type {ColorImage} from "../colorScenes";
 import {createRGBScene,extractChannel,getRGBPixel,recombineRGB,reconstructFromChannels} from "../colorScenes";
 import {hsvHueLabel,rgbToGrayscale,rgbToHsl,rgbToHsv} from "../colorSpaceMath";
 import {
@@ -15,6 +16,14 @@ import {
   verifyContrastSymmetry,
   verifySaturationBounded
 } from "../colorManipulationMath";
+import {
+  formObservedImage,
+  getImageFormationPixel,
+  createIlluminationImage,
+  verifyGainLinearity,
+  verifyUnitIllumination,
+  verifyZeroIllumination
+} from "../imageFormationMath";
 const groups=[
  ["A","RGB Fundamentals","Understand colour pixels, channels, and RGB vectors."],
  ["B","Channel Separation","Separate, inspect, and recombine R, G, and B channels."],
@@ -35,7 +44,7 @@ function draw(canvas:HTMLCanvasElement|null,w:number,h:number,data:Uint8ClampedA
 }
 function rgbCanvas(
  canvas:HTMLCanvasElement|null,
- im:ReturnType<typeof createRGBScene>,
+ im:ColorImage,
  x:number,
  y:number
 ){
@@ -101,6 +110,11 @@ export default function Sprint6Page(){
       [groupDSaturation,setGroupDSaturation]=useState(1.4),
       [groupDChannel,setGroupDChannel]=useState<"r"|"g"|"b">("r"),
       [groupDChannelDelta,setGroupDChannelDelta]=useState(25);
+
+ const[groupELightX,setGroupELightX]=useState(0.5),
+      [groupELightY,setGroupELightY]=useState(0.5),
+      [groupELightStrength,setGroupELightStrength]=useState(1),
+      [groupESensorGain,setGroupESensorGain]=useState(1);
 
   const groupCRgb=useMemo(()=>({r,g,b}),[r,g,b]);
   const groupCGray=useMemo(()=>rgbToGrayscale(groupCRgb),[groupCRgb]);
@@ -187,6 +201,41 @@ export default function Sprint6Page(){
     groupDChannelPixel
   ),
   [groupDSource,groupDChannelPixel]
+ );
+
+ const groupEParams=useMemo(
+  ()=>({
+   lightX:groupELightX,
+   lightY:groupELightY,
+   strength:groupELightStrength,
+   sensorGain:groupESensorGain
+  }),
+  [
+   groupELightX,
+   groupELightY,
+   groupELightStrength,
+   groupESensorGain
+  ]
+ );
+
+ const groupEIllumination=useMemo(
+  ()=>createIlluminationImage(im,groupEParams),
+  [im,groupEParams]
+ );
+
+ const groupEObserved=useMemo(
+  ()=>formObservedImage(im,groupEParams),
+  [im,groupEParams]
+ );
+
+ const groupEPixel=useMemo(
+  ()=>getImageFormationPixel(
+    im,
+    x,
+    y,
+    groupEParams
+  ),
+  [im,x,y,groupEParams]
  );
 
  useEffect(()=>{rgbCanvas(ref.current,im,x,y);},[im,x,y]);
@@ -860,6 +909,242 @@ active==="D"?<section className="s6d-lab">
      just one component.
     </p>
 
+   </div>
+
+  </section>:active==="E"?<section className="s6e-lab">
+
+   <div className="sectionEyebrow">
+    GROUP E · IMAGE FORMATION
+   </div>
+
+   <h2>From surface reflectance to the observed image</h2>
+
+   <p>
+    Treat the synthetic RGB scene as surface reflectance.
+    Illumination changes how much light reaches the surface,
+    and sensor gain changes the measured signal.
+   </p>
+
+   <div className="s6e-equationFlow">
+    <div>
+     <span>REFLECTANCE</span>
+     <code>R(x,y)</code>
+    </div>
+
+    <div className="s6e-arrow">×</div>
+
+    <div>
+     <span>ILLUMINATION</span>
+     <code>L(x,y)</code>
+    </div>
+
+    <div className="s6e-arrow">×</div>
+
+    <div>
+     <span>SENSOR GAIN</span>
+     <code>G</code>
+    </div>
+
+    <div className="s6e-arrow">→</div>
+
+    <div>
+     <span>OBSERVED</span>
+     <code>O(x,y)</code>
+    </div>
+   </div>
+
+   <div className="s6e-controls">
+
+    <div className="s6e-controlGroup">
+     <div className="sectionEyebrow">LIGHT X</div>
+     <label>
+      <span>{groupELightX.toFixed(2)}</span>
+      <input
+       type="range"
+       min="0"
+       max="1"
+       step="0.01"
+       value={groupELightX}
+       onChange={e=>setGroupELightX(Number(e.target.value))}
+      />
+     </label>
+    </div>
+
+    <div className="s6e-controlGroup">
+     <div className="sectionEyebrow">LIGHT Y</div>
+     <label>
+      <span>{groupELightY.toFixed(2)}</span>
+      <input
+       type="range"
+       min="0"
+       max="1"
+       step="0.01"
+       value={groupELightY}
+       onChange={e=>setGroupELightY(Number(e.target.value))}
+      />
+     </label>
+    </div>
+
+    <div className="s6e-controlGroup">
+     <div className="sectionEyebrow">LIGHT STRENGTH</div>
+     <label>
+      <span>{groupELightStrength.toFixed(2)}×</span>
+      <input
+       type="range"
+       min="0"
+       max="1"
+       step="0.05"
+       value={groupELightStrength}
+       onChange={e=>setGroupELightStrength(Number(e.target.value))}
+      />
+     </label>
+    </div>
+
+    <div className="s6e-controlGroup">
+     <div className="sectionEyebrow">SENSOR GAIN</div>
+     <label>
+      <span>{groupESensorGain.toFixed(2)}×</span>
+      <input
+       type="range"
+       min="0"
+       max="2"
+       step="0.05"
+       value={groupESensorGain}
+       onChange={e=>setGroupESensorGain(Number(e.target.value))}
+      />
+     </label>
+    </div>
+
+   </div>
+
+   <div className="s6e-visualGrid">
+
+    <div className="s6e-imageCard">
+     <div className="s6a-imageLabel">SURFACE REFLECTANCE</div>
+     <canvas
+      ref={node=>{
+       if(node)rgbCanvas(node,im,x,y);
+      }}
+      className="s6a-canvas"
+     />
+     <small>Material colour before illumination.</small>
+    </div>
+
+    <div className="s6e-imageCard">
+     <div className="s6a-imageLabel">ILLUMINATION MAP</div>
+     <canvas
+      ref={node=>{
+       if(node)rgbCanvas(node,groupEIllumination,x,y);
+      }}
+      className="s6a-canvas"
+     />
+     <small>Bright = more incident illumination.</small>
+    </div>
+
+    <div className="s6e-imageCard">
+     <div className="s6a-imageLabel">OBSERVED IMAGE</div>
+     <canvas
+      ref={node=>{
+       if(node)rgbCanvas(node,groupEObserved,x,y);
+      }}
+      className="s6a-canvas"
+     />
+     <small>What the simplified sensor model observes.</small>
+    </div>
+
+   </div>
+
+   <div className="s6e-pixelGrid">
+
+    <div className="s6e-pixelCard">
+     <div className="sectionEyebrow">REFLECTANCE</div>
+     <code>
+      [{groupEPixel.reflectance.r},
+       {groupEPixel.reflectance.g},
+       {groupEPixel.reflectance.b}]
+     </code>
+    </div>
+
+    <div className="s6e-pixelCard">
+     <div className="sectionEyebrow">ILLUMINATION</div>
+     <b>{groupEPixel.illumination.toFixed(3)}</b>
+     <small>fractional light level</small>
+    </div>
+
+    <div className="s6e-pixelCard">
+     <div className="sectionEyebrow">INCIDENT SIGNAL</div>
+     <code>
+      [{groupEPixel.incident.r},
+       {groupEPixel.incident.g},
+       {groupEPixel.incident.b}]
+     </code>
+    </div>
+
+    <div className="s6e-pixelCard">
+     <div className="sectionEyebrow">OBSERVED</div>
+     <code>
+      [{groupEPixel.observed.r},
+       {groupEPixel.observed.g},
+       {groupEPixel.observed.b}]
+     </code>
+    </div>
+
+   </div>
+
+   <div className="s6e-mathPanel">
+
+    <div>
+     <div className="sectionEyebrow">SELECTED PIXEL</div>
+     <h3>Follow one pixel through image formation</h3>
+     <p>Selected pixel: ({x}, {y})</p>
+    </div>
+
+    <div className="s6e-formula">
+     <code>O = clamp(R × L × G)</code>
+     <code>L = {groupEPixel.illumination.toFixed(3)}</code>
+     <code>G = {groupESensorGain.toFixed(2)}</code>
+    </div>
+
+   </div>
+
+   <div className="s6e-verification">
+
+    <div className="sectionEyebrow">
+     GROUP E VERIFICATION
+    </div>
+
+    <div className="s6e-checkGrid">
+
+     <div>
+      <span>01</span>
+      <b>Unit illumination preserves reflectance</b>
+      <strong>{verifyUnitIllumination()?"PASS":"REVIEW"}</strong>
+     </div>
+
+     <div>
+      <span>02</span>
+      <b>Zero illumination produces black</b>
+      <strong>{verifyZeroIllumination()?"PASS":"REVIEW"}</strong>
+     </div>
+
+     <div>
+      <span>03</span>
+      <b>Sensor gain scales the observed signal</b>
+      <strong>{verifyGainLinearity()?"PASS":"REVIEW"}</strong>
+     </div>
+
+    </div>
+
+   </div>
+
+   <div className="s6e-teachingNote">
+    <div className="sectionEyebrow">WHAT TO NOTICE</div>
+    <p>
+     The surface itself has not changed. Moving the light changes
+     the illumination map, which changes the observed image.
+     Increasing sensor gain changes the measured brightness without
+     changing the underlying reflectance.
+    </p>
    </div>
 
   </section>:<section className="s6-gate"><div className="sectionEyebrow">GROUP {active} · PLANNED</div><h2>{group[1]}</h2><p>{group[2]}</p><div className="s6-gateStatus">→ IMPLEMENTED IN A FUTURE VERIFIED SLICE</div></section>}

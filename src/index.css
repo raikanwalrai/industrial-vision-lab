@@ -1,0 +1,237 @@
+
+/* =========================================================
+   SPRINT 6 GROUP E — IMAGE FORMATION
+   ========================================================= */
+
+.s6e-lab{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+
+.s6e-equationFlow{
+  display:grid;
+  grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;
+  gap:12px;
+  align-items:center;
+  padding:20px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--panel);
+}
+
+.s6e-equationFlow > div:not(.s6e-arrow){
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.s6e-equationFlow span{
+  font-size:11px;
+  letter-spacing:.12em;
+  opacity:.65;
+}
+
+.s6e-equationFlow code{
+  font-size:20px;
+  font-weight:700;
+}
+
+.s6e-arrow{
+  font-size:24px;
+  opacity:.6;
+}
+
+.s6e-controls{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.s6e-controlGroup{
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--panel);
+}
+
+.s6e-controlGroup label{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:10px;
+}
+
+.s6e-controlGroup label span{
+  font-family:monospace;
+  font-weight:700;
+}
+
+.s6e-controlGroup input[type="range"]{
+  width:100%;
+}
+
+.s6e-visualGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.s6e-imageCard{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--panel);
+}
+
+.s6e-imageCard small{
+  opacity:.65;
+  line-height:1.4;
+}
+
+.s6e-pixelGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.s6e-pixelCard{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-height:90px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--panel);
+}
+
+.s6e-pixelCard code{
+  font-size:15px;
+  font-weight:700;
+}
+
+.s6e-pixelCard b{
+  font-size:22px;
+}
+
+.s6e-pixelCard small{
+  opacity:.6;
+}
+
+.s6e-mathPanel{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  padding:22px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--panel);
+}
+
+.s6e-mathPanel h3{
+  margin:6px 0;
+}
+
+.s6e-formula{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:10px;
+}
+
+.s6e-formula code{
+  display:block;
+  padding:10px 12px;
+  border-radius:8px;
+  background:var(--surface);
+  font-size:15px;
+}
+
+.s6e-verification{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.s6e-checkGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.s6e-checkGrid > div{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:12px;
+  row-gap:8px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--panel);
+}
+
+.s6e-checkGrid span{
+  grid-row:span 2;
+  font-family:monospace;
+  opacity:.5;
+}
+
+.s6e-checkGrid b{
+  font-size:14px;
+}
+
+.s6e-checkGrid strong{
+  font-size:12px;
+  letter-spacing:.08em;
+}
+
+.s6e-teachingNote{
+  padding:18px 20px;
+  border-left:3px solid currentColor;
+  border-radius:8px;
+  background:var(--panel);
+}
+
+.s6e-teachingNote p{
+  margin:8px 0 0;
+  line-height:1.6;
+}
+
+@media(max-width:950px){
+  .s6e-controls{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .s6e-visualGrid{
+    grid-template-columns:1fr;
+  }
+
+  .s6e-pixelGrid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .s6e-checkGrid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:650px){
+  .s6e-equationFlow{
+    grid-template-columns:1fr;
+  }
+
+  .s6e-arrow{
+    text-align:center;
+  }
+
+  .s6e-controls,
+  .s6e-pixelGrid,
+  .s6e-mathPanel{
+    grid-template-columns:1fr;
+  }
+}
+
