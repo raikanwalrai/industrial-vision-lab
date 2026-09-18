@@ -101,6 +101,10 @@ export default function AppShell({ children }: AppShellProps) {
     if (sprint.number === 5) {
       navigateTo("/learn/sprint-5");
     }
+    if (sprint.number === 6) {
+      navigateTo("/learn/sprint-6");
+      return;
+    }
   }
 
 

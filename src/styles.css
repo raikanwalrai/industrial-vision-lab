@@ -6260,3 +6260,31 @@
   .s5-finalResultList div { align-items: flex-start; flex-direction: column; }
   .s5-finalResultList span { text-align: left; }
 }
+
+/* ===== Sprint 6.0 · Page + Navigation ===== */
+.s6-page{display:grid;gap:22px}
+.sprintMetaRow{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;color:#aeb6c2;font-size:.82rem}
+.statusPill{display:inline-flex;align-items:center;width:fit-content;border:1px solid #3a4652;border-radius:999px;padding:5px 9px;font-size:.72rem;font-weight:800;letter-spacing:.08em}
+.statusCurrent{border-color:#3e6b55}.statusPlanned{opacity:.75}
+.s6-roadmap,.s6-currentCard,.s6-foundation,.s6-learningLoop,.s6-gate{border:1px solid #30363d;border-radius:16px;background:#171a1e;padding:22px}
+.s6-groupGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.s6-groupCard{min-height:145px;display:flex;flex-direction:column;align-items:flex-start;gap:7px;border:1px solid #30363d;border-radius:12px;background:#111418;color:inherit;padding:16px;text-align:left;cursor:pointer}
+.s6-groupCard:hover,.s6-groupCardActive{border-color:#5b9bd5;background:#171d23}
+.s6-groupNumber{color:#7fb2df;font-size:.72rem;font-weight:900;letter-spacing:.12em}
+.s6-groupTitle{font-weight:800}.s6-groupDescription{color:#aeb6c2;font-size:.78rem;line-height:1.45}
+.s6-groupStatus{margin-top:auto;color:#7f8a96;font-size:.65rem;font-weight:900;letter-spacing:.1em}
+.s6-currentCard{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px}
+.s6-currentBadge{width:48px;height:48px;display:grid;place-items:center;border-radius:12px;background:#302a1c;color:#f1d69b;font-weight:900;font-size:1.15rem}
+.s6-currentCard h2,.s6-foundation h2,.s6-gate h2{margin:5px 0 6px}
+.s6-currentCard p,.s6-foundation p,.s6-gate p{margin:0;color:#aeb6c2;line-height:1.55}
+.s6-foundation{display:grid;grid-template-columns:1.2fr 1fr;gap:24px;align-items:center}
+.s6-equation{display:flex;align-items:center;justify-content:center;gap:13px;flex-wrap:wrap;border:1px solid #2f3943;border-radius:12px;background:#101317;padding:22px}
+.s6-equationLabel{color:#7f8a96;font-size:.65rem;font-weight:900;letter-spacing:.1em}
+.s6-equation code{color:#dce6ef;font-size:.95rem}.s6-arrow{color:#7fb2df;font-size:1.25rem}
+.s6-loopGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.s6-loopGrid>div{display:grid;gap:8px;border:1px solid #2c333b;border-radius:11px;background:#111418;padding:15px}
+.s6-loopGrid b{font-size:.72rem}.s6-loopGrid span{color:#aeb6c2;font-size:.8rem;line-height:1.45}
+.s6-gate{border-color:#3a4652}
+.s6-gateStatus{display:inline-block;margin-top:14px;border:1px solid #3e4650;border-radius:8px;padding:8px 11px;color:#d4dbe2;font-size:.72rem;font-weight:900;letter-spacing:.08em}
+@media(max-width:900px){.s6-groupGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.s6-foundation{grid-template-columns:1fr}.s6-loopGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:620px){.s6-groupGrid,.s6-loopGrid{grid-template-columns:1fr}.s6-currentCard{grid-template-columns:auto 1fr}.s6-currentCard .statusPill{grid-column:2}}
