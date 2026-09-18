@@ -1,5 +1,6 @@
 import Sprint3Page from "./pages/Sprint3Page";
 import Sprint5Page from "./pages/Sprint5Page";
+import Sprint6Page from "./pages/Sprint6Page";
 import Sprint4Page from "./pages/Sprint4Page";
 import AppShell from "./components/AppShell";
 import Sprint3 from "./Sprint3";
@@ -1317,6 +1318,14 @@ function App() {
       </AppShell>
     );
   }
+  if (path === "/learn/sprint-6") {
+    return (
+      <AppShell>
+        <Sprint6Page />
+      </AppShell>
+    );
+  }
+
   if (path === "/learn/sprint-5") {
     return (
       <AppShell>

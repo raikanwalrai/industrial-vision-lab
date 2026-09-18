@@ -12,7 +12,7 @@ export const curriculum: Sprint[] = [
   { number: 3, title: "Interactive Convolution", status: "complete" },
   { number: 4, title: "Custom Kernels + Enhancement", status: "complete" },
   { number: 5, title: "Noise + Restoration + Illumination", status: "complete" },
-  { number: 6, title: "Colour + Image Formation", status: "planned" },
+  { number: 6, title: "Colour + Image Formation", status: "current" },
   { number: 7, title: "Derivatives + Edges + Scale", status: "planned" },
   { number: 8, title: "Corners + Blobs + SIFT", status: "planned" },
   { number: 9, title: "Texture + Grouping + Model Fitting", status: "planned" },
