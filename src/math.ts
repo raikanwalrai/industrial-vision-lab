@@ -40,3 +40,139 @@ export function patchCalculation(img: GrayImage, kernel: number[][], x=128, y=12
   }
   return {x,y,total,terms};
 }
+
+export function pixelNeighborhood(
+  img: GrayImage,
+  x: number,
+  y: number,
+  radius = 1,
+) {
+  const values: number[][] = [];
+
+  for (let j = -radius; j <= radius; j++) {
+    const row: number[] = [];
+
+    for (let i = -radius; i <= radius; i++) {
+      const yy = Math.max(0, Math.min(img.height - 1, y + j));
+      const xx = Math.max(0, Math.min(img.width - 1, x + i));
+
+      row.push(img.data[yy * img.width + xx]);
+    }
+
+    values.push(row);
+  }
+
+  const center = img.data[y * img.width + x];
+
+  return {
+    x,
+    y,
+    center,
+    values,
+  };
+}
+
+export function imageErrorMetrics(reference: GrayImage, observed: GrayImage) {
+  if (reference.width !== observed.width || reference.height !== observed.height) {
+    throw new Error("Images must have identical dimensions.");
+  }
+
+  const error = new Float32Array(reference.data.length);
+  let sum = 0;
+  let sumSquared = 0;
+
+  for (let i = 0; i < reference.data.length; i++) {
+    const e = observed.data[i] - reference.data[i];
+    error[i] = e;
+    sum += e;
+    sumSquared += e * e;
+  }
+
+  const n = error.length;
+  const meanError = sum / n;
+  const mse = sumSquared / n;
+
+  let variance = 0;
+  for (const e of error) {
+    const centered = e - meanError;
+    variance += centered * centered;
+  }
+  variance /= n;
+
+  return {
+    meanError,
+    variance,
+    mse,
+    rmse: Math.sqrt(mse),
+    errorImage: {
+      width: reference.width,
+      height: reference.height,
+      data: error,
+    },
+  };
+}
+
+export function meanFilter(img: GrayImage, size = 3): GrayImage {
+  if (size < 1 || size % 2 === 0) {
+    throw new Error("Mean filter size must be a positive odd number.");
+  }
+
+  const radius = Math.floor(size / 2);
+  const out = {
+    width: img.width,
+    height: img.height,
+    data: new Float32Array(img.data.length),
+  };
+  const area = size * size;
+
+  for (let y = 0; y < img.height; y++) {
+    for (let x = 0; x < img.width; x++) {
+      let sum = 0;
+
+      for (let j = -radius; j <= radius; j++) {
+        for (let i = -radius; i <= radius; i++) {
+          const yy = Math.max(0, Math.min(img.height - 1, y + j));
+          const xx = Math.max(0, Math.min(img.width - 1, x + i));
+          sum += img.data[yy * img.width + xx];
+        }
+      }
+
+      out.data[y * img.width + x] = sum / area;
+    }
+  }
+
+  return out;
+}
+
+export function medianFilter(img: GrayImage, size = 3): GrayImage {
+  if (size < 1 || size % 2 === 0) {
+    throw new Error("Median filter size must be a positive odd number.");
+  }
+
+  const radius = Math.floor(size / 2);
+  const out = {
+    width: img.width,
+    height: img.height,
+    data: new Float32Array(img.data.length),
+  };
+
+  for (let y = 0; y < img.height; y++) {
+    for (let x = 0; x < img.width; x++) {
+      const values: number[] = [];
+
+      for (let j = -radius; j <= radius; j++) {
+        for (let i = -radius; i <= radius; i++) {
+          const yy = Math.max(0, Math.min(img.height - 1, y + j));
+          const xx = Math.max(0, Math.min(img.width - 1, x + i));
+          values.push(img.data[yy * img.width + xx]);
+        }
+      }
+
+      values.sort((a, b) => a - b);
+      out.data[y * img.width + x] =
+        values[Math.floor(values.length / 2)];
+    }
+  }
+
+  return out;
+}

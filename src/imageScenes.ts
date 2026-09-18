@@ -194,3 +194,59 @@ export const scenes: Scene[] = [
     ],
   },
 ];
+
+export function cloneImage(img: GrayImage): GrayImage {
+  return {
+    width: img.width,
+    height: img.height,
+    data: new Float32Array(img.data),
+  };
+}
+
+function seededRandom(seed: number) {
+  let state = (seed >>> 0) || 1;
+  return () => {
+    state += 0x6D2B79F5;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function gaussianRandom(random: () => number) {
+  let u = 0;
+  let v = 0;
+  while (u === 0) u = random();
+  while (v === 0) v = random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+export function addGaussianNoise(img: GrayImage, sigma = 18, seed = 42): GrayImage {
+  const out = cloneImage(img);
+  const random = seededRandom(seed);
+
+  for (let i = 0; i < out.data.length; i++) {
+    out.data[i] = Math.max(0, Math.min(255, img.data[i] + gaussianRandom(random) * sigma));
+  }
+
+  return out;
+}
+
+export function addSaltPepperNoise(
+  img: GrayImage,
+  probability = 0.08,
+  saltProbability = 0.5,
+  seed = 42,
+): GrayImage {
+  const out = cloneImage(img);
+  const random = seededRandom(seed);
+
+  for (let i = 0; i < out.data.length; i++) {
+    if (random() < probability) {
+      out.data[i] = random() < saltProbability ? 255 : 0;
+    }
+  }
+
+  return out;
+}
