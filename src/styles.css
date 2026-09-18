@@ -6322,3 +6322,311 @@
 @media(max-width:900px){.s6b-reading,.s6b-pixelLink,.s6b-reconstruction{grid-template-columns:1fr}.s6b-channelGrid{grid-template-columns:1fr}.s6b-checkGrid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.s6b-explain{grid-template-columns:1fr}.s6b-arrow{transform:rotate(90deg);justify-self:center}.s6b-checkGrid,.s6b-metrics{grid-template-columns:1fr}}
 .s6c-lab{border:1px solid #30363d;border-radius:16px;background:#171a1e;padding:24px;display:grid;gap:18px}.s6c-lab h2{margin:4px 0 0}.s6c-lab>p{margin:0;color:#aeb6c2;line-height:1.55}.s6c-controls{display:grid;grid-template-columns:1.1fr 1.3fr .65fr;gap:14px;align-items:center;border:1px solid #30363d;border-radius:12px;background:#111418;padding:18px}.s6c-controlIntro{display:grid;gap:5px}.s6c-controlIntro h3{margin:0}.s6c-controlIntro p{margin:0;color:#aeb6c2;font-size:.78rem;line-height:1.5}.s6c-sliders{display:grid;gap:10px}.s6c-sliders label{display:grid;grid-template-columns:70px 1fr;gap:9px;align-items:center;color:#c4ccd5;font-size:.75rem;font-weight:800}.s6c-sliders input{width:100%}.s6c-sourceColour{display:grid;gap:8px;justify-items:center}.s6c-swatch{width:100%;height:72px;border:1px solid #46505a;border-radius:9px}.s6c-sourceColour code{color:#dce6ef}.s6c-representations{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.s6c-card{display:grid;gap:10px;border:1px solid #30363d;border-radius:12px;background:#111418;padding:16px}.s6c-card h3{margin:0}.s6c-card code{color:#dce6ef;font-size:.72rem}.s6c-card>p{margin:0;color:#aeb6c2;font-size:.76rem;line-height:1.5}.s6c-graySwatch{height:100px;border-radius:9px;border:1px solid #46505a}.s6c-metricGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.s6c-metricGrid div{display:grid;gap:5px;border:1px solid #30363d;border-radius:8px;background:#171a1e;padding:10px}.s6c-metricGrid span{font-size:.65rem;color:#8995a1;font-weight:900}.s6c-metricGrid b{font-size:.9rem}.s6c-math{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center;border:1px solid #30363d;border-radius:12px;background:#111418;padding:18px}.s6c-math h3{margin:0}.s6c-math p{margin:8px 0 0;color:#aeb6c2;font-size:.78rem;line-height:1.5}.s6c-formulas{display:grid;gap:8px;border:1px solid #35414d;border-radius:10px;background:#0e1114;padding:14px}.s6c-formulas code{color:#dce6ef}.s6c-verification{border:1px solid #3b4650;border-radius:12px;background:#12161a;padding:17px}.s6c-checkGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.s6c-checkGrid div{display:grid;gap:7px;border:1px solid #30363d;border-radius:9px;background:#0e1114;padding:12px}.s6c-checkGrid span{font-size:.62rem;color:#7f8a96}.s6c-checkGrid b{font-size:.74rem}.s6c-checkGrid strong{font-size:.65rem;color:#91d0a9}@media(max-width:900px){.s6c-controls,.s6c-math{grid-template-columns:1fr}.s6c-representations{grid-template-columns:1fr}.s6c-checkGrid{grid-template-columns:repeat(2,1fr)}}@media(max-width:620px){.s6c-checkGrid{grid-template-columns:1fr}.s6c-sliders label{grid-template-columns:1fr}}
+
+/* =========================================================
+   SPRINT 6 · GROUP D · COLOUR MANIPULATION LAB
+   Scoped exclusively to .s6d-lab
+   ========================================================= */
+
+.s6d-lab {
+  margin-top: 24px;
+  padding: 28px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255,80,80,.08), transparent 32%),
+    radial-gradient(circle at 85% 10%, rgba(70,120,255,.08), transparent 32%),
+    rgba(255,255,255,.025);
+  box-shadow: 0 18px 50px rgba(0,0,0,.22);
+}
+
+.s6d-lab h2 {
+  margin: 6px 0 10px;
+  font-size: clamp(1.45rem, 2.4vw, 2.1rem);
+  line-height: 1.15;
+  letter-spacing: -.025em;
+}
+
+.s6d-lab h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.s6d-lab p {
+  max-width: 900px;
+  line-height: 1.6;
+}
+
+/* ---------- Controls ---------- */
+
+.s6d-lab label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.s6d-lab input[type="range"] {
+  width: 100%;
+  accent-color: #7aa7ff;
+  cursor: pointer;
+}
+
+.s6d-lab select {
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 8px;
+  background: rgba(0,0,0,.25);
+  color: inherit;
+}
+
+/* ---------- Generic Group-D grids ---------- */
+
+.s6d-lab > div {
+  box-sizing: border-box;
+}
+
+/*
+   The controls are deliberately allowed to wrap.
+   This keeps the lab usable on a laptop and on smaller screens.
+*/
+.s6d-lab input[type="range"] {
+  min-width: 160px;
+}
+
+/* ---------- Canvas presentation ---------- */
+
+.s6d-lab canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 180px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: #050505;
+  image-rendering: auto;
+}
+
+/* ---------- Colour swatches ---------- */
+
+.s6d-lab [style*="background"] {
+  border-radius: 8px;
+}
+
+/* ---------- Code / mathematical values ---------- */
+
+.s6d-lab code {
+  display: inline-block;
+  padding: 6px 9px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 7px;
+  background: rgba(0,0,0,.28);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+/* ---------- Existing Group-D named components ---------- */
+
+.s6d-controls,
+.s6d-controlGrid,
+.s6d-mainGrid,
+.s6d-imageGrid,
+.s6d-comparison,
+.s6d-pixelGrid,
+.s6d-metrics,
+.s6d-verification,
+.s6d-checkGrid {
+  display: grid;
+  gap: 14px;
+}
+
+.s6d-controls,
+.s6d-controlGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 22px 0;
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+}
+
+.s6d-mainGrid,
+.s6d-imageGrid,
+.s6d-comparison {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.s6d-card,
+.s6d-imageCard,
+.s6d-panel,
+.s6d-pixelCard,
+.s6d-metric,
+.s6d-check,
+.s6d-verification > div {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 12px;
+  background: rgba(255,255,255,.025);
+}
+
+.s6d-imageCard {
+  overflow: hidden;
+}
+
+.s6d-imageLabel,
+.s6d-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  opacity: .72;
+}
+
+.s6d-pixelGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.s6d-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.s6d-metric span,
+.s6d-check span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  opacity: .62;
+}
+
+.s6d-metric b {
+  font-size: 1rem;
+}
+
+.s6d-verification {
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+}
+
+.s6d-checkGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.s6d-check {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.s6d-check strong {
+  font-size: .68rem;
+  letter-spacing: .08em;
+}
+
+.s6d-pass,
+.s6d-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(70,200,120,.10);
+  border: 1px solid rgba(70,200,120,.18);
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+  .s6d-mainGrid,
+  .s6d-imageGrid,
+  .s6d-comparison {
+    grid-template-columns: 1fr;
+  }
+
+  .s6d-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .s6d-lab {
+    padding: 18px;
+  }
+
+  .s6d-controls,
+  .s6d-controlGrid,
+  .s6d-checkGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s6d-pixelGrid,
+  .s6d-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .s6d-check {
+    grid-template-columns: 28px 1fr;
+  }
+
+  .s6d-check strong {
+    grid-column: 2;
+  }
+}
+
+
+/* =========================================================
+   GROUP D · IMAGE COMPARISON
+   Keep ORIGINAL and MODIFIED images side-by-side.
+   ========================================================= */
+
+.s6d-lab .s6d-visualGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.s6d-lab .s6d-visualGrid .s6d-imageCard {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  background: rgba(255,255,255,.025);
+  overflow: hidden;
+}
+
+.s6d-lab .s6d-visualGrid .s6a-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+@media (max-width: 900px) {
+  .s6d-lab .s6d-visualGrid {
+    grid-template-columns: 1fr;
+  }
+}

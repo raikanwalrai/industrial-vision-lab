@@ -2,6 +2,19 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import {colorImageStats,recombinationMatchesPixel,rgbChannelSum,rgbToHex} from "../colorMath";
 import {createRGBScene,extractChannel,getRGBPixel,recombineRGB,reconstructFromChannels} from "../colorScenes";
 import {hsvHueLabel,rgbToGrayscale,rgbToHsl,rgbToHsv} from "../colorSpaceMath";
+import {
+  adjustBrightness,
+  adjustChannel,
+  adjustContrast,
+  adjustSaturation,
+  applyColourManipulation,
+  channelChanges,
+  rgbDistance,
+  verifyBrightnessDelta,
+  verifyChannelIndependence,
+  verifyContrastSymmetry,
+  verifySaturationBounded
+} from "../colorManipulationMath";
 const groups=[
  ["A","RGB Fundamentals","Understand colour pixels, channels, and RGB vectors."],
  ["B","Channel Separation","Separate, inspect, and recombine R, G, and B channels."],
@@ -83,6 +96,12 @@ function drawReconstructedRGB(
 function Channel({title,im,ch}:{title:string;im:ReturnType<typeof createRGBScene>;ch:"r"|"g"|"b"}){const ref=useRef<HTMLCanvasElement>(null);useEffect(()=>{draw(ref.current,im.width,im.height,extractChannel(im,ch));},[im,ch]);return <div className="s6a-imageCard"><div className="s6a-imageLabel">{title}</div><canvas ref={ref} className="s6a-canvas"/><div className="s6a-channelHint">Bright = more {ch.toUpperCase()} · Dark = less {ch.toUpperCase()}</div></div>}
 export default function Sprint6Page(){
  const[active,setActive]=useState("A"),[x,setX]=useState(128),[y,setY]=useState(88),[r,setR]=useState(220),[g,setG]=useState(100),[b,setB]=useState(40);
+ const[groupDBrightness,setGroupDBrightness]=useState(20),
+      [groupDContrast,setGroupDContrast]=useState(1.4),
+      [groupDSaturation,setGroupDSaturation]=useState(1.4),
+      [groupDChannel,setGroupDChannel]=useState<"r"|"g"|"b">("r"),
+      [groupDChannelDelta,setGroupDChannelDelta]=useState(25);
+
   const groupCRgb=useMemo(()=>({r,g,b}),[r,g,b]);
   const groupCGray=useMemo(()=>rgbToGrayscale(groupCRgb),[groupCRgb]);
   const groupCHsv=useMemo(()=>rgbToHsv(groupCRgb),[groupCRgb]);
@@ -106,6 +125,69 @@ export default function Sprint6Page(){
   return {differing,mse:squared/im.data.length};
  },[im,reconstructed]);
  const reconstructionRef=useRef<HTMLCanvasElement>(null);
+ const groupDSource=useMemo(
+  ()=>getRGBPixel(im,x,y),
+  [im,x,y]
+ );
+
+ const groupDBrightnessPixel=useMemo(
+  ()=>adjustBrightness(groupDSource,groupDBrightness),
+  [groupDSource,groupDBrightness]
+ );
+
+ const groupDContrastPixel=useMemo(
+  ()=>adjustContrast(groupDSource,groupDContrast,128),
+  [groupDSource,groupDContrast]
+ );
+
+ const groupDSaturationPixel=useMemo(
+  ()=>adjustSaturation(groupDSource,groupDSaturation),
+  [groupDSource,groupDSaturation]
+ );
+
+ const groupDChannelPixel=useMemo(
+  ()=>adjustChannel(
+    groupDSource,
+    groupDChannel,
+    groupDChannelDelta
+  ),
+  [groupDSource,groupDChannel,groupDChannelDelta]
+ );
+
+ const groupDModified=useMemo(
+  ()=>applyColourManipulation(
+    im,
+    groupDBrightness,
+    groupDContrast,
+    groupDSaturation,
+    groupDChannel,
+    groupDChannelDelta
+  ),
+  [
+    im,
+    groupDBrightness,
+    groupDContrast,
+    groupDSaturation,
+    groupDChannel,
+    groupDChannelDelta
+  ]
+ );
+
+ const groupDChanged=useMemo(
+  ()=>channelChanges(
+    groupDSource,
+    groupDChannelPixel
+  ),
+  [groupDSource,groupDChannelPixel]
+ );
+
+ const groupDDistance=useMemo(
+  ()=>rgbDistance(
+    groupDSource,
+    groupDChannelPixel
+  ),
+  [groupDSource,groupDChannelPixel]
+ );
 
  useEffect(()=>{rgbCanvas(ref.current,im,x,y);},[im,x,y]);
  useEffect(()=>{drawReconstructedRGB(reconstructionRef.current,reconstructed);},[reconstructed]);
@@ -219,6 +301,567 @@ export default function Sprint6Page(){
     <div><span>03</span><b>HSV components are bounded</b><strong>{groupCHsv.h>=0&&groupCHsv.h<=360&&groupCHsv.s>=0&&groupCHsv.s<=100&&groupCHsv.v>=0&&groupCHsv.v<=100?"PASS":"REVIEW"}</strong></div>
     <div><span>04</span><b>HSL components are bounded</b><strong>{groupCHsl.h>=0&&groupCHsl.h<=360&&groupCHsl.s>=0&&groupCHsl.s<=100&&groupCHsl.l>=0&&groupCHsl.l<=100?"PASS":"REVIEW"}</strong></div>
    </div></div>
+  </section>:
+active==="D"?<section className="s6d-lab">
+
+   <div className="sectionEyebrow">
+    GROUP D · COLOUR MANIPULATION
+   </div>
+
+   <h2>Change the colour — and see the mathematics</h2>
+
+   <p>
+    Brightness shifts all channels. Contrast expands or compresses
+    differences around a midpoint. Saturation changes colour intensity.
+    RGB channel manipulation changes only the selected channel.
+   </p>
+
+   <div className="s6d-equationFlow">
+
+    <div>
+     <span>SOURCE</span>
+     <code>[ R, G, B ]ᵀ</code>
+    </div>
+
+    <div className="s6d-arrow">→</div>
+
+    <div>
+     <span>MANIPULATE</span>
+     <code>
+      brightness · contrast · saturation · RGB channel
+     </code>
+    </div>
+
+    <div className="s6d-arrow">→</div>
+
+    <div>
+     <span>RESULT</span>
+     <code>[ R', G', B' ]ᵀ</code>
+    </div>
+
+   </div>
+
+   <div className="s6d-controls">
+
+    <div className="s6d-controlGroup">
+
+     <div className="sectionEyebrow">
+      BRIGHTNESS
+     </div>
+
+     <label>
+      <span>Δ = {groupDBrightness}</span>
+
+      <input
+       type="range"
+       min="-100"
+       max="100"
+       value={groupDBrightness}
+       onChange={e=>
+        setGroupDBrightness(
+         Number(e.target.value)
+        )
+       }
+      />
+     </label>
+
+     <code>
+      I' = I + Δ
+     </code>
+
+    </div>
+
+
+    <div className="s6d-controlGroup">
+
+     <div className="sectionEyebrow">
+      CONTRAST
+     </div>
+
+     <label>
+      <span>
+       α = {groupDContrast.toFixed(1)}
+      </span>
+
+      <input
+       type="range"
+       min="0"
+       max="2"
+       step="0.1"
+       value={groupDContrast}
+       onChange={e=>
+        setGroupDContrast(
+         Number(e.target.value)
+        )
+       }
+      />
+     </label>
+
+     <code>
+      I' = α(I − μ) + μ
+     </code>
+
+     <small>
+      μ = 128
+     </small>
+
+    </div>
+
+
+    <div className="s6d-controlGroup">
+
+     <div className="sectionEyebrow">
+      SATURATION
+     </div>
+
+     <label>
+      <span>
+       factor = {groupDSaturation.toFixed(1)}×
+      </span>
+
+      <input
+       type="range"
+       min="0"
+       max="2"
+       step="0.1"
+       value={groupDSaturation}
+       onChange={e=>
+        setGroupDSaturation(
+         Number(e.target.value)
+        )
+       }
+      />
+     </label>
+
+     <code>
+      S' = clamp(S × factor)
+     </code>
+
+     <small>
+      Saturation is manipulated through HSV.
+     </small>
+
+    </div>
+
+
+    <div className="s6d-controlGroup">
+
+     <div className="sectionEyebrow">
+      RGB CHANNEL
+     </div>
+
+     <select
+      value={groupDChannel}
+      onChange={e=>
+       setGroupDChannel(
+        e.target.value as "r"|"g"|"b"
+       )
+      }
+     >
+      <option value="r">R · Red</option>
+      <option value="g">G · Green</option>
+      <option value="b">B · Blue</option>
+     </select>
+
+     <label>
+      <span>
+       Δ = {groupDChannelDelta}
+      </span>
+
+      <input
+       type="range"
+       min="-100"
+       max="100"
+       value={groupDChannelDelta}
+       onChange={e=>
+        setGroupDChannelDelta(
+         Number(e.target.value)
+        )
+       }
+      />
+     </label>
+
+     <code>
+      selected' = selected + Δ
+     </code>
+
+    </div>
+
+   </div>
+
+
+   <div className="s6d-visualGrid">
+
+    <div className="s6d-imageCard">
+
+     <div className="s6a-imageLabel">
+      ORIGINAL RGB IMAGE
+     </div>
+
+     <canvas
+      ref={node=>{
+       if(node){
+        rgbCanvas(
+         node,
+         im,
+         x,
+         y
+        )
+       }
+      }}
+      className="s6a-canvas s6d-pixelProbe"
+      onPointerDown={e=>{
+       const rect=e.currentTarget.getBoundingClientRect();
+
+       const px=
+        (e.clientX-rect.left) *
+        (e.currentTarget.width/rect.width);
+
+       const py=
+        (e.clientY-rect.top) *
+        (e.currentTarget.height/rect.height);
+
+       setX(
+        Math.max(
+         0,
+         Math.min(
+          im.width-1,
+          Math.round(px)
+         )
+        )
+       );
+
+       setY(
+        Math.max(
+         0,
+         Math.min(
+          im.height-1,
+          Math.round(py)
+         )
+        )
+       );
+
+       e.currentTarget.setPointerCapture?.(
+        e.pointerId
+       );
+      }}
+      onPointerMove={e=>{
+       if(e.buttons!==1)return;
+
+       const rect=
+        e.currentTarget.getBoundingClientRect();
+
+       const px=
+        (e.clientX-rect.left) *
+        (e.currentTarget.width/rect.width);
+
+       const py=
+        (e.clientY-rect.top) *
+        (e.currentTarget.height/rect.height);
+
+       setX(
+        Math.max(
+         0,
+         Math.min(
+          im.width-1,
+          Math.round(px)
+         )
+        )
+       );
+
+       setY(
+        Math.max(
+         0,
+         Math.min(
+          im.height-1,
+          Math.round(py)
+         )
+        )
+       );
+      }}
+     />
+
+     <div className="s6a-coordinate">
+      Selected pixel: ({x}, {y})
+     </div>
+
+    </div>
+
+
+    <div className="s6d-imageCard">
+
+     <div className="s6a-imageLabel">
+      MODIFIED RGB IMAGE
+     </div>
+
+     <canvas
+      ref={node=>{
+       if(!node)return;
+
+       rgbCanvas(
+        node,
+        groupDModified,
+        x,
+        y
+       );
+      }}
+      className="s6a-canvas s6d-pixelProbe"
+     />
+
+     <div className="s6a-coordinate">
+      Brightness + contrast + saturation +
+      selected-channel operation
+     </div>
+
+    </div>
+
+   </div>
+
+
+   <div className="s6d-pixelGrid">
+
+    <div className="s6d-pixelCard">
+
+     <div className="sectionEyebrow">
+      SOURCE PIXEL
+     </div>
+
+     <div
+      className="s6d-swatch"
+      style={{
+       background:rgbToHex(groupDSource)
+      }}
+     />
+
+     <code>
+      [ {groupDSource.r},
+        {groupDSource.g},
+        {groupDSource.b} ]ᵀ
+     </code>
+
+    </div>
+
+
+    <div className="s6d-pixelCard">
+
+     <div className="sectionEyebrow">
+      BRIGHTNESS
+     </div>
+
+     <div
+      className="s6d-swatch"
+      style={{
+       background:
+        rgbToHex(
+         groupDBrightnessPixel
+        )
+      }}
+     />
+
+     <code>
+      [ {groupDBrightnessPixel.r},
+        {groupDBrightnessPixel.g},
+        {groupDBrightnessPixel.b} ]ᵀ
+     </code>
+
+     <p>
+      R: {groupDSource.r} +
+      {groupDBrightness} =
+      {groupDBrightnessPixel.r}
+     </p>
+
+    </div>
+
+
+    <div className="s6d-pixelCard">
+
+     <div className="sectionEyebrow">
+      CONTRAST
+     </div>
+
+     <div
+      className="s6d-swatch"
+      style={{
+       background:
+        rgbToHex(
+         groupDContrastPixel
+        )
+      }}
+     />
+
+     <code>
+      [ {groupDContrastPixel.r},
+        {groupDContrastPixel.g},
+        {groupDContrastPixel.b} ]ᵀ
+     </code>
+
+     <p>
+      R: {groupDContrast.toFixed(1)}
+      ({groupDSource.r} − 128) + 128
+      = {groupDContrastPixel.r}
+     </p>
+
+    </div>
+
+
+    <div className="s6d-pixelCard">
+
+     <div className="sectionEyebrow">
+      SATURATION
+     </div>
+
+     <div
+      className="s6d-swatch"
+      style={{
+       background:
+        rgbToHex(
+         groupDSaturationPixel
+        )
+      }}
+     />
+
+     <code>
+      [ {groupDSaturationPixel.r},
+        {groupDSaturationPixel.g},
+        {groupDSaturationPixel.b} ]ᵀ
+     </code>
+
+     <p>
+      HSV saturation ×
+      {groupDSaturation.toFixed(1)}
+     </p>
+
+    </div>
+
+
+    <div className="s6d-pixelCard">
+
+     <div className="sectionEyebrow">
+      CHANNEL ONLY
+     </div>
+
+     <div
+      className="s6d-swatch"
+      style={{
+       background:
+        rgbToHex(
+         groupDChannelPixel
+        )
+      }}
+     />
+
+     <code>
+      [ {groupDChannelPixel.r},
+        {groupDChannelPixel.g},
+        {groupDChannelPixel.b} ]ᵀ
+     </code>
+
+     <p>
+      {groupDChannel.toUpperCase()}
+      changes by {groupDChannelDelta}.
+      Other channels stay fixed.
+     </p>
+
+    </div>
+
+   </div>
+
+
+   <div className="s6d-verification">
+
+    <div className="sectionEyebrow">
+     GROUP D VERIFICATION
+    </div>
+
+    <div className="s6d-checkGrid">
+
+     <div>
+      <span>01</span>
+      <b>Brightness applies one shared Δ</b>
+      <strong>
+       {verifyBrightnessDelta()
+        ?"PASS"
+        :"REVIEW"}
+      </strong>
+     </div>
+
+     <div>
+      <span>02</span>
+      <b>Contrast follows the midpoint formula</b>
+      <strong>
+       {verifyContrastSymmetry()
+        ?"PASS"
+        :"REVIEW"}
+      </strong>
+     </div>
+
+     <div>
+      <span>03</span>
+      <b>Saturation stays within 0–255</b>
+      <strong>
+       {verifySaturationBounded()
+        ?"PASS"
+        :"REVIEW"}
+      </strong>
+     </div>
+
+     <div>
+      <span>04</span>
+      <b>Only the selected RGB channel changes</b>
+      <strong>
+       {verifyChannelIndependence()
+        ?"PASS"
+        :"REVIEW"}
+      </strong>
+     </div>
+
+    </div>
+
+
+    <div className="s6d-metrics">
+
+     <div>
+      <span>SELECTED CHANNEL</span>
+      <b>
+       {groupDChannel.toUpperCase()}
+      </b>
+     </div>
+
+     <div>
+      <span>OBSERVED CHANNEL DELTA</span>
+      <b>
+       {groupDChanged[groupDChannel]}
+      </b>
+     </div>
+
+     <div>
+      <span>RGB DISTANCE</span>
+      <b>
+       {groupDDistance.toFixed(2)}
+      </b>
+     </div>
+
+    </div>
+
+   </div>
+
+
+   <div className="s6d-teachingNote">
+
+    <div className="sectionEyebrow">
+     WHAT TO NOTICE
+    </div>
+
+    <p>
+     <b>Brightness</b> adds the same amount to every
+     channel. <b>Contrast</b> changes the distance from
+     a midpoint. <b>Saturation</b> changes how colourful
+     the pixel is. <b>Channel manipulation</b> changes
+     just one component.
+    </p>
+
+   </div>
+
   </section>:<section className="s6-gate"><div className="sectionEyebrow">GROUP {active} · PLANNED</div><h2>{group[1]}</h2><p>{group[2]}</p><div className="s6-gateStatus">→ IMPLEMENTED IN A FUTURE VERIFIED SLICE</div></section>}
   <section className="s6-foundation"><div><div className="sectionEyebrow">SPRINT 6 FOUNDATION</div><h2>From one intensity value to a colour vector</h2><p>Earlier sprints represented a pixel with one grayscale intensity. Sprint 6 begins by treating colour as three coordinated channels.</p></div><div className="s6-equation"><div className="s6-equationLabel">GRAYSCALE</div><code>I(x,y)</code><div className="s6-arrow">→</div><div className="s6-equationLabel">RGB</div><code>[ R(x,y), G(x,y), B(x,y) ]ᵀ</code></div></section>
  </div>
