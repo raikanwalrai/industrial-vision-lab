@@ -27,3 +27,17 @@ export function extractChannel(im:ColorImage,ch:keyof RGB):Uint8ClampedArray{
  for(let p=0;p<im.width*im.height;p++){const v=im.data[p*3+o];out[p*4]=v;out[p*4+1]=v;out[p*4+2]=v;out[p*4+3]=255;} return out;
 }
 export const recombineRGB=(r:number,g:number,b:number):RGB=>({r:clamp(r),g:clamp(g),b:clamp(b)});
+export function reconstructFromChannels(
+ im:ColorImage,
+ r:Uint8ClampedArray,
+ g:Uint8ClampedArray,
+ b:Uint8ClampedArray
+):ColorImage{
+ const out=new Uint8ClampedArray(im.width*im.height*3);
+ for(let p=0;p<im.width*im.height;p++){
+  out[p*3]=r[p*4];
+  out[p*3+1]=g[p*4];
+  out[p*3+2]=b[p*4];
+ }
+ return {width:im.width,height:im.height,data:out};
+}

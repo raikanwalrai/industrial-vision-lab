@@ -1,6 +1,6 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import {colorImageStats,recombinationMatchesPixel,rgbChannelSum,rgbToHex} from "../colorMath";
-import {createRGBScene,extractChannel,getRGBPixel,recombineRGB} from "../colorScenes";
+import {createRGBScene,extractChannel,getRGBPixel,recombineRGB,reconstructFromChannels} from "../colorScenes";
 const groups=[
  ["A","RGB Fundamentals","Understand colour pixels, channels, and RGB vectors."],
  ["B","Channel Separation","Separate, inspect, and recombine R, G, and B channels."],
@@ -63,16 +63,52 @@ function rgbCanvas(
 
  ctx.restore();
 }
+
+function drawReconstructedRGB(
+ canvas:HTMLCanvasElement|null,
+ im:ReturnType<typeof createRGBScene>
+){
+ if(!canvas)return;
+ const d=new Uint8ClampedArray(im.width*im.height*4);
+ for(let q=0;q<im.width*im.height;q++){
+  d[q*4]=im.data[q*3];
+  d[q*4+1]=im.data[q*3+1];
+  d[q*4+2]=im.data[q*3+2];
+  d[q*4+3]=255;
+ }
+ draw(canvas,im.width,im.height,d);
+}
+
 function Channel({title,im,ch}:{title:string;im:ReturnType<typeof createRGBScene>;ch:"r"|"g"|"b"}){const ref=useRef<HTMLCanvasElement>(null);useEffect(()=>{draw(ref.current,im.width,im.height,extractChannel(im,ch));},[im,ch]);return <div className="s6a-imageCard"><div className="s6a-imageLabel">{title}</div><canvas ref={ref} className="s6a-canvas"/><div className="s6a-channelHint">Bright = more {ch.toUpperCase()} · Dark = less {ch.toUpperCase()}</div></div>}
 export default function Sprint6Page(){
  const[active,setActive]=useState("A"),[x,setX]=useState(128),[y,setY]=useState(88),[r,setR]=useState(220),[g,setG]=useState(100),[b,setB]=useState(40);
  const im=useMemo(()=>createRGBScene(),[]),px=useMemo(()=>getRGBPixel(im,x,y),[im,x,y]),manual=useMemo(()=>recombineRGB(r,g,b),[r,g,b]),stats=useMemo(()=>colorImageStats(im),[im]),ref=useRef<HTMLCanvasElement>(null);
+ const rChannel=useMemo(()=>extractChannel(im,"r"),[im]);
+ const gChannel=useMemo(()=>extractChannel(im,"g"),[im]);
+ const bChannel=useMemo(()=>extractChannel(im,"b"),[im]);
+ const reconstructed=useMemo(
+  ()=>reconstructFromChannels(im,rChannel,gChannel,bChannel),
+  [im,rChannel,gChannel,bChannel]
+ );
+ const reconstructionStats=useMemo(()=>{
+  let differing=0;
+  let squared=0;
+  for(let i=0;i<im.data.length;i++){
+   const e=im.data[i]-reconstructed.data[i];
+   if(e!==0)differing++;
+   squared+=e*e;
+  }
+  return {differing,mse:squared/im.data.length};
+ },[im,reconstructed]);
+ const reconstructionRef=useRef<HTMLCanvasElement>(null);
+
  useEffect(()=>{rgbCanvas(ref.current,im,x,y);},[im,x,y]);
+ useEffect(()=>{drawReconstructedRGB(reconstructionRef.current,reconstructed);},[reconstructed]);
  const group=groups.find(v=>v[0]===active)??groups[0];
  return <div className="sprintPage s6-page">
   <section className="sprintHero"><div className="sectionEyebrow">SPRINT 6 · COLOUR VISION</div><h1>Colour + Image Formation</h1><p>Move from single-channel grayscale images to colour images and understand how illumination and reflectance create what a camera observes.</p><div className="sprintMetaRow"><span className="statusPill statusCurrent">● CURRENT</span><span>7 learning groups</span><span>RGB · Colour Spaces · Image Formation</span></div></section>
-  <section className="s6-roadmap"><div className="sectionEyebrow">SPRINT 6 ROADMAP</div><div className="s6-groupGrid">{groups.map(([id,title,desc])=><button key={id} type="button" className={`s6-groupCard ${active===id?"s6-groupCardActive":""}`} onClick={()=>setActive(id)}><span className="s6-groupNumber">{id}</span><span className="s6-groupTitle">{title}</span><span className="s6-groupDescription">{desc}</span><span className="s6-groupStatus">{active===id?(id==="A"?"CURRENT · LIVE":"CURRENT"):"PLANNED"}</span></button>)}</div></section>
-  <section className="s6-currentCard"><div className="s6-currentBadge">{group[0]}</div><div><div className="sectionEyebrow">CURRENT EXPERIMENT</div><h2>{group[1]}</h2><p>{group[2]}</p></div><span className={`statusPill ${active==="A"?"statusCurrent":"statusPlanned"}`}>{active==="A"?"LIVE":"PLANNED"}</span></section>
+  <section className="s6-roadmap"><div className="sectionEyebrow">SPRINT 6 ROADMAP</div><div className="s6-groupGrid">{groups.map(([id,title,desc])=><button key={id} type="button" className={`s6-groupCard ${active===id?"s6-groupCardActive":""}`} onClick={()=>setActive(id)}><span className="s6-groupNumber">{id}</span><span className="s6-groupTitle">{title}</span><span className="s6-groupDescription">{desc}</span><span className="s6-groupStatus">{active===id?((id==="A"||id==="B")?"CURRENT · LIVE":"CURRENT"):"PLANNED"}</span></button>)}</div></section>
+  <section className="s6-currentCard"><div className="s6-currentBadge">{group[0]}</div><div><div className="sectionEyebrow">CURRENT EXPERIMENT</div><h2>{group[1]}</h2><p>{group[2]}</p></div><span className={`statusPill ${active==="A"||active==="B"?"statusCurrent":"statusPlanned"}`}>{active==="A"||active==="B"?"LIVE":"PLANNED"}</span></section>
   {active==="A"?<section className="s6a-lab"><div className="sectionEyebrow">GROUP A · RGB FUNDAMENTALS</div><h2>One colour pixel is three intensity values</h2><p>A grayscale pixel has one intensity. An RGB pixel carries three channel values: red, green, and blue. Together they describe one colour.</p>
    <div className="s6a-equationHero"><code>p(x,y) = [ R(x,y), G(x,y), B(x,y) ]ᵀ</code><span>Example: [220, 100, 40]ᵀ</span></div>
    <div className="s6a-controls"><label><span>X = {x}</span><input type="range" min="0" max={im.width-1} value={x} onChange={e=>setX(Number(e.target.value))}/></label><label><span>Y = {y}</span><input type="range" min="0" max={im.height-1} value={y} onChange={e=>setY(Number(e.target.value))}/></label></div>
@@ -82,7 +118,78 @@ export default function Sprint6Page(){
    <div className="s6a-recombine"><div><div className="sectionEyebrow">RECOMBINE A PIXEL</div><h3>Build a colour from three channel numbers</h3><p>Change R, G, and B and watch the resulting colour.</p></div><div className="s6a-recombineControls"><label>R {r}<input type="range" min="0" max="255" value={r} onChange={e=>setR(Number(e.target.value))}/></label><label>G {g}<input type="range" min="0" max="255" value={g} onChange={e=>setG(Number(e.target.value))}/></label><label>B {b}<input type="range" min="0" max="255" value={b} onChange={e=>setB(Number(e.target.value))}/></label></div><div className="s6a-recombined"><div className="s6a-swatch s6a-largeSwatch" style={{background:rgbToHex(manual)}}/><code>[ {manual.r}, {manual.g}, {manual.b} ]ᵀ</code><b>{rgbToHex(manual)}</b></div></div>
    <div className="s6a-stats"><div><span>IMAGE SIZE</span><b>{im.width} × {im.height}</b></div><div><span>MEAN RED</span><b>{stats.meanR.toFixed(1)}</b></div><div><span>MEAN GREEN</span><b>{stats.meanG.toFixed(1)}</b></div><div><span>MEAN BLUE</span><b>{stats.meanB.toFixed(1)}</b></div></div>
    <div className="s6a-verification"><div className="sectionEyebrow">GROUP A VERIFICATION</div><div className="s6a-checkGrid"><div><span>01</span><b>RGB pixel has 3 channels</b><strong>PASS</strong></div><div><span>02</span><b>Each channel is 0–255</b><strong>PASS</strong></div><div><span>03</span><b>Channel separation is deterministic</b><strong>PASS</strong></div><div><span>04</span><b>Selected pixel can be recombined</b><strong>{recombinationMatchesPixel(im,x,y)?"PASS":"REVIEW"}</strong></div></div></div>
-  </section>:<section className="s6-gate"><div className="sectionEyebrow">GROUP {active} · PLANNED</div><h2>{group[1]}</h2><p>{group[2]}</p><div className="s6-gateStatus">→ IMPLEMENTED IN A FUTURE VERIFIED SLICE</div></section>}
+  </section>:active==="B"?<section className="s6b-lab">
+   <div className="sectionEyebrow">GROUP B · CHANNEL SEPARATION</div>
+   <h2>One colour image becomes three grayscale channel images</h2>
+   <p>RGB stores three intensity values at every pixel. Channel separation means taking those three values apart so we can inspect red, green, and blue independently.</p>
+
+   <div className="s6b-explain">
+    <div><b>RGB PIXEL</b><code>[ R, G, B ]ᵀ</code><span>three intensities at one location</span></div>
+    <div className="s6b-arrow">→</div>
+    <div><b>SEPARATE</b><code>R &nbsp; G &nbsp; B</code><span>one grayscale image per channel</span></div>
+   </div>
+
+   <div className="s6b-reading">
+    <div>
+     <div className="sectionEyebrow">HOW TO READ THE CHANNELS</div>
+     <h3>Bright means more of that colour channel</h3>
+     <p>The channel is displayed in grayscale only so its numerical intensity can be seen easily. White means a high value in that channel; black means a low value.</p>
+    </div>
+    <div className="s6b-readingFormula">
+     <code>R(x,y), G(x,y), B(x,y) ∈ [0,255]</code>
+     <span>Each channel is an intensity image.</span>
+    </div>
+   </div>
+
+   <div className="s6b-channelGrid">
+    <Channel title="RED CHANNEL" im={im} ch="r"/>
+    <Channel title="GREEN CHANNEL" im={im} ch="g"/>
+    <Channel title="BLUE CHANNEL" im={im} ch="b"/>
+   </div>
+
+   <div className="s6b-pixelLink">
+    <div>
+     <div className="sectionEyebrow">SAME PIXEL · THREE CHANNEL VALUES</div>
+     <h3>One coordinate gives three channel values</h3>
+     <p>The X/Y location selected in Group A refers to the same location in all three channel images.</p>
+    </div>
+    <div className="s6b-values">
+     <div><span>R</span><b>{px.r}</b></div>
+     <div><span>G</span><b>{px.g}</b></div>
+     <div><span>B</span><b>{px.b}</b></div>
+    </div>
+    <code>pixel ({x},{y}) = [ {px.r}, {px.g}, {px.b} ]ᵀ</code>
+   </div>
+
+   <div className="s6b-reconstruction">
+    <div>
+     <div className="sectionEyebrow">CHANNEL RECONSTRUCTION</div>
+     <h3>Put the three channels back together</h3>
+     <p>At every pixel we take R from the red channel, G from the green channel, and B from the blue channel.</p>
+     <div className="s6b-equation"><code>RGB(x,y) = [ R(x,y), G(x,y), B(x,y) ]ᵀ</code></div>
+    </div>
+    <div className="s6b-imageCard">
+     <div className="s6a-imageLabel">RECONSTRUCTED RGB IMAGE</div>
+     <canvas ref={reconstructionRef} className="s6a-canvas"/>
+     <div className="s6a-channelHint">Rebuilt only from the three separated channels.</div>
+    </div>
+   </div>
+
+   <div className="s6b-verification">
+    <div className="sectionEyebrow">ROUND-TRIP VERIFICATION</div>
+    <div className="s6b-checkGrid">
+     <div><span>01</span><b>R channel extracted</b><strong>PASS</strong></div>
+     <div><span>02</span><b>G channel extracted</b><strong>PASS</strong></div>
+     <div><span>03</span><b>B channel extracted</b><strong>PASS</strong></div>
+     <div><span>04</span><b>Reconstructed image matches source</b><strong>{reconstructionStats.differing===0?"PASS":"REVIEW"}</strong></div>
+    </div>
+    <div className="s6b-metrics">
+     <div><span>DIFFERING CHANNEL VALUES</span><b>{reconstructionStats.differing}</b></div>
+     <div><span>RECONSTRUCTION MSE</span><b>{reconstructionStats.mse.toFixed(3)}</b></div>
+     <div><span>ROUND-TRIP</span><b>{reconstructionStats.differing===0?"EXACT":"CHECK"}</b></div>
+    </div>
+   </div>
+</section>:<section className="s6-gate"><div className="sectionEyebrow">GROUP {active} · PLANNED</div><h2>{group[1]}</h2><p>{group[2]}</p><div className="s6-gateStatus">→ IMPLEMENTED IN A FUTURE VERIFIED SLICE</div></section>}
   <section className="s6-foundation"><div><div className="sectionEyebrow">SPRINT 6 FOUNDATION</div><h2>From one intensity value to a colour vector</h2><p>Earlier sprints represented a pixel with one grayscale intensity. Sprint 6 begins by treating colour as three coordinated channels.</p></div><div className="s6-equation"><div className="s6-equationLabel">GRAYSCALE</div><code>I(x,y)</code><div className="s6-arrow">→</div><div className="s6-equationLabel">RGB</div><code>[ R(x,y), G(x,y), B(x,y) ]ᵀ</code></div></section>
  </div>
 }
