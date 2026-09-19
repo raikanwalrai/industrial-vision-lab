@@ -3,6 +3,9 @@ import Sprint5Page from "./pages/Sprint5Page";
 import Sprint6Page from "./pages/Sprint6Page";
 import Sprint7Page from "./pages/Sprint7Page";
 import Sprint8Page from "./pages/Sprint8Page";
+import Sprint8GroupBPage from "./pages/Sprint8GroupBPage";
+import Sprint8GroupCPage from "./pages/Sprint8GroupCPage";
+import Sprint8GroupDPage from "./pages/Sprint8GroupDPage";
 import Sprint4Page from "./pages/Sprint4Page";
 import AppShell from "./components/AppShell";
 import Sprint3 from "./Sprint3";
@@ -1324,6 +1327,30 @@ function App() {
     return (
       <AppShell>
         <Sprint8Page />
+      </AppShell>
+    );
+  }
+
+  if (path === "/learn/sprint-8/group-b") {
+    return (
+      <AppShell>
+        <Sprint8GroupBPage />
+      </AppShell>
+    );
+  }
+
+  if (path === "/learn/sprint-8/group-c") {
+    return (
+      <AppShell>
+        <Sprint8GroupCPage />
+      </AppShell>
+    );
+  }
+
+  if (path === "/learn/sprint-8/group-d") {
+    return (
+      <AppShell>
+        <Sprint8GroupDPage />
       </AppShell>
     );
   }
