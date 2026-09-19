@@ -7812,3 +7812,487 @@
     border-bottom: 1px solid #43545f;
   }
 }
+
+/* =========================================================
+   Sprint 8 Group A — Harris Corner Laboratory
+   ========================================================= */
+
+.s8-page {
+  display: grid;
+  gap: 18px;
+}
+
+.s8-page .panel {
+  overflow: hidden;
+}
+
+.s8-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, .42fr);
+  gap: 24px;
+  align-items: center;
+}
+
+.s8-hero h1 {
+  margin: 6px 0 10px;
+}
+
+.s8-hero p {
+  max-width: 760px;
+  color: #aeb9c1;
+  line-height: 1.65;
+}
+
+.s8-heroFormula {
+  padding: 20px;
+  border: 1px solid #354650;
+  border-radius: 10px;
+  background: #0d151a;
+}
+
+.s8-heroFormula span,
+.s8-smallLabel {
+  display: block;
+  color: #82929d;
+  font-size: .63rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.s8-heroFormula b {
+  display: block;
+  margin: 10px 0;
+  color: #ffd166;
+  font-size: .88rem;
+  line-height: 1.6;
+}
+
+.s8-heroFormula small {
+  color: #8fa0aa;
+}
+
+.s8-flowGrid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.s8-flowStep {
+  min-width: 0;
+  padding: 12px 8px;
+  border: 1px solid #31414c;
+  border-radius: 8px;
+  background: #0c1419;
+  text-align: center;
+}
+
+.s8-flowStep b {
+  display: block;
+  color: #55c7ff;
+  font-size: .62rem;
+  margin-bottom: 7px;
+}
+
+.s8-flowStep span {
+  display: block;
+  color: #b8c5cc;
+  font-size: .62rem;
+  line-height: 1.35;
+}
+
+.s8-sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.s8-sectionHeader h2 {
+  margin: 5px 0 7px;
+}
+
+.s8-sectionHeader p {
+  color: #aeb9c1;
+  line-height: 1.55;
+}
+
+.s8-sceneButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: flex-end;
+}
+
+.s8-sceneButtons button {
+  border: 1px solid #3b4a55;
+  border-radius: 7px;
+  background: #11181d;
+  color: #aebbc3;
+  padding: 8px 11px;
+  font-size: .68rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.s8-sceneButtons button:hover,
+.s8-sceneButtons button.active {
+  border-color: #55c7ff;
+  color: #55c7ff;
+  background: #12212a;
+}
+
+.s8-controlRow {
+  margin: 18px 0;
+}
+
+.s8-controlRow label {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  color: #82929d;
+  font-size: .65rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+}
+
+.s8-controlRow input {
+  width: 100%;
+}
+
+.s8-controlRow b {
+  color: #55c7ff;
+  min-width: 38px;
+  text-align: right;
+}
+
+.s8-imageGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.s8-canvasCard {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #31414c;
+  border-radius: 9px;
+  background: #0b1318;
+}
+
+.s8-cardLabel {
+  margin-bottom: 9px;
+  color: #9eacb4;
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+}
+
+.s8-canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  image-rendering: pixelated;
+  background: #05090b;
+}
+
+.s8-cardHint {
+  margin-top: 8px;
+  color: #6f818d;
+  font-size: .66rem;
+}
+
+.s8-cornerSummary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.s8-cornerSummary > div {
+  padding: 12px;
+  border: 1px solid #30404a;
+  border-radius: 8px;
+  background: #0c1419;
+  text-align: center;
+}
+
+.s8-cornerSummary span {
+  display: block;
+  color: #82929d;
+  font-size: .6rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+.s8-cornerSummary b {
+  display: block;
+  margin-top: 6px;
+  color: #55c7ff;
+  font-size: .95rem;
+}
+
+.s8-pixelGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.s8-gradientCard,
+.s8-tensorCard,
+.s8-eigenCard,
+.s8-harrisCard {
+  min-width: 0;
+  min-height: 190px;
+  padding: 15px;
+  border: 1px solid #31414c;
+  border-radius: 9px;
+  background: #0b1318;
+}
+
+.s8-bigValue {
+  margin-top: 12px;
+  color: #55c7ff;
+  font-size: .82rem;
+  font-weight: 900;
+}
+
+.s8-formulaNote {
+  margin-top: 15px;
+  color: #71838e;
+  font-size: .63rem;
+  line-height: 1.6;
+}
+
+.s8-matrix {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 120px;
+  margin: 14px auto;
+  border: 1px solid #455660;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.s8-matrix span {
+  padding: 8px;
+  border: 1px solid #2a3942;
+  color: #ffd166;
+  font-family: monospace;
+  text-align: center;
+  font-size: .7rem;
+}
+
+.s8-equationLine,
+.s8-eigenRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 9px;
+  color: #7f919b;
+  font-size: .68rem;
+}
+
+.s8-equationLine b,
+.s8-eigenRow b {
+  color: #d1dce1;
+}
+
+.s8-region {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 6px 9px;
+  border-radius: 5px;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+.s8-flat {
+  color: #8e9ba2;
+  background: #182126;
+}
+
+.s8-edge {
+  color: #ffd166;
+  background: #292516;
+}
+
+.s8-corner {
+  color: #35d39a;
+  background: #10271f;
+}
+
+.s8-harrisFormula {
+  margin-top: 16px;
+  color: #aebbc3;
+  font-family: monospace;
+  font-size: .68rem;
+  line-height: 1.5;
+}
+
+.s8-harrisValue {
+  margin-top: 14px;
+  color: #ffd166;
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+
+.s8-pixelClickArea {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  padding: 13px;
+  border: 1px dashed #3a4b56;
+  border-radius: 7px;
+  color: #728590;
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .05em;
+  cursor: crosshair;
+}
+
+.s8-pixelClickArea:hover {
+  border-color: #55c7ff;
+  color: #55c7ff;
+}
+
+.s8-regionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.s8-regionGrid article {
+  padding: 15px;
+  border: 1px solid #31414c;
+  border-radius: 8px;
+  background: #0c1419;
+}
+
+.s8-regionGrid b {
+  display: block;
+  margin-bottom: 9px;
+  color: #55c7ff;
+  font-size: .68rem;
+  letter-spacing: .05em;
+}
+
+.s8-regionGrid span {
+  display: block;
+  color: #aab7be;
+  font-size: .73rem;
+  line-height: 1.55;
+}
+
+.s8-verificationGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.s8-verificationItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid #30404a;
+  border-radius: 7px;
+  background: #0c1419;
+}
+
+.s8-verificationItem span {
+  color: #35d39a;
+  font-weight: 900;
+}
+
+.s8-verificationItem b {
+  color: #aebbc3;
+  font-size: .66rem;
+  line-height: 1.4;
+}
+
+.s8-takeaway {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+
+.s8-takeaway > b {
+  padding-right: 18px;
+  border-right: 1px solid #43545f;
+  color: #ffd166;
+  font-size: .68rem;
+  letter-spacing: .07em;
+  white-space: nowrap;
+}
+
+.s8-takeaway > span {
+  color: #bdc9cf;
+  font-size: .78rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .s8-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .s8-flowGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .s8-pixelGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .s8-verificationGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .s8-sectionHeader {
+    flex-direction: column;
+  }
+
+  .s8-sceneButtons {
+    justify-content: flex-start;
+  }
+
+  .s8-imageGrid,
+  .s8-regionGrid,
+  .s8-cornerSummary {
+    grid-template-columns: 1fr;
+  }
+
+  .s8-flowGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .s8-pixelGrid,
+  .s8-verificationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s8-takeaway {
+    grid-template-columns: 1fr;
+  }
+
+  .s8-takeaway > b {
+    padding-right: 0;
+    padding-bottom: 8px;
+    border-right: 0;
+    border-bottom: 1px solid #43545f;
+  }
+
+  .s8-controlRow label {
+    grid-template-columns: 1fr;
+  }
+}
