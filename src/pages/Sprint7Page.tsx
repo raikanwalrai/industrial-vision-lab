@@ -3,6 +3,7 @@ import { makeScene } from "../imageScenes";
 import { normalizeForDisplay } from "../math";
 import { derivativeDisplayImages, derivativePixel, verifyConstantImageDerivatives, verifyRampDerivative, type DerivativeMethod } from "../derivativeMath";
 import { edgeDisplayImage, edgePixel, edgeResponse, noiseAmplificationExperiment, thresholdEdges, verifyConstantEdges, verifyHorizontalStep, verifyLoGKernel, verifyNoiseAmplification, verifyZeroCrossingStep, zeroCrossingEdges, type EdgeOperator } from "../edgeDetectionMath";
+import { SCALE_VALUES, derivativeOfGaussianDisplay, gaussianSmooth, scaleSpace, verifyDerivativeKernelSums, verifyDerivativeOfGaussian, verifyGaussianKernel, verifyGaussianSmoothing } from "../scaleSpaceMath";
 
 type ImageLike = { width: number; height: number; data: Float32Array };
 
@@ -115,7 +116,416 @@ function GroupB() {
   </>;
 }
 
+
+function GroupC() {
+  const [sceneName, setSceneName] = useState("shapes");
+  const [sigma, setSigma] = useState<number>(2);
+  const [x, setX] = useState(128);
+  const [y, setY] = useState(128);
+
+  const image = useMemo(() => makeScene(sceneName), [sceneName]);
+
+  const smoothed = useMemo(
+    () => scaleSpace(image, sigma),
+    [image, sigma]
+  );
+
+  const dog = useMemo(
+    () => derivativeOfGaussianDisplay(image, sigma),
+    [image, sigma]
+  );
+
+  const multiScale = useMemo(
+    () =>
+      SCALE_VALUES.map((value) => ({
+        sigma: value,
+        image: gaussianSmooth(image, value),
+      })),
+    [image]
+  );
+
+  const sourceDisplay = useMemo(
+    () => normalizeForDisplay(image),
+    [image]
+  );
+
+  const smoothedDisplay = useMemo(
+    () => normalizeForDisplay(smoothed),
+    [smoothed]
+  );
+
+  const logResponses = useMemo(
+    () =>
+      SCALE_VALUES.map((value) => ({
+        sigma: value,
+        response: normalizeForDisplay(
+          edgeResponse(image, "log", value)
+        ),
+      })),
+    [image]
+  );
+
+  const verification = [
+    {
+      label: "Gaussian kernel sums to approximately 1",
+      pass: verifyGaussianKernel(),
+    },
+    {
+      label: "Larger σ produces stronger smoothing",
+      pass: verifyGaussianSmoothing(),
+    },
+    {
+      label: "Derivative-of-Gaussian detects horizontal change",
+      pass: verifyDerivativeOfGaussian(),
+    },
+    {
+      label: "Derivative kernels have approximately zero sum",
+      pass: verifyDerivativeKernelSums(),
+    },
+  ];
+
+  const selectedPixel = y * image.width + x;
+
+  return (
+    <>
+      <section className="s7b-hero">
+        <div className="sectionEyebrow">SPRINT 7 · GROUP C</div>
+        <h1>Scale Space &amp; Derivative of Gaussian</h1>
+        <p>
+          The same image can reveal different structures at different
+          scales. Blur the image with Gaussian σ, then measure how
+          derivatives change as the scale changes.
+        </p>
+        <div className="s7a-meta">
+          <span className="statusPill statusCurrent">● CURRENT</span>
+          <span>Gaussian scale space</span>
+          <span>Derivative of Gaussian</span>
+          <span>Multi-scale LoG</span>
+        </div>
+      </section>
+
+      <section className="s7a-roadmap panel">
+        <div className="sectionEyebrow">GROUP C LEARNING PATH</div>
+        <div className="s7a-flow">
+          <span>IMAGE</span>
+          <b>→</b>
+          <span>GAUSSIAN σ</span>
+          <b>→</b>
+          <span>SMOOTHED IMAGE</span>
+          <b>→</b>
+          <span>DERIVATIVE</span>
+          <b>→</b>
+          <span>MULTI-SCALE RESPONSE</span>
+        </div>
+      </section>
+
+      <section className="s7b-controls panel">
+        <div>
+          <div className="sectionEyebrow">SCALE SPACE CONTROLS</div>
+          <h2>Change the image and Gaussian scale</h2>
+          <p>
+            Small σ preserves fine detail. Larger σ suppresses fine
+            structures and emphasizes broader image structure.
+          </p>
+        </div>
+
+        <div className="s7b-controlField">
+          <label>
+            IMAGE
+            <select
+              value={sceneName}
+              onChange={(e) => setSceneName(e.target.value)}
+            >
+              <option value="step">Step edge</option>
+              <option value="ramp">Horizontal ramp</option>
+              <option value="checker">Checkerboard</option>
+              <option value="corner">Corner</option>
+              <option value="shapes">Synthetic scene</option>
+              <option value="noisy">Noisy scene</option>
+              <option value="constant">Constant image</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="s7b-controlField">
+          <label className="s7b-slider">
+            GAUSSIAN σ
+            <input
+              type="range"
+              min={0.5}
+              max={4}
+              step={0.5}
+              value={sigma}
+              onChange={(e) => setSigma(Number(e.target.value))}
+            />
+            <b>{sigma.toFixed(1)}</b>
+          </label>
+        </div>
+      </section>
+
+      <section className="s7c-mainGrid s7a-mainGrid">
+        <div className="s7a-imageCard">
+          <div className="s7a-imageLabel">
+            INPUT IMAGE · CLICK TO PROBE
+          </div>
+
+          <canvas
+            className="s7a-canvas s7a-clickable"
+            ref={(node) => {
+              if (!node) return;
+
+              drawGray(node, sourceDisplay);
+
+              node.onpointerdown = (e) => {
+                const r = node.getBoundingClientRect();
+
+                setX(
+                  Math.max(
+                    0,
+                    Math.min(
+                      node.width - 1,
+                      Math.round(
+                        ((e.clientX - r.left) / r.width) *
+                          (node.width - 1)
+                      )
+                    )
+                  )
+                );
+
+                setY(
+                  Math.max(
+                    0,
+                    Math.min(
+                      node.height - 1,
+                      Math.round(
+                        ((e.clientY - r.top) / r.height) *
+                          (node.height - 1)
+                      )
+                    )
+                  )
+                );
+              };
+            }}
+          />
+
+          <div className="s7a-coordinate">
+            Selected pixel: ({x}, {y})
+          </div>
+        </div>
+
+        <LabCanvas
+          label={`GAUSSIAN SMOOTHED · σ = ${sigma.toFixed(1)}`}
+          image={smoothedDisplay}
+        />
+
+        <LabCanvas
+          label={`∂Gσ/∂x · σ = ${sigma.toFixed(1)}`}
+          image={dog.dx}
+        />
+
+        <LabCanvas
+          label={`∂Gσ/∂y · σ = ${sigma.toFixed(1)}`}
+          image={dog.dy}
+        />
+
+        <LabCanvas
+          label={`|∇(Gσ * I)| · σ = ${sigma.toFixed(1)}`}
+          image={dog.magnitude}
+        />
+      </section>
+
+      <section className="s7b-compare panel">
+        <div className="sectionEyebrow">
+          SCALE SPACE · FINE → COARSE
+        </div>
+
+        <h2>What disappears as σ becomes larger?</h2>
+
+        <div className="s7c-scaleCards s7b-operatorCards">
+          {multiScale.map((item) => (
+            <article
+              key={item.sigma}
+              className={sigma === item.sigma ? "active" : ""}
+              onClick={() => setSigma(item.sigma)}
+            >
+              <div className="s7b-cardTitle">
+                <b>σ = {item.sigma}</b>
+                <span>
+                  {item.sigma === 0.5
+                    ? "FINE"
+                    : item.sigma === 1
+                    ? "SMALL"
+                    : item.sigma === 2
+                    ? "MEDIUM"
+                    : "COARSE"}
+                </span>
+              </div>
+
+              <LabCanvas
+                label={`SMOOTHED · σ = ${item.sigma}`}
+                image={normalizeForDisplay(item.image)}
+              />
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="s7b-second panel">
+        <div className="sectionEyebrow">
+          DERIVATIVE OF GAUSSIAN
+        </div>
+
+        <h2>Differentiate after smoothing — or smooth the derivative</h2>
+
+        <p>
+          The derivative can be moved through convolution:
+        </p>
+
+        <div className="s7b-math">
+          <code>
+            ∂/∂x (Gσ * I) = (∂Gσ/∂x) * I
+          </code>
+        </div>
+
+        <p>
+          This means we can use a derivative-of-Gaussian kernel
+          directly on the original image.
+        </p>
+
+        <div className="s7a-pixelGrid">
+          <div>
+            <span>σ</span>
+            <b>{sigma.toFixed(1)}</b>
+          </div>
+          <div>
+            <span>PIXEL X</span>
+            <b>{x}</b>
+          </div>
+          <div>
+            <span>PIXEL Y</span>
+            <b>{y}</b>
+          </div>
+          <div>
+            <span>IMAGE VALUE</span>
+            <b>{image.data[selectedPixel]?.toFixed(2)}</b>
+          </div>
+        </div>
+      </section>
+
+      <section className="s7b-noise panel">
+        <div className="sectionEyebrow">
+          LAPLACIAN OF GAUSSIAN · MULTI-SCALE
+        </div>
+
+        <h2>Which scale responds most strongly?</h2>
+
+        <p>
+          LoG combines Gaussian smoothing with a second derivative.
+          Changing σ changes which structures are emphasized.
+        </p>
+
+        <div className="s7c-logCards s7b-operatorCards">
+          {logResponses.map((item) => (
+            <article
+              key={item.sigma}
+              className={sigma === item.sigma ? "active" : ""}
+              onClick={() => setSigma(item.sigma)}
+            >
+              <div className="s7b-cardTitle">
+                <b>LoG · σ = {item.sigma}</b>
+                <span>SECOND DERIVATIVE</span>
+              </div>
+
+              <LabCanvas
+                label={`LoG RESPONSE · σ = ${item.sigma}`}
+                image={item.response}
+              />
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="s7b-math panel">
+        <div className="sectionEyebrow">THE MATHEMATICS</div>
+
+        <h2>Scale space in four equations</h2>
+
+        <div className="s7b-equationGrid">
+          <div>
+            <code>
+              Iσ = Gσ * I
+            </code>
+            <span>
+              Create a smoothed image at scale σ.
+            </span>
+          </div>
+
+          <div>
+            <code>
+              Gσ(x,y) = 1/(2πσ²)e^(-(x²+y²)/(2σ²))
+            </code>
+            <span>
+              Larger σ spreads the Gaussian over a wider neighbourhood.
+            </span>
+          </div>
+
+          <div>
+            <code>
+              ∂(Gσ * I)/∂x = (∂Gσ/∂x) * I
+            </code>
+            <span>
+              Smoothing and differentiation can be combined into one
+              derivative-of-Gaussian filter.
+            </span>
+          </div>
+
+          <div>
+            <code>
+              LoGσ = ∇²Gσ
+            </code>
+            <span>
+              The Laplacian of Gaussian detects second-order structure
+              at a chosen scale.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section className="s7b-verification panel">
+        <div className="sectionEyebrow">
+          GROUP C VERIFICATION
+        </div>
+
+        <div className="s7a-checkGrid">
+          {verification.map((item, index) => (
+            <div key={item.label}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <b>{item.label}</b>
+              <strong>{item.pass ? "PASS" : "REVIEW"}</strong>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="s7b-next panel">
+        <div className="sectionEyebrow">
+          GROUP C → GROUP D
+        </div>
+
+        <h2>Next: Canny + Hough</h2>
+
+        <p>
+          Scale space tells us how image structures change with
+          smoothing. Group D will turn these ideas into a complete
+          Canny edge detector and then use edge evidence to detect
+          geometric lines with the Hough transform.
+        </p>
+      </section>
+    </>
+  );
+}
+
 export default function Sprint7Page() {
-  const [group, setGroup] = useState<"A" | "B">("B");
-  return <main className="s7-page"><section className="s7-groupSwitcher panel"><div><div className="sectionEyebrow">SPRINT 7 · DERIVATIVES + EDGES + SCALE</div><h2>Choose the experiment</h2><p>Group A established derivatives. Group B turns those derivatives into edge detectors.</p></div><div className="s7-groupButtons"><button className={group === "A" ? "active" : ""} onClick={() => setGroup("A")}>A · Derivatives + Gradients</button><button className={group === "B" ? "active" : ""} onClick={() => setGroup("B")}>B · Edge Detection</button></div></section>{group === "A" ? <GroupA /> : <GroupB />}</main>;
+  const [group, setGroup] = useState<"A" | "B" | "C">("A");
+  return <main className="s7-page"><section className="s7-groupSwitcher panel"><div><div className="sectionEyebrow">SPRINT 7 · DERIVATIVES + EDGES + SCALE</div><h2>Choose the experiment</h2><p>Group A established derivatives. Group B turns those derivatives into edge detectors. Group C studies how structures change across scale.</p></div><div className="s7-groupButtons"><button className={group === "A" ? "active" : ""} onClick={() => setGroup("A")}>A · Derivatives + Gradients</button><button className={group === "B" ? "active" : ""} onClick={() => setGroup("B")}>B · Edge Detection</button><button className={group === "C" ? "active" : ""} onClick={() => setGroup("C")}>C · Scale Space</button></div></section>{group === "A" ? <GroupA /> : group === "B" ? <GroupB /> : <GroupC />}</main>;
 }
