@@ -13,6 +13,7 @@ import {
 } from "../cornerMath";
 import type { GrayImage } from "../imageScenes";
 import { normalizeForDisplay } from "../math";
+import { navigateTo } from "../navigation";
 
 type CornerScene =
   | "shapes"
@@ -256,6 +257,7 @@ function TensorCard({
 }
 
 export default function Sprint8Page() {
+  const [group] = useState<"A">("A");
   const [
     sceneName,
     setSceneName,
@@ -333,6 +335,59 @@ export default function Sprint8Page() {
 
   return (
     <main className="s8-page">
+      <section className="s7-groupSwitcher panel">
+        <div>
+          <div className="sectionEyebrow">
+            SPRINT 8 · CORNERS + BLOBS + SIFT
+          </div>
+
+          <h2>
+            Choose the experiment
+          </h2>
+
+          <p>
+            Group A builds corner reasoning from the
+            structure tensor. Group B moves from
+            corners to blobs and scale-space features.
+            Groups C and D will complete the SIFT and
+            feature-matching path.
+          </p>
+        </div>
+
+        <div className="s7-groupButtons">
+          <button
+            className={group === "A" ? "active" : ""}
+            onClick={() =>
+              navigateTo("/learn/sprint-8")
+            }
+          >
+            A · Harris + Structure Tensor
+          </button>
+
+          <button
+            onClick={() =>
+              navigateTo(
+                "/learn/sprint-8/group-b",
+              )
+            }
+          >
+            B · Shi-Tomasi + Blobs + LoG/DoG
+          </button>
+
+          <button
+            disabled
+          >
+            C · SIFT Construction
+          </button>
+
+          <button
+            disabled
+          >
+            D · Feature Matching
+          </button>
+        </div>
+      </section>
+
       <section className="s8-hero panel">
         <div>
           <div className="sectionEyebrow">
