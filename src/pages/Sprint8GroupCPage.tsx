@@ -320,7 +320,13 @@ export default function Sprint8GroupCPage() {
             C · SIFT Construction
           </button>
 
-          <button disabled>
+          <button
+            onClick={() =>
+              navigateTo(
+                "/learn/sprint-8/group-d",
+              )
+            }
+          >
             D · Feature Matching
           </button>
         </div>

@@ -385,7 +385,11 @@ export default function Sprint8Page() {
           </button>
 
           <button
-            disabled
+            onClick={() =>
+              navigateTo(
+                "/learn/sprint-8/group-d",
+              )
+            }
           >
             D · Feature Matching
           </button>
