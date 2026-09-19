@@ -8566,3 +8566,498 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ============================================================
+   Sprint 8 Group C — SIFT Construction visual refinement
+   ============================================================ */
+
+.s8c-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-bottom: 48px;
+}
+
+.s8c-page .panel {
+  box-sizing: border-box;
+}
+
+.s8c-hero {
+  padding: 28px 30px;
+}
+
+.s8c-hero h1 {
+  margin: 6px 0 10px;
+  font-size: clamp(2rem, 4vw, 3.25rem);
+  line-height: 1.05;
+}
+
+.s8c-hero p {
+  max-width: 900px;
+  line-height: 1.65;
+}
+
+.s8c-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.s8c-flow span,
+.s8c-flow b {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 11px;
+  border: 1px solid var(--border, #303840);
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.s8c-flow b {
+  border-color: rgba(90, 180, 255, 0.45);
+}
+
+.s8c-pipeline {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.s8c-pipeline > * {
+  min-width: 0;
+}
+
+.s8c-twoCol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+
+.s8c-panel {
+  padding: 22px;
+}
+
+.s8c-panel h2 {
+  margin: 5px 0 12px;
+  line-height: 1.2;
+}
+
+.s8c-equation {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 14px 0 18px;
+  padding: 12px 16px;
+  border: 1px solid rgba(90, 180, 255, 0.25);
+  border-radius: 9px;
+  text-align: center;
+  overflow-x: auto;
+}
+
+.s8c-scaleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+  align-items: start;
+}
+
+.s8c-canvasWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 7px;
+  min-width: 0;
+}
+
+.s8c-canvasLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  opacity: 0.82;
+}
+
+.s8c-canvas {
+  display: block;
+  width: 100%;
+  max-width: 260px;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  image-rendering: auto;
+  border-radius: 7px;
+}
+
+.s8c-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.s8c-metric {
+  min-width: 0;
+  padding: 10px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.s8c-metric span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.72rem;
+  opacity: 0.68;
+}
+
+.s8c-metric b {
+  display: block;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.s8c-note,
+.s8c-takeaway {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  line-height: 1.55;
+}
+
+.s8c-takeaway {
+  margin-top: 18px;
+}
+
+.s8c-histogram {
+  display: grid;
+  grid-template-columns: repeat(36, minmax(2px, 1fr));
+  align-items: end;
+  gap: 2px;
+  min-height: 150px;
+  margin-top: 18px;
+  padding: 14px 10px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9px;
+}
+
+.s8c-histogram > * {
+  min-width: 0;
+}
+
+.s8c-miniBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  min-height: 110px;
+}
+
+.s8c-vector {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 16px;
+}
+
+.s8c-vector > * {
+  min-width: 0;
+}
+
+.s8c-descriptorLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(260px, 0.95fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 18px;
+}
+
+.s8c-cellGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.s8c-descriptorCell {
+  min-height: 76px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 8px;
+}
+
+.s8c-descriptorSummary {
+  padding: 16px;
+  border: 1px solid rgba(90, 180, 255, 0.2);
+  border-radius: 10px;
+}
+
+.s8c-verification {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.s8c-verificationItem {
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9px;
+}
+
+.s8c-verificationItem span {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.s8c-verificationItem b {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1050px) {
+  .s8c-pipeline {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .s8c-scaleGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s8c-descriptorLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .s8c-hero,
+  .s8c-panel {
+    padding: 18px;
+  }
+
+  .s8c-twoCol,
+  .s8c-scaleGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s8c-pipeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s8c-verification {
+    grid-template-columns: 1fr;
+  }
+
+  .s8c-canvas {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .s8c-pipeline {
+    grid-template-columns: 1fr;
+  }
+
+  .s8c-flow {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .s8c-vector {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+/* ============================================================
+   Sprint 8 Group C — consistent card spacing
+   ============================================================ */
+
+.s8c-page > .panel,
+.s8c-page > section.panel {
+  margin-bottom: 18px;
+}
+
+.s8c-page > .panel:last-child,
+.s8c-page > section.panel:last-child {
+  margin-bottom: 0;
+}
+
+.s8c-twoCol {
+  column-gap: 20px;
+  row-gap: 20px;
+}
+
+.s8c-twoCol > .s8c-panel,
+.s8c-twoCol > .panel {
+  margin: 0;
+}
+
+.s8c-scaleGrid {
+  column-gap: 18px;
+  row-gap: 18px;
+}
+
+.s8c-scaleGrid > * {
+  margin: 0;
+}
+
+.s8c-verification {
+  column-gap: 14px;
+  row-gap: 14px;
+}
+
+.s8c-descriptorLayout {
+  column-gap: 20px;
+  row-gap: 20px;
+}
+
+.s8c-pipeline {
+  column-gap: 10px;
+  row-gap: 10px;
+}
+
+/* Keep nested cards from inheriting inconsistent outer spacing. */
+.s8c-panel .s8c-panel {
+  margin-bottom: 0;
+}
+
+/* ============================================================
+   Sprint 8 Group C — orientation histogram bars
+   ============================================================ */
+
+.s8c-histogram {
+  height: 150px;
+  min-height: 150px;
+  box-sizing: border-box;
+  align-items: end;
+}
+
+.s8c-bar {
+  display: block;
+  width: 100%;
+  min-height: 3px;
+  align-self: end;
+  border-radius: 3px 3px 1px 1px;
+  background: rgba(99, 179, 237, 0.72);
+}
+
+.s8c-bar.active {
+  background: #f8fafc;
+}
+
+/* ============================================================
+   Sprint 8 Group C — descriptor cell visualizations
+   ============================================================ */
+
+.s8c-equationStack {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  line-height: 1.55;
+}
+
+.s8c-equationStack > div {
+  text-align: center;
+}
+
+.s8c-cellGrid {
+  align-items: stretch;
+}
+
+.s8c-descriptorCell {
+  min-height: 86px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.s8c-descriptorCell > span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.s8c-miniBars {
+  height: 48px;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  align-items: end;
+  gap: 3px;
+  padding: 4px 2px 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.s8c-miniBars i {
+  display: block;
+  width: 100%;
+  min-height: 2px;
+  align-self: end;
+  border-radius: 2px 2px 0 0;
+  background: rgba(99, 179, 237, 0.78);
+}
+
+.s8c-vector {
+  display: block;
+  margin-top: 16px;
+}
+
+.s8c-vectorTitle {
+  margin-bottom: 9px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #63b3ed;
+}
+
+.s8c-vectorGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.s8c-vectorValue {
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.s8c-vectorValue span {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.66rem;
+  opacity: 0.62;
+}
+
+.s8c-vectorValue b {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .s8c-cellGrid {
+    gap: 7px;
+  }
+
+  .s8c-descriptorCell {
+    min-height: 78px;
+  }
+
+  .s8c-miniBars {
+    height: 40px;
+    min-height: 40px;
+  }
+
+  .s8c-vectorGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

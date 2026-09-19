@@ -375,7 +375,11 @@ export default function Sprint8Page() {
           </button>
 
           <button
-            disabled
+            onClick={() =>
+              navigateTo(
+                "/learn/sprint-8/group-c",
+              )
+            }
           >
             C · SIFT Construction
           </button>

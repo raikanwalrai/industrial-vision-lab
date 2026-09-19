@@ -371,7 +371,13 @@ export default function Sprint8GroupBPage() {
             B · Shi-Tomasi + Blobs + LoG/DoG
           </button>
 
-          <button disabled>
+          <button
+            onClick={() =>
+              navigateTo(
+                "/learn/sprint-8/group-c",
+              )
+            }
+          >
             C · SIFT Construction
           </button>
 
