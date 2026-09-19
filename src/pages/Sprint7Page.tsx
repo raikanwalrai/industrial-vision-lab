@@ -4,6 +4,26 @@ import { normalizeForDisplay } from "../math";
 import { derivativeDisplayImages, derivativePixel, verifyConstantImageDerivatives, verifyRampDerivative, type DerivativeMethod } from "../derivativeMath";
 import { edgeDisplayImage, edgePixel, edgeResponse, noiseAmplificationExperiment, thresholdEdges, verifyConstantEdges, verifyHorizontalStep, verifyLoGKernel, verifyNoiseAmplification, verifyZeroCrossingStep, zeroCrossingEdges, type EdgeOperator } from "../edgeDetectionMath";
 import { SCALE_VALUES, derivativeOfGaussianDisplay, gaussianSmooth, scaleSpace, verifyDerivativeKernelSums, verifyDerivativeOfGaussian, verifyGaussianKernel, verifyGaussianSmoothing } from "../scaleSpaceMath";
+import {
+  accumulateDualityVotes,
+  createDualityDataset,
+  findDualityPeaks,
+  lineFromRhoTheta,
+  pointToSinusoid,
+  type DualityPoint,
+} from "../houghDualityMath";
+import {
+  cannyEdgeDetection,
+  houghAccumulatorDisplay,
+  houghTransform,
+  lineToEndpoints,
+  verifyCannyStep,
+  verifyHoughAccumulator,
+  verifyHoughVerticalLine,
+  verifyHysteresis,
+  verifyNmsStep,
+} from "../cannyHoughMath";
+
 
 type ImageLike = { width: number; height: number; data: Float32Array };
 
@@ -116,6 +136,1127 @@ function GroupB() {
   </>;
 }
 
+
+function HoughLineCanvas({
+  image,
+  lines,
+}: {
+  image: ImageLike;
+  lines: Array<{ rho: number; theta: number; votes: number }>;
+}) {
+  const ref = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+
+    drawGray(canvas, image);
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const scaleX = canvas.width / image.width;
+    const scaleY = canvas.height / image.height;
+
+    ctx.save();
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+
+    for (const line of lines) {
+      const endpoints = lineToEndpoints(
+        line,
+        image.width,
+        image.height
+      );
+
+      if (!endpoints) continue;
+
+      ctx.beginPath();
+      ctx.moveTo(
+        endpoints.x1 * scaleX,
+        endpoints.y1 * scaleY
+      );
+      ctx.lineTo(
+        endpoints.x2 * scaleX,
+        endpoints.y2 * scaleY
+      );
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }, [image, lines]);
+
+  return (
+    <div className="s7a-imageCard">
+      <div className="s7a-imageLabel">
+        DETECTED HOUGH LINES
+      </div>
+      <canvas
+        ref={ref}
+        className="s7a-canvas"
+      />
+    </div>
+  );
+}
+
+
+function DualityImagePlot({
+  points,
+  showLines,
+}: {
+  points: DualityPoint[];
+  showLines: boolean;
+}) {
+  const width = 500;
+  const height = 320;
+  const margin = 42;
+  const min = -100;
+  const max = 100;
+
+  const sx = (x: number) =>
+    margin +
+    ((x - min) / (max - min)) *
+      (width - 2 * margin);
+
+  const sy = (y: number) =>
+    height -
+    margin -
+    ((y - min) / (max - min)) *
+      (height - 2 * margin);
+
+  const peaks = findDualityPeaks(points, 3);
+
+  return (
+    <div className="s7d-dualityPlot">
+      <div className="s7d-plotTitle">
+        IMAGE SPACE · POINTS
+      </div>
+
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="s7d-dualitySvg"
+      >
+        <line
+          x1={margin}
+          y1={height - margin}
+          x2={width - margin}
+          y2={height - margin}
+          className="s7d-axis"
+        />
+
+        <line
+          x1={margin}
+          y1={margin}
+          x2={margin}
+          y2={height - margin}
+          className="s7d-axis"
+        />
+
+        <text
+          x={width - margin + 8}
+          y={height - margin + 4}
+          className="s7d-axisLabel"
+        >
+          x
+        </text>
+
+        <text
+          x={margin - 22}
+          y={margin - 8}
+          className="s7d-axisLabel"
+        >
+          y
+        </text>
+
+        {showLines &&
+          peaks.slice(0, 2).map((peak, index) => {
+            const line = lineFromRhoTheta(
+              peak.rho,
+              peak.theta,
+              150
+            );
+
+            return (
+              <line
+                key={`dual-line-${index}`}
+                x1={sx(line.x1)}
+                y1={sy(line.y1)}
+                x2={sx(line.x2)}
+                y2={sy(line.y2)}
+                className="s7d-dualityDetectedLine"
+              />
+            );
+          })}
+
+        {points.map((point, index) => (
+          <circle
+            key={`${point.x}-${point.y}-${index}`}
+            cx={sx(point.x)}
+            cy={sy(point.y)}
+            r={index < 12 ? 4 : 2.5}
+            className={
+              index < 12
+                ? `s7d-dualityPoint s7d-dualityPoint-${index % 12}`
+                : "s7d-dualityNoise"
+            }
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+function DualityHoughPlot({
+  points,
+}: {
+  points: DualityPoint[];
+}) {
+  const width = 620;
+  const height = 320;
+  const margin = 48;
+  const rhoMin = -160;
+  const rhoMax = 160;
+
+  const tx = (theta: number) =>
+    margin +
+    (theta / Math.PI) *
+      (width - 2 * margin);
+
+  const ty = (rho: number) =>
+    height -
+    margin -
+    ((rho - rhoMin) /
+      (rhoMax - rhoMin)) *
+      (height - 2 * margin);
+
+  const curves = points
+    .slice(0, 12)
+    .map((point) =>
+      pointToSinusoid(point, 120)
+    );
+
+  const peaks = findDualityPeaks(
+    points,
+    3
+  );
+
+  return (
+    <div className="s7d-dualityPlot s7d-houghCurvePlot">
+      <div className="s7d-plotTitle">
+        HOUGH SPACE · ρ(θ)
+      </div>
+
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        className="s7d-dualitySvg"
+      >
+        <line
+          x1={margin}
+          y1={height - margin}
+          x2={width - margin}
+          y2={height - margin}
+          className="s7d-axis"
+        />
+
+        <line
+          x1={margin}
+          y1={margin}
+          x2={margin}
+          y2={height - margin}
+          className="s7d-axis"
+        />
+
+        <text
+          x={width - margin + 8}
+          y={height - margin + 4}
+          className="s7d-axisLabel"
+        >
+          θ →
+        </text>
+
+        <text
+          x={margin - 28}
+          y={margin - 8}
+          className="s7d-axisLabel"
+        >
+          ρ
+        </text>
+
+        <text
+          x={margin - 5}
+          y={height - margin + 20}
+          className="s7d-tick"
+        >
+          0°
+        </text>
+
+        <text
+          x={width - margin - 20}
+          y={height - margin + 20}
+          className="s7d-tick"
+        >
+          180°
+        </text>
+
+        {curves.map((curve, index) => {
+          const path = curve.values
+            .map(
+              (value) =>
+                `${tx(value.theta)},${ty(
+                  value.rho
+                )}`
+            )
+            .join(" ");
+
+          return (
+            <polyline
+              key={`${curve.point.x}-${curve.point.y}-${index}`}
+              points={path}
+              className={`s7d-dualityCurve s7d-dualityCurve-${index % 12}`}
+            />
+          );
+        })}
+
+        {peaks.slice(0, 4).map(
+          (peak, index) => (
+            <g
+              key={`dual-peak-${index}`}
+            >
+              <circle
+                cx={tx(peak.theta)}
+                cy={ty(peak.rho)}
+                r={index === 0 ? 6 : 4}
+                className="s7d-dualityPeak"
+              />
+
+              <text
+                x={tx(peak.theta) + 9}
+                y={ty(peak.rho) - 8}
+                className="s7d-peakLabel"
+              >
+                {peak.votes} votes
+              </text>
+            </g>
+          )
+        )}
+      </svg>
+    </div>
+  );
+}
+
+function GroupD() {
+  const [sceneName, setSceneName] = useState("shapes");
+  const [sigma, setSigma] = useState(1);
+  const [lowThreshold, setLowThreshold] = useState(30);
+  const [highThreshold, setHighThreshold] = useState(70);
+  const [peakThreshold, setPeakThreshold] = useState(40);
+  const [thetaStep, setThetaStep] = useState(2);
+
+  const [dualityMode, setDualityMode] =
+    useState<
+      "one" |
+      "two" |
+      "collinear" |
+      "twoLines" |
+      "noisy"
+    >("collinear");
+
+  const dualityDataset = useMemo(
+    () => createDualityDataset(dualityMode),
+    [dualityMode]
+  );
+
+  const dualityPeaks = useMemo(
+    () =>
+      findDualityPeaks(
+        dualityDataset.points,
+        3
+      ),
+    [dualityDataset]
+  );
+
+  const dualityAccumulator =
+    useMemo(
+      () =>
+        accumulateDualityVotes(
+          dualityDataset.points,
+          180,
+          160,
+          -160,
+          160
+        ),
+      [dualityDataset]
+    );
+
+  const image = useMemo(
+    () => makeScene(sceneName),
+    [sceneName]
+  );
+
+  const canny = useMemo(
+    () =>
+      cannyEdgeDetection(
+        image,
+        sigma,
+        lowThreshold,
+        highThreshold
+      ),
+    [
+      image,
+      sigma,
+      lowThreshold,
+      highThreshold,
+    ]
+  );
+
+  const hough = useMemo(
+    () =>
+      houghTransform(
+        canny.edges,
+        thetaStep,
+        peakThreshold,
+        8
+      ),
+    [
+      canny.edges,
+      thetaStep,
+      peakThreshold,
+    ]
+  );
+
+  const verification = [
+    {
+      label: "Non-Maximum Suppression keeps local maxima",
+      pass: verifyNmsStep(),
+    },
+    {
+      label: "Hysteresis follows connected weak edges",
+      pass: verifyHysteresis(),
+    },
+    {
+      label: "Canny detects a synthetic step edge",
+      pass: verifyCannyStep(),
+    },
+    {
+      label: "Hough detects a vertical line",
+      pass: verifyHoughVerticalLine(),
+    },
+    {
+      label: "Hough accumulator produces a line peak",
+      pass: verifyHoughAccumulator(),
+    },
+  ];
+
+  return (
+    <>
+      <section className="s7d-hero">
+        <div className="sectionEyebrow">
+          SPRINT 7 · GROUP D
+        </div>
+
+        <h1>Canny + Hough Laboratory</h1>
+
+        <p>
+          Build a complete edge detector from gradients, then
+          transform edge pixels into geometric line evidence using
+          the Hough transform.
+        </p>
+
+        <div className="s7a-meta">
+          <span className="statusPill statusCurrent">
+            ● CURRENT
+          </span>
+          <span>Canny edge detection</span>
+          <span>Non-Maximum Suppression</span>
+          <span>Hysteresis</span>
+          <span>Hough lines</span>
+        </div>
+      </section>
+
+      <section className="s7a-roadmap panel">
+        <div className="sectionEyebrow">
+          GROUP D LEARNING PATH
+        </div>
+
+        <div className="s7a-flow">
+          <span>IMAGE</span>
+          <b>→</b>
+          <span>SMOOTH</span>
+          <b>→</b>
+          <span>GRADIENT</span>
+          <b>→</b>
+          <span>NMS</span>
+          <b>→</b>
+          <span>HYSTERESIS</span>
+          <b>→</b>
+          <span>HOUGH</span>
+        </div>
+      </section>
+
+      <section className="s7d-controls panel">
+        <div>
+          <div className="sectionEyebrow">
+            CANNY CONTROLS
+          </div>
+
+          <h2>Build the edge detector</h2>
+
+          <p>
+            Change one parameter at a time and observe how the
+            Canny pipeline changes.
+          </p>
+        </div>
+
+        <label>
+          IMAGE
+          <select
+            value={sceneName}
+            onChange={(e) =>
+              setSceneName(e.target.value)
+            }
+          >
+            <option value="step">Step edge</option>
+            <option value="ramp">
+              Horizontal ramp
+            </option>
+            <option value="checker">
+              Checkerboard
+            </option>
+            <option value="corner">Corner</option>
+            <option value="shapes">
+              Synthetic scene
+            </option>
+            <option value="noisy">
+              Noisy scene
+            </option>
+            <option value="constant">
+              Constant image
+            </option>
+          </select>
+        </label>
+
+        <label className="s7d-slider">
+          GAUSSIAN σ
+          <input
+            type="range"
+            min={0.5}
+            max={4}
+            step={0.5}
+            value={sigma}
+            onChange={(e) =>
+              setSigma(Number(e.target.value))
+            }
+          />
+          <b>{sigma.toFixed(1)}</b>
+        </label>
+
+        <label className="s7d-slider">
+          LOW THRESHOLD
+          <input
+            type="range"
+            min={1}
+            max={150}
+            value={lowThreshold}
+            onChange={(e) =>
+              setLowThreshold(
+                Math.min(
+                  Number(e.target.value),
+                  highThreshold
+                )
+              )
+            }
+          />
+          <b>{lowThreshold}</b>
+        </label>
+
+        <label className="s7d-slider">
+          HIGH THRESHOLD
+          <input
+            type="range"
+            min={1}
+            max={200}
+            value={highThreshold}
+            onChange={(e) =>
+              setHighThreshold(
+                Math.max(
+                  Number(e.target.value),
+                  lowThreshold
+                )
+              )
+            }
+          />
+          <b>{highThreshold}</b>
+        </label>
+      </section>
+
+      <section className="s7d-stage panel">
+        <div className="sectionEyebrow">
+          CANNY · STAGE BY STAGE
+        </div>
+
+        <h2>Watch the edge detector being constructed</h2>
+
+        <div className="s7d-grid">
+          <LabCanvas
+            label="1 · GAUSSIAN SMOOTHED"
+            image={normalizeForDisplay(
+              canny.smoothed
+            )}
+          />
+
+          <LabCanvas
+            label="2 · GRADIENT MAGNITUDE"
+            image={normalizeForDisplay(
+              canny.magnitude
+            )}
+          />
+
+          <LabCanvas
+            label="3 · NON-MAXIMUM SUPPRESSION"
+            image={normalizeForDisplay(
+              canny.nms
+            )}
+          />
+
+          <LabCanvas
+            label="4 · STRONG EDGES"
+            image={canny.strong}
+          />
+
+          <LabCanvas
+            label="5 · WEAK EDGES"
+            image={canny.weak}
+          />
+
+          <LabCanvas
+            label="6 · FINAL CANNY EDGES"
+            image={canny.edges}
+          />
+        </div>
+      </section>
+
+      <section className="s7d-explanation panel">
+        <div className="sectionEyebrow">
+          WHY EACH STEP EXISTS
+        </div>
+
+        <div className="s7d-stepCards">
+          <article>
+            <b>01 · SMOOTH</b>
+            <span>
+              Gaussian filtering reduces noise before
+              differentiation.
+            </span>
+          </article>
+
+          <article>
+            <b>02 · GRADIENT</b>
+            <span>
+              Sobel derivatives estimate intensity change
+              and edge direction.
+            </span>
+          </article>
+
+          <article>
+            <b>03 · NMS</b>
+            <span>
+              Keep only the strongest response along the
+              gradient direction.
+            </span>
+          </article>
+
+          <article>
+            <b>04 · THRESHOLD</b>
+            <span>
+              Separate strong evidence from weak candidate
+              edges.
+            </span>
+          </article>
+
+          <article>
+            <b>05 · HYSTERESIS</b>
+            <span>
+              Keep weak edges only when they connect to
+              strong edges.
+            </span>
+          </article>
+        </div>
+      </section>
+
+      <section className="s7d-duality panel">
+        <div className="sectionEyebrow">
+          HOUGH DUALITY · FROM POINTS TO PARAMETER SPACE
+        </div>
+
+        <h2>
+          Why does one image point become a curve?
+        </h2>
+
+        <p className="s7d-dualityIntro">
+          The Hough transform changes the question.
+          Instead of asking which line passes through a
+          pixel, we let every possible line vote for itself.
+          For one point <strong>(x, y)</strong>, changing
+          <strong> θ</strong> traces the sinusoid
+          <strong>
+            {" "}ρ(θ) = x cos θ + y sin θ
+          </strong>.
+          Points belonging to the same line produce curves
+          that meet at the same parameter-space location.
+        </p>
+
+        <div className="s7d-dualityModes">
+          <button
+            className={
+              dualityMode === "one"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setDualityMode("one")
+            }
+          >
+            1 POINT
+          </button>
+
+          <button
+            className={
+              dualityMode === "two"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setDualityMode("two")
+            }
+          >
+            2 POINTS
+          </button>
+
+          <button
+            className={
+              dualityMode === "collinear"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setDualityMode("collinear")
+            }
+          >
+            5 COLLINEAR
+          </button>
+
+          <button
+            className={
+              dualityMode === "twoLines"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setDualityMode("twoLines")
+            }
+          >
+            2 LINES
+          </button>
+
+          <button
+            className={
+              dualityMode === "noisy"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setDualityMode("noisy")
+            }
+          >
+            NOISE + CLUTTER
+          </button>
+        </div>
+
+        <div className="s7d-dualityGrid">
+          <DualityImagePlot
+            points={dualityDataset.points}
+            showLines={
+              dualityMode !== "one"
+            }
+          />
+
+          <DualityHoughPlot
+            points={dualityDataset.points}
+          />
+        </div>
+
+        <div className="s7d-dualityEquation">
+          <code>
+            ρ = x cos θ + y sin θ
+          </code>
+
+          <span>
+            One image-space point generates many possible
+            lines. In Hough space those possibilities form
+            one sinusoidal curve.
+          </span>
+        </div>
+
+        <div className="s7d-dualitySteps">
+          <article>
+            <b>01 · POINT</b>
+            <span>
+              A pixel fixes x and y.
+            </span>
+          </article>
+
+          <article>
+            <b>02 · VARY θ</b>
+            <span>
+              Every orientation gives one possible line.
+            </span>
+          </article>
+
+          <article>
+            <b>03 · TRACE ρ</b>
+            <span>
+              The point becomes a curve in parameter space.
+            </span>
+          </article>
+
+          <article>
+            <b>04 · INTERSECT</b>
+            <span>
+              Collinear points create a common Hough peak.
+            </span>
+          </article>
+
+          <article>
+            <b>05 · VOTE</b>
+            <span>
+              The strongest peak becomes a candidate line.
+            </span>
+          </article>
+        </div>
+
+        <div className="s7d-dualitySummary">
+          <div>
+            <span>POINTS</span>
+            <b>
+              {dualityDataset.points.length}
+            </b>
+          </div>
+
+          <div>
+            <span>STRONGEST PEAK</span>
+            <b>
+              {dualityPeaks[0]?.votes ?? 0}
+              {" "}votes
+            </b>
+          </div>
+
+          <div>
+            <span>PEAK θ</span>
+            <b>
+              {dualityPeaks[0]
+                ? `${(
+                    (dualityPeaks[0].theta *
+                      180) /
+                    Math.PI
+                  ).toFixed(1)}°`
+                : "—"}
+            </b>
+          </div>
+
+          <div>
+            <span>PEAK ρ</span>
+            <b>
+              {dualityPeaks[0]
+                ? dualityPeaks[0].rho.toFixed(1)
+                : "—"}
+            </b>
+          </div>
+
+          <div>
+            <span>PARAMETER BINS</span>
+            <b>
+              {dualityAccumulator.rhoValues.length}
+              {" × "}
+              {dualityAccumulator.thetaValues.length}
+            </b>
+          </div>
+        </div>
+
+        <div className="s7d-dualityTakeaway">
+          <b>KEY IDEA</b>
+
+          <span>
+            Image space:
+            {" "}
+            <strong>
+              points vote for lines.
+            </strong>
+            {" "}
+            Hough space:
+            {" "}
+            <strong>
+              curves intersect where many points
+              support the same line.
+            </strong>
+          </span>
+        </div>
+      </section>
+
+      <section className="s7d-houghControls panel">
+        <div>
+          <div className="sectionEyebrow">
+            HOUGH TRANSFORM
+          </div>
+
+          <h2>Turn edge pixels into line votes</h2>
+
+          <p>
+            Every Canny edge pixel votes for all lines that
+            could pass through it.
+          </p>
+        </div>
+
+        <label className="s7d-slider">
+          PEAK THRESHOLD
+          <input
+            type="range"
+            min={5}
+            max={200}
+            value={peakThreshold}
+            onChange={(e) =>
+              setPeakThreshold(
+                Number(e.target.value)
+              )
+            }
+          />
+          <b>{peakThreshold}</b>
+        </label>
+
+        <label className="s7d-slider">
+          θ STEP
+          <input
+            type="range"
+            min={1}
+            max={10}
+            step={1}
+            value={thetaStep}
+            onChange={(e) =>
+              setThetaStep(
+                Number(e.target.value)
+              )
+            }
+          />
+          <b>{thetaStep}°</b>
+        </label>
+      </section>
+
+      <section className="s7d-hough panel">
+        <div className="sectionEyebrow">
+          HOUGH · FROM PIXELS TO GEOMETRY
+        </div>
+
+        <div className="s7d-houghGrid">
+          <LabCanvas
+            label="CANNY EDGE PIXELS"
+            image={canny.edges}
+          />
+
+          <LabCanvas
+            label="HOUGH ACCUMULATOR · ρ × θ"
+            image={houghAccumulatorDisplay(
+              hough
+            )}
+          />
+
+          <HoughLineCanvas
+            image={normalizeForDisplay(image)}
+            lines={hough.lines}
+          />
+        </div>
+
+        <div className="s7d-equation">
+          <code>
+            ρ = x cos(θ) + y sin(θ)
+          </code>
+
+          <span>
+            A single edge pixel becomes a sinusoidal vote
+            curve in parameter space. Where many curves
+            intersect, many pixels support the same line.
+          </span>
+        </div>
+      </section>
+
+      <section className="s7d-lines panel">
+        <div className="sectionEyebrow">
+          DETECTED LINES
+        </div>
+
+        <h2>
+          Hough accumulator peaks
+        </h2>
+
+        {hough.lines.length === 0 ? (
+          <div className="s7d-empty">
+            No lines currently exceed the peak threshold.
+            Lower the threshold to inspect weaker geometric
+            evidence.
+          </div>
+        ) : (
+          <div className="s7d-lineGrid">
+            {hough.lines.map((line, index) => (
+              <div key={`${line.rho}-${line.theta}`}>
+                <span>
+                  LINE {String(index + 1).padStart(2, "0")}
+                </span>
+
+                <b>
+                  ρ = {line.rho.toFixed(1)}
+                </b>
+
+                <b>
+                  θ ={" "}
+                  {(
+                    (line.theta * 180) /
+                    Math.PI
+                  ).toFixed(1)}
+                  °
+                </b>
+
+                <small>
+                  votes = {line.votes}
+                </small>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="s7d-math panel">
+        <div className="sectionEyebrow">
+          THE MATHEMATICS
+        </div>
+
+        <h2>
+          Canny and Hough in equations
+        </h2>
+
+        <div className="s7d-equationGrid">
+          <div>
+            <code>
+              M = √(Iₓ² + Iᵧ²)
+            </code>
+            <span>
+              Gradient magnitude measures edge strength.
+            </span>
+          </div>
+
+          <div>
+            <code>
+              θ = atan2(Iᵧ, Iₓ)
+            </code>
+            <span>
+              Gradient orientation determines the direction
+              used by NMS.
+            </span>
+          </div>
+
+          <div>
+            <code>
+              NMS → local maximum along θ
+            </code>
+            <span>
+              Thick gradient responses become thin candidate
+              edges.
+            </span>
+          </div>
+
+          <div>
+            <code>
+              weak → keep if connected to strong
+            </code>
+            <span>
+              Hysteresis removes isolated weak responses.
+            </span>
+          </div>
+
+          <div>
+            <code>
+              ρ = x cos θ + y sin θ
+            </code>
+            <span>
+              Hough transforms image coordinates into line
+              parameter space.
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section className="s7d-verification panel">
+        <div className="sectionEyebrow">
+          GROUP D VERIFICATION
+        </div>
+
+        <div className="s7a-checkGrid">
+          {verification.map(
+            (item, index) => (
+              <div key={item.label}>
+                <span>
+                  {String(index + 1).padStart(
+                    2,
+                    "0"
+                  )}
+                </span>
+
+                <b>{item.label}</b>
+
+                <strong>
+                  {item.pass
+                    ? "PASS"
+                    : "REVIEW"}
+                </strong>
+              </div>
+            )
+          )}
+        </div>
+      </section>
+
+      <section className="s7d-industrial panel">
+        <div className="sectionEyebrow">
+          INDUSTRIAL VISION CONNECTION
+        </div>
+
+        <h2>
+          Why Canny + Hough matters
+        </h2>
+
+        <p>
+          Canny produces clean geometric evidence. Hough
+          converts that evidence into explicit geometric
+          structures such as rails, pipes, machine edges,
+          alignment boundaries, and structural lines.
+        </p>
+      </section>
+
+      <section className="s7d-complete panel">
+        <div className="sectionEyebrow">
+          SPRINT 7 COMPLETE
+        </div>
+
+        <h2>
+          Derivatives → Edges → Scale → Geometry
+        </h2>
+
+        <p>
+          Sprint 7 now connects first derivatives,
+          second derivatives, scale space, Canny edge
+          detection, and Hough geometric reasoning into
+          one progression.
+        </p>
+      </section>
+    </>
+  );
+}
 
 function GroupC() {
   const [sceneName, setSceneName] = useState("shapes");
@@ -526,6 +1667,6 @@ function GroupC() {
 }
 
 export default function Sprint7Page() {
-  const [group, setGroup] = useState<"A" | "B" | "C">("A");
-  return <main className="s7-page"><section className="s7-groupSwitcher panel"><div><div className="sectionEyebrow">SPRINT 7 · DERIVATIVES + EDGES + SCALE</div><h2>Choose the experiment</h2><p>Group A established derivatives. Group B turns those derivatives into edge detectors. Group C studies how structures change across scale.</p></div><div className="s7-groupButtons"><button className={group === "A" ? "active" : ""} onClick={() => setGroup("A")}>A · Derivatives + Gradients</button><button className={group === "B" ? "active" : ""} onClick={() => setGroup("B")}>B · Edge Detection</button><button className={group === "C" ? "active" : ""} onClick={() => setGroup("C")}>C · Scale Space</button></div></section>{group === "A" ? <GroupA /> : group === "B" ? <GroupB /> : <GroupC />}</main>;
+  const [group, setGroup] = useState<"A" | "B" | "C" | "D">("A");
+  return <main className="s7-page"><section className="s7-groupSwitcher panel"><div><div className="sectionEyebrow">SPRINT 7 · DERIVATIVES + EDGES + SCALE</div><h2>Choose the experiment</h2><p>Group A established derivatives. Group B turns those derivatives into edge detectors. Group C studies how structures change across scale.</p></div><div className="s7-groupButtons"><button className={group === "A" ? "active" : ""} onClick={() => setGroup("A")}>A · Derivatives + Gradients</button><button className={group === "B" ? "active" : ""} onClick={() => setGroup("B")}>B · Edge Detection</button><button className={group === "C" ? "active" : ""} onClick={() => setGroup("C")}>C · Scale Space</button><button className={group === "D" ? "active" : ""} onClick={() => setGroup("D")}>D · Canny + Hough</button></div></section>{group === "A" ? <GroupA /> : group === "B" ? <GroupB /> : group === "C" ? <GroupC /> : <GroupD />}</main>;
 }

@@ -6801,3 +6801,1014 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   SPRINT 7 — GROUP D
+   Canny + Hough Laboratory
+   ============================================================ */
+
+.s7d-hero {
+  margin-bottom: 18px;
+}
+
+.s7d-controls {
+  display: grid;
+  grid-template-columns: 1.5fr repeat(4, minmax(130px, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.s7d-controls > div:first-child {
+  min-width: 0;
+}
+
+.s7d-controls label,
+.s7d-houghControls label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.s7d-controls select {
+  width: 100%;
+}
+
+.s7d-slider input {
+  width: 100%;
+}
+
+.s7d-slider b {
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+.s7d-stage,
+.s7d-hough,
+.s7d-explanation,
+.s7d-houghControls,
+.s7d-lines,
+.s7d-math,
+.s7d-verification,
+.s7d-industrial,
+.s7d-complete {
+  margin-top: 14px;
+}
+
+.s7d-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.s7d-grid .s7a-imageCard,
+.s7d-houghGrid .s7a-imageCard {
+  min-width: 0;
+  box-sizing: border-box;
+  background: #080a0c;
+  border: 1px solid rgba(145, 185, 220, .32);
+  border-radius: 7px;
+  padding: 7px;
+}
+
+.s7d-grid .s7a-canvas,
+.s7d-houghGrid .s7a-canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.s7d-stepCards {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.s7d-stepCards article {
+  border: 1px solid rgba(145, 185, 220, .25);
+  border-radius: 7px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.s7d-stepCards b {
+  font-size: 11px;
+  letter-spacing: .05em;
+}
+
+.s7d-stepCards span {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.s7d-houghControls {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr;
+  gap: 18px;
+  align-items: end;
+}
+
+.s7d-houghGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.s7d-equation {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(145, 185, 220, .22);
+  border-radius: 7px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.s7d-equation code {
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.s7d-equation span {
+  line-height: 1.5;
+}
+
+.s7d-lineGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.s7d-lineGrid > div {
+  border: 1px solid rgba(145, 185, 220, .25);
+  border-radius: 7px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.s7d-lineGrid span {
+  font-size: 10px;
+  letter-spacing: .06em;
+}
+
+.s7d-lineGrid b {
+  font-size: 13px;
+}
+
+.s7d-lineGrid small {
+  opacity: .7;
+}
+
+.s7d-empty {
+  margin-top: 14px;
+  padding: 18px;
+  border: 1px dashed rgba(145, 185, 220, .3);
+  border-radius: 7px;
+}
+
+.s7d-equationGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.s7d-equationGrid > div {
+  border: 1px solid rgba(145, 185, 220, .25);
+  border-radius: 7px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.s7d-equationGrid code {
+  display: block;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.s7d-equationGrid span {
+  font-size: 11px;
+  line-height: 1.45;
+  opacity: .8;
+}
+
+.s7d-industrial p,
+.s7d-complete p {
+  max-width: 850px;
+  line-height: 1.6;
+}
+
+@media (max-width: 1000px) {
+  .s7d-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s7d-controls > div:first-child,
+  .s7d-houghControls > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .s7d-grid,
+  .s7d-houghGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s7d-stepCards,
+  .s7d-equationGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s7d-lineGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s7d-houghControls {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .s7d-controls,
+  .s7d-grid,
+  .s7d-houghControls,
+  .s7d-houghGrid,
+  .s7d-stepCards,
+  .s7d-lineGrid,
+  .s7d-equationGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s7d-equation {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ============================================================
+   GROUP D — Hough parameter-space presentation
+   ============================================================ */
+
+.s7d-houghGrid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(420px, 2fr);
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 14px;
+}
+
+.s7d-houghGrid > :nth-child(1) {
+  grid-column: 1;
+}
+
+.s7d-houghGrid > :nth-child(2) {
+  grid-column: 2;
+}
+
+/* Detected-line overlay gets the full row. */
+.s7d-houghGrid > :nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+/* The accumulator is parameter space, not a square image. */
+.s7d-houghGrid > :nth-child(2) .s7a-canvas {
+  aspect-ratio: auto;
+  width: 100%;
+  height: 420px;
+  object-fit: fill;
+}
+
+/* Keep the edge image compact and square. */
+.s7d-houghGrid > :nth-child(1) .s7a-canvas {
+  aspect-ratio: 1;
+}
+
+/* Detected-line overlay gets a wider landscape presentation. */
+.s7d-houghGrid > :nth-child(3) .s7a-canvas {
+  aspect-ratio: 2 / 1;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Make the parameter-space card visually prominent. */
+.s7d-houghGrid > :nth-child(2) {
+  border-color: rgba(145, 185, 220, .45);
+}
+
+/* Small explanatory axis labels. */
+.s7d-houghGrid > :nth-child(2)::after {
+  content: "ρ ↓   |   θ →";
+  display: block;
+  margin-top: 7px;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: .08em;
+  opacity: .7;
+}
+
+@media (max-width: 900px) {
+  .s7d-houghGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s7d-houghGrid > :nth-child(1),
+  .s7d-houghGrid > :nth-child(2),
+  .s7d-houghGrid > :nth-child(3) {
+    grid-column: auto;
+  }
+
+  .s7d-houghGrid > :nth-child(2) .s7a-canvas {
+    height: auto;
+    aspect-ratio: 2 / 1;
+  }
+}
+
+/* ============================================================
+   GROUP D — CANNY CONTROLS FINAL LAYOUT
+   ============================================================ */
+
+.s7d-controls {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.25fr) repeat(4, minmax(140px, 1fr));
+  gap: 18px;
+  align-items: end;
+}
+
+.s7d-controls > div:first-child {
+  min-width: 0;
+  padding-right: 8px;
+}
+
+.s7d-controls > label {
+  min-width: 0;
+}
+
+.s7d-controls select {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.s7d-controls .s7d-slider {
+  min-width: 0;
+}
+
+.s7d-controls .s7d-slider input[type="range"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: block;
+}
+
+.s7d-controls .s7d-slider b {
+  display: block;
+  margin-top: 5px;
+}
+
+/* Prevent labels and controls from visually colliding. */
+.s7d-controls label {
+  overflow: hidden;
+}
+
+.s7d-controls label:first-line {
+  white-space: nowrap;
+}
+
+/* Medium screens: put the description across the top,
+   then four controls in one clean row. */
+@media (max-width: 1100px) {
+  .s7d-controls {
+    grid-template-columns: repeat(4, minmax(140px, 1fr));
+    gap: 16px;
+  }
+
+  .s7d-controls > div:first-child {
+    grid-column: 1 / -1;
+    padding-right: 0;
+  }
+}
+
+/* Smaller screens: two controls per row. */
+@media (max-width: 760px) {
+  .s7d-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s7d-controls > div:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Mobile: one control per row. */
+@media (max-width: 520px) {
+  .s7d-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .s7d-controls > div:first-child {
+    grid-column: auto;
+  }
+}
+
+/* =========================================================
+   Sprint 7 Group D — Hough Duality Laboratory
+   Image-space points and Hough-space curves share colours.
+   ========================================================= */
+
+.s7d-duality {
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.s7d-dualityIntro {
+  max-width: 1050px;
+  color: #aeb9c1;
+  line-height: 1.65;
+}
+
+.s7d-dualityModes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.s7d-dualityModes button {
+  border: 1px solid #3b4a55;
+  border-radius: 7px;
+  background: #11181d;
+  color: #cbd5db;
+  padding: 9px 13px;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  cursor: pointer;
+}
+
+.s7d-dualityModes button:hover {
+  border-color: #4da3ff;
+  color: #f4f8fb;
+  background: #17232b;
+}
+
+.s7d-dualityModes button.active {
+  border-color: #28a9ff;
+  background: #12324a;
+  color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(40,169,255,.2),
+              0 0 18px rgba(40,169,255,.12);
+}
+
+.s7d-dualityGrid {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.15fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.s7d-dualityPlot {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid #33434f;
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(24,55,72,.20), transparent 60%),
+    #0b1115;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.015);
+}
+
+.s7d-houghCurvePlot {
+  background:
+    radial-gradient(circle at 50% 45%, rgba(26,54,72,.24), transparent 62%),
+    #091015;
+}
+
+.s7d-plotTitle {
+  margin-bottom: 8px;
+  color: #55c7ff;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.s7d-dualitySvg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 300px;
+  overflow: visible;
+}
+
+/* Axes */
+
+.s7d-dualitySvg .s7d-axis {
+  stroke: #aab8c2;
+  stroke-width: 1.4;
+  opacity: .9;
+}
+
+.s7d-dualitySvg .s7d-axisLabel {
+  fill: #e5edf2;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.s7d-dualitySvg .s7d-tick {
+  fill: #8fa0aa;
+  font-size: 11px;
+}
+
+/* Add a subtle plot field behind the mathematical objects. */
+
+.s7d-dualityPlot::after {
+  content: "";
+  display: block;
+  height: 0;
+}
+
+/* Source points */
+
+.s7d-dualityPoint {
+  stroke: #ffffff;
+  stroke-width: 1.8;
+  paint-order: stroke;
+  filter: drop-shadow(0 0 5px currentColor);
+}
+
+/*
+ * The same palette is deliberately used for:
+ *
+ *   point 0 <-> curve 0
+ *   point 1 <-> curve 1
+ *   ...
+ */
+
+.s7d-dualityPoint-0,
+.s7d-dualityCurve-0 {
+  color: #ff4d5a;
+}
+
+.s7d-dualityPoint-1,
+.s7d-dualityCurve-1 {
+  color: #35d39a;
+}
+
+.s7d-dualityPoint-2,
+.s7d-dualityCurve-2 {
+  color: #ffd166;
+}
+
+.s7d-dualityPoint-3,
+.s7d-dualityCurve-3 {
+  color: #5ab0ff;
+}
+
+.s7d-dualityPoint-4,
+.s7d-dualityCurve-4 {
+  color: #c77dff;
+}
+
+.s7d-dualityPoint-5,
+.s7d-dualityCurve-5 {
+  color: #ff9f43;
+}
+
+.s7d-dualityPoint-6,
+.s7d-dualityCurve-6 {
+  color: #2dd4bf;
+}
+
+.s7d-dualityPoint-7,
+.s7d-dualityCurve-7 {
+  color: #f472b6;
+}
+
+.s7d-dualityPoint-8,
+.s7d-dualityCurve-8 {
+  color: #a3e635;
+}
+
+.s7d-dualityPoint-9,
+.s7d-dualityCurve-9 {
+  color: #60a5fa;
+}
+
+.s7d-dualityPoint-10,
+.s7d-dualityCurve-10 {
+  color: #fb7185;
+}
+
+.s7d-dualityPoint-11,
+.s7d-dualityCurve-11 {
+  color: #a78bfa;
+}
+
+/*
+ * SVG fill/stroke explicitly use currentColor.
+ * This is important because an SVG circle/polyline does not
+ * automatically become visible merely because CSS 'color' exists.
+ */
+
+.s7d-dualityPoint[class*="s7d-dualityPoint-"] {
+  fill: currentColor;
+}
+
+.s7d-dualityCurve[class*="s7d-dualityCurve-"] {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .88;
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+/* Noise/clutter points */
+
+.s7d-dualityNoise {
+  fill: #64727c;
+  stroke: #aab6bd;
+  stroke-width: .8;
+  opacity: .42;
+}
+
+/* Detected supporting lines in image space */
+
+.s7d-dualityDetectedLine {
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  stroke-dasharray: 7 5;
+  opacity: .72;
+}
+
+/* Hough-space peaks */
+
+.s7d-dualityPeak {
+  fill: #ffffff;
+  stroke: #ffcc33;
+  stroke-width: 2;
+  filter:
+    drop-shadow(0 0 4px #ffcc33)
+    drop-shadow(0 0 9px rgba(255,204,51,.7));
+}
+
+.s7d-peakLabel {
+  fill: #ffe28a;
+  font-size: 11px;
+  font-weight: 900;
+  paint-order: stroke;
+  stroke: #091015;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* Equation */
+
+.s7d-dualityEquation {
+  margin-top: 16px;
+  padding: 17px 20px;
+  border: 1px solid #334b59;
+  border-radius: 10px;
+  background: #0d171d;
+  color: #ffd166;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 1.08rem;
+  font-weight: 800;
+}
+
+/* Explanation cards */
+
+.s7d-dualitySteps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.s7d-dualitySteps > div {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid #33434f;
+  border-radius: 9px;
+  background: #0d151a;
+}
+
+.s7d-dualitySteps strong,
+.s7d-dualitySteps b {
+  color: #f1f5f7;
+}
+
+.s7d-dualitySteps p {
+  margin: 7px 0 0;
+  color: #9eabb4;
+  font-size: .78rem;
+  line-height: 1.5;
+}
+
+/* Summary */
+
+.s7d-dualitySummary {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin-top: 16px;
+  border: 1px solid #33434f;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #0b1217;
+}
+
+.s7d-dualitySummary > div {
+  padding: 14px 10px;
+  text-align: center;
+  border-right: 1px solid #263640;
+}
+
+.s7d-dualitySummary > div:last-child {
+  border-right: 0;
+}
+
+.s7d-dualitySummary small {
+  display: block;
+  color: #82929d;
+  font-size: .65rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.s7d-dualitySummary strong {
+  display: block;
+  margin-top: 6px;
+  color: #55c7ff;
+  font-size: 1rem;
+}
+
+/* Key takeaway */
+
+.s7d-dualityTakeaway {
+  margin-top: 16px;
+  padding: 16px 20px;
+  border: 1px solid #3d5260;
+  border-radius: 10px;
+  background: #0d171d;
+  color: #d6e0e5;
+  line-height: 1.6;
+}
+
+.s7d-dualityTakeaway strong {
+  color: #ffd166;
+}
+
+/* Responsive */
+
+@media (max-width: 1050px) {
+  .s7d-dualityGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s7d-dualitySteps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .s7d-dualityModes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s7d-dualitySteps {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .s7d-dualitySummary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .s7d-dualitySummary > div:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .s7d-dualitySvg {
+    min-height: 240px;
+  }
+}
+
+@media (max-width: 520px) {
+  .s7d-dualityModes {
+    grid-template-columns: 1fr;
+  }
+
+  .s7d-dualitySteps,
+  .s7d-dualitySummary {
+    grid-template-columns: 1fr;
+  }
+
+  .s7d-dualitySummary > div {
+    border-right: 0;
+    border-bottom: 1px solid #263640;
+  }
+
+  .s7d-dualitySummary > div:last-child {
+    border-bottom: 0;
+  }
+}
+
+/* =========================================================
+   Sprint 7 Group D — Hough Duality
+   Layout refinement for equation, teaching steps and metrics
+   ========================================================= */
+
+/* Equation: formula on the left, explanation on the right */
+
+.s7d-dualityEquation {
+  display: grid;
+  grid-template-columns: minmax(180px, .38fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  text-align: left;
+}
+
+.s7d-dualityEquation code {
+  display: block;
+  color: #ffd166;
+  font-size: 1.12rem;
+  font-weight: 900;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.s7d-dualityEquation span {
+  display: block;
+  padding-left: 24px;
+  border-left: 1px solid #43545f;
+  color: #c2cdd3;
+  font-family: inherit;
+  font-size: .82rem;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+/* Five conceptual teaching steps */
+
+.s7d-dualitySteps > article {
+  min-width: 0;
+  min-height: 105px;
+  padding: 16px 15px;
+  border: 1px solid #33434f;
+  border-radius: 9px;
+  background: #0d151a;
+}
+
+.s7d-dualitySteps > article b {
+  display: block;
+  margin-bottom: 12px;
+  color: #55c7ff;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  line-height: 1.25;
+}
+
+.s7d-dualitySteps > article span {
+  display: block;
+  color: #aebbc3;
+  font-size: .76rem;
+  line-height: 1.55;
+}
+
+/* Give each conceptual step a small visual identity */
+
+.s7d-dualitySteps > article:nth-child(1) {
+  border-top: 2px solid #55c7ff;
+}
+
+.s7d-dualitySteps > article:nth-child(2) {
+  border-top: 2px solid #35d39a;
+}
+
+.s7d-dualitySteps > article:nth-child(2) b {
+  color: #35d39a;
+}
+
+.s7d-dualitySteps > article:nth-child(3) {
+  border-top: 2px solid #ffd166;
+}
+
+.s7d-dualitySteps > article:nth-child(3) b {
+  color: #ffd166;
+}
+
+.s7d-dualitySteps > article:nth-child(4) {
+  border-top: 2px solid #ff5c66;
+}
+
+.s7d-dualitySteps > article:nth-child(4) b {
+  color: #ff6871;
+}
+
+.s7d-dualitySteps > article:nth-child(5) {
+  border-top: 2px solid #c77dff;
+}
+
+.s7d-dualitySteps > article:nth-child(5) b {
+  color: #c77dff;
+}
+
+/* Summary metrics */
+
+.s7d-dualitySummary > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 76px;
+}
+
+.s7d-dualitySummary > div > span {
+  display: block;
+  color: #82929d;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.s7d-dualitySummary > div > b {
+  display: block;
+  margin-top: 8px;
+  color: #55c7ff;
+  font-size: .95rem;
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  word-break: break-word;
+}
+
+/* Keep the key takeaway internally separated */
+
+.s7d-dualityTakeaway {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+}
+
+.s7d-dualityTakeaway > b {
+  display: block;
+  padding-right: 18px;
+  border-right: 1px solid #43545f;
+  color: #ffd166;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: .07em;
+  white-space: nowrap;
+}
+
+.s7d-dualityTakeaway > span {
+  display: block;
+  color: #c8d3d9;
+  font-size: .8rem;
+  line-height: 1.55;
+}
+
+/* Responsive refinement */
+
+@media (max-width: 760px) {
+  .s7d-dualityEquation {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .s7d-dualityEquation span {
+    padding-left: 0;
+    padding-top: 12px;
+    border-left: 0;
+    border-top: 1px solid #43545f;
+  }
+
+  .s7d-dualitySteps > article {
+    min-height: 90px;
+  }
+
+  .s7d-dualityTakeaway {
+    grid-template-columns: 1fr;
+  }
+
+  .s7d-dualityTakeaway > b {
+    padding-right: 0;
+    padding-bottom: 8px;
+    border-right: 0;
+    border-bottom: 1px solid #43545f;
+  }
+}
