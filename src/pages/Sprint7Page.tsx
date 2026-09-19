@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { makeScene } from "../imageScenes";
 import { normalizeForDisplay } from "../math";
 import { derivativeDisplayImages, derivativePixel, verifyConstantImageDerivatives, verifyRampDerivative, type DerivativeMethod } from "../derivativeMath";
-import { edgeDisplayImage, edgePixel, edgeResponse, thresholdEdges, verifyConstantEdges, verifyHorizontalStep, verifyLoGKernel, type EdgeOperator } from "../edgeDetectionMath";
+import { edgeDisplayImage, edgePixel, edgeResponse, noiseAmplificationExperiment, thresholdEdges, verifyConstantEdges, verifyHorizontalStep, verifyLoGKernel, verifyNoiseAmplification, verifyZeroCrossingStep, zeroCrossingEdges, type EdgeOperator } from "../edgeDetectionMath";
 
 type ImageLike = { width: number; height: number; data: Float32Array };
 
@@ -54,11 +54,31 @@ function GroupB() {
   const [sceneName, setSceneName] = useState("step");
   const [sigma, setSigma] = useState(1);
   const [threshold, setThreshold] = useState(40);
+  const [zeroThreshold, setZeroThreshold] = useState(5);
+  const [noiseSigma, setNoiseSigma] = useState(18);
   const [x, setX] = useState(128), [y, setY] = useState(128);
   const image = useMemo(() => makeScene(sceneName), [sceneName]);
   const response = useMemo(() => edgeResponse(image, operator, sigma), [image, operator, sigma]);
   const responseDisplay = useMemo(() => edgeDisplayImage(image, operator, sigma), [image, operator, sigma]);
   const edgeMap = useMemo(() => thresholdEdges(response, threshold), [response, threshold]);
+  // Zero crossings require a signed second-derivative response.
+  const secondDerivativeOperator: EdgeOperator =
+    operator === "log" ? "log" : "laplacian";
+
+  const secondDerivativeResponse = useMemo(
+    () => edgeResponse(image, secondDerivativeOperator, sigma),
+    [image, secondDerivativeOperator, sigma]
+  );
+
+  const zeroCrossings = useMemo(
+    () => zeroCrossingEdges(secondDerivativeResponse, zeroThreshold),
+    [secondDerivativeResponse, zeroThreshold]
+  );
+  const noiseExperiment = useMemo(() => noiseAmplificationExperiment(noiseSigma, 42), [noiseSigma]);
+  const noiseDifferenceDisplay = useMemo(() => normalizeForDisplay(noiseExperiment.difference), [noiseExperiment.difference]);
+
+
+
   const sourceDisplay = useMemo(() => normalizeForDisplay(image), [image]);
   const pixel = useMemo(() => edgePixel(image, x, y, operator, sigma), [image, x, y, operator, sigma]);
   const operators: { id: EdgeOperator; label: string; detail: string }[] = [
@@ -72,12 +92,20 @@ function GroupB() {
     { label: "Constant image → no edge response", pass: verifyConstantEdges() },
     { label: "Horizontal step → Sobel detects transition", pass: verifyHorizontalStep() },
     { label: "LoG kernel sums to approximately zero", pass: verifyLoGKernel() },
+    { label: "Laplacian step -> zero crossing exists", pass: verifyZeroCrossingStep() },
+    { label: "First difference -> noise variance approx 2x", pass: verifyNoiseAmplification() },
+    { label: "Laplacian step -> zero crossing exists", pass: verifyZeroCrossingStep() },
+    { label: "First difference -> noise variance approx 2x", pass: verifyNoiseAmplification() },
   ];
   return <>
     <section className="s7b-hero"><div className="sectionEyebrow">SPRINT 7 · GROUP B</div><h1>Edge Detection</h1><p>Turn the derivative idea into practical edge operators. Compare first-derivative detectors with second-derivative methods and see exactly where edges appear.</p><div className="s7a-meta"><span className="statusPill statusCurrent">● CURRENT</span><span>Roberts</span><span>Prewitt</span><span>Sobel</span><span>Laplacian</span><span>LoG</span></div></section>
     <section className="s7b-roadmap panel"><div className="sectionEyebrow">GROUP B LEARNING PATH</div><div className="s7b-flow"><span>INTENSITY</span><b>→</b><span>DERIVATIVE</span><b>→</b><span>EDGE RESPONSE</span><b>→</b><span>THRESHOLD</span><b>→</b><span>EDGE MAP</span></div></section>
     <section className="s7b-controls panel"><div><div className="sectionEyebrow">EDGE LAB CONTROLS</div><h2>Choose an image and edge operator</h2><p>Keep the scene fixed and change only the operator. For LoG, change σ to see how smoothing changes which structures survive.</p></div><div className="s7b-controlField"><label>IMAGE<select value={sceneName} onChange={e => setSceneName(e.target.value)}><option value="step">Step edge</option><option value="ramp">Horizontal ramp</option><option value="checker">Checkerboard</option><option value="corner">Corner</option><option value="shapes">Synthetic scene</option><option value="noisy">Noisy scene</option><option value="constant">Constant image</option></select></label></div><div className="s7b-controlField"><label>EDGE OPERATOR</label><div className="s7b-operatorButtons">{operators.map(op => <button key={op.id} className={operator === op.id ? "active" : ""} onClick={() => setOperator(op.id)}>{op.label}</button>)}</div></div><div className="s7b-parameterStack">{operator === "log" && <label className="s7b-slider">SIGMA<input type="range" min={0.5} max={2} step={0.5} value={sigma} onChange={e => setSigma(Number(e.target.value))}/><b>{sigma.toFixed(1)}</b></label>}<label className="s7b-slider">THRESHOLD<input type="range" min={0} max={150} step={5} value={threshold} onChange={e => setThreshold(Number(e.target.value))}/><b>{threshold}</b></label></div></section>
     <section className="s7b-mainGrid"><div className="s7a-imageCard"><div className="s7a-imageLabel">INPUT IMAGE · CLICK TO PROBE</div><canvas className="s7a-canvas s7a-clickable" ref={node => { if (!node) return; drawGray(node, sourceDisplay); node.onpointerdown = e => { const r = node.getBoundingClientRect(); setX(Math.max(0, Math.min(node.width - 1, Math.round(((e.clientX - r.left) / r.width) * (node.width - 1))))); setY(Math.max(0, Math.min(node.height - 1, Math.round(((e.clientY - r.top) / r.height) * (node.height - 1))))); }; }} /><div className="s7a-coordinate">Selected pixel: ({x}, {y})</div></div><LabCanvas label={`${operators.find(o => o.id === operator)?.label} · RAW RESPONSE`} image={responseDisplay}/><LabCanvas label="THRESHOLDED EDGE MAP" image={edgeMap}/></section>
+    <section className="s7b-second panel"><div><div className="sectionEyebrow">SECOND-DERIVATIVE ANALYSIS</div><h2>Zero crossings reveal sign changes</h2><p>Zero crossings are computed from a signed second-derivative response. Laplacian is used for Roberts, Prewitt, and Sobel selections; LoG is used when LoG is selected.</p></div><div className="s7b-secondControls"><label>ZERO-CROSSING THRESHOLD<input type="range" min={0} max={50} step={1} value={zeroThreshold} onChange={e => setZeroThreshold(Number(e.target.value))}/><b>{zeroThreshold}</b></label></div><LabCanvas label={`${secondDerivativeOperator === "log" ? "LoG" : "LAPLACIAN"} · ZERO-CROSSING MAP`} image={zeroCrossings}/></section>
+    <section className="s7b-noise panel"><div className="sectionEyebrow">NOISE + DIFFERENTIATION</div><h2>Why smoothing matters before differentiation</h2><p>For independent noise with variance sigma-squared, a simple difference n2-n1 has variance 2 sigma-squared. This controlled experiment makes that amplification visible.</p><label>INPUT NOISE σ<input type="range" min={2} max={40} step={2} value={noiseSigma} onChange={e => setNoiseSigma(Number(e.target.value))}/><b>{noiseSigma}</b></label><div className="s7b-noiseGrid"><LabCanvas label="NOISY CONSTANT IMAGE" image={noiseExperiment.noisy}/><LabCanvas label="FIRST DIFFERENCE RESPONSE" image={noiseDifferenceDisplay}/><div className="s7b-noiseMetrics"><div><span>INPUT VARIANCE</span><b>{noiseExperiment.inputVariance.toFixed(2)}</b></div><div><span>DERIVATIVE VARIANCE</span><b>{noiseExperiment.derivativeVariance.toFixed(2)}</b></div><div><span>MEASURED RATIO</span><b>{noiseExperiment.varianceRatio.toFixed(2)}x</b></div><div><span>THEORY</span><b>{noiseExperiment.expectedRatio.toFixed(0)}x</b></div></div></div></section>
+
+
     <section className="s7b-compare panel"><div className="sectionEyebrow">OPERATOR COMPARISON</div><h2>What changes when the edge operator changes?</h2><div className="s7b-operatorCards">{operators.map(op => <article key={op.id} className={operator === op.id ? "active" : ""} onClick={() => setOperator(op.id)}><div className="s7b-cardTitle"><b>{op.label}</b><span>{op.id === "laplacian" || op.id === "log" ? "2nd order" : "1st order"}</span></div><p>{op.detail}</p></article>)}</div></section>
     <section className="s7b-math panel"><div className="sectionEyebrow">THE MATHEMATICS</div><h2>Five operators, two main ideas</h2><div className="s7b-equationGrid"><div><code>G = √(Gx² + Gy²)</code><span>Roberts, Prewitt and Sobel combine directional first derivatives.</span></div><div><code>∇²I = Ixx + Iyy</code><span>The Laplacian measures second-order change in both directions.</span></div><div><code>LoG(I) = ∇²(Gσ * I)</code><span>LoG smooths first, then applies the Laplacian.</span></div><div><code>|R(x,y)| ≥ T</code><span>Thresholding converts a response into a binary edge map.</span></div></div></section>
     <section className="s7b-pixel panel"><div className="sectionEyebrow">PIXEL-BY-PIXEL INSPECTOR</div><h2>What did {operators.find(o => o.id === operator)?.label} do at ({x}, {y})?</h2><p>Inspect the raw response before thresholding. Positive and negative second-derivative responses are meaningful even when the display is normalized.</p><div className="s7a-pixelGrid"><div><span>INPUT</span><b>{pixel.input.toFixed(2)}</b></div><div><span>RESPONSE</span><b>{pixel.response.toFixed(4)}</b></div><div><span>|RESPONSE|</span><b>{pixel.absolute.toFixed(4)}</b></div><div><span>THRESHOLD</span><b>{threshold}</b></div><div><span>EDGE?</span><b>{pixel.absolute >= threshold ? "YES" : "NO"}</b></div></div></section>
