@@ -2,116 +2,92 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { makeScene } from "../imageScenes";
 import { normalizeForDisplay } from "../math";
 import { derivativeDisplayImages, derivativePixel, verifyConstantImageDerivatives, verifyRampDerivative, type DerivativeMethod } from "../derivativeMath";
+import { edgeDisplayImage, edgePixel, edgeResponse, thresholdEdges, verifyConstantEdges, verifyHorizontalStep, verifyLoGKernel, type EdgeOperator } from "../edgeDetectionMath";
 
-type ImageLike={width:number;height:number;data:Float32Array};
+type ImageLike = { width: number; height: number; data: Float32Array };
 
-function drawGray(canvas:HTMLCanvasElement|null,image:ImageLike){
-  if(!canvas)return;
-  canvas.width=image.width; canvas.height=image.height;
-  const ctx=canvas.getContext("2d"); if(!ctx)return;
-  const id=ctx.createImageData(image.width,image.height);
-  for(let i=0;i<image.data.length;i++){
-    const v=Math.max(0,Math.min(255,Math.round(image.data[i])));
-    id.data[i*4]=v; id.data[i*4+1]=v; id.data[i*4+2]=v; id.data[i*4+3]=255;
+function drawGray(canvas: HTMLCanvasElement | null, image: ImageLike) {
+  if (!canvas) return;
+  canvas.width = image.width; canvas.height = image.height;
+  const ctx = canvas.getContext("2d"); if (!ctx) return;
+  const id = ctx.createImageData(image.width, image.height);
+  for (let i = 0; i < image.data.length; i++) {
+    const v = Math.max(0, Math.min(255, Math.round(image.data[i])));
+    id.data[i * 4] = v; id.data[i * 4 + 1] = v; id.data[i * 4 + 2] = v; id.data[i * 4 + 3] = 255;
   }
-  ctx.putImageData(id,0,0);
+  ctx.putImageData(id, 0, 0);
 }
 
-function LabCanvas({label,image}:{label:string;image:ImageLike}){
-  const ref=useRef<HTMLCanvasElement>(null);
-  useEffect(()=>drawGray(ref.current,image),[image]);
-  return <div className="s7a-imageCard"><div className="s7a-imageLabel">{label}</div><canvas ref={ref} className="s7a-canvas"/></div>;
+function LabCanvas({ label, image }: { label: string; image: ImageLike }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => drawGray(ref.current, image), [image]);
+  return <div className="s7a-imageCard"><div className="s7a-imageLabel">{label}</div><canvas ref={ref} className="s7a-canvas" /></div>;
 }
 
-export default function Sprint7Page(){
-  const [method,setMethod]=useState<DerivativeMethod>("central");
-  const [sceneName,setSceneName]=useState("step");
-  const [x,setX]=useState(128),[y,setY]=useState(128);
-  const image=useMemo(()=>makeScene(sceneName),[sceneName]);
-  const display=useMemo(()=>derivativeDisplayImages(image,method),[image,method]);
-  const pixel=useMemo(()=>derivativePixel(image,x,y,method),[image,x,y,method]);
-  const sourceDisplay=useMemo(()=>normalizeForDisplay(image),[image]);
-  const verification=[
-    {label:"Constant image → zero derivatives",pass:verifyConstantImageDerivatives()},
-    {label:"Horizontal ramp → Ix ≈ 1, Iy ≈ 0",pass:verifyRampDerivative()},
+function GroupA() {
+  const [method, setMethod] = useState<DerivativeMethod>("central");
+  const [sceneName, setSceneName] = useState("step");
+  const [x, setX] = useState(128), [y, setY] = useState(128);
+  const image = useMemo(() => makeScene(sceneName), [sceneName]);
+  const display = useMemo(() => derivativeDisplayImages(image, method), [image, method]);
+  const pixel = useMemo(() => derivativePixel(image, x, y, method), [image, x, y, method]);
+  const sourceDisplay = useMemo(() => normalizeForDisplay(image), [image]);
+  const verification = [
+    { label: "Constant image → zero derivatives", pass: verifyConstantImageDerivatives() },
+    { label: "Horizontal ramp → Ix ≈ 1, Iy ≈ 0", pass: verifyRampDerivative() },
   ];
+  return <>
+    <section className="s7a-hero"><div className="sectionEyebrow">SPRINT 7 · GROUP A</div><h1>Derivatives &amp; Gradients</h1><p>An edge is a place where image intensity changes rapidly. This laboratory turns that idea into numbers.</p><div className="s7a-meta"><span className="statusPill statusCurrent">● COMPLETE</span><span>First derivatives</span><span>Gradient magnitude</span><span>Gradient orientation</span></div></section>
+    <section className="s7a-roadmap panel"><div className="sectionEyebrow">GROUP A LEARNING PATH</div><div className="s7a-flow"><span>IMAGE</span><b>→</b><span>CHANGE IN X</span><b>→</b><span>CHANGE IN Y</span><b>→</b><span>GRADIENT</span><b>→</b><span>EDGE EVIDENCE</span></div></section>
+    <section className="s7a-controls panel"><div><div className="sectionEyebrow">EXPERIMENT CONTROLS</div><h2>Change the scene and derivative operator</h2><p>Central difference shows the finite-difference idea. Sobel adds weighted smoothing while measuring directional change.</p></div><label>IMAGE<select value={sceneName} onChange={e => setSceneName(e.target.value)}><option value="step">Step edge</option><option value="ramp">Horizontal ramp</option><option value="checker">Checkerboard</option><option value="corner">Corner</option><option value="shapes">Synthetic scene</option><option value="noisy">Noisy scene</option><option value="constant">Constant image</option></select></label><div className="s7a-methodButtons"><button className={method === "central" ? "active" : ""} onClick={() => setMethod("central")}>Central Difference</button><button className={method === "sobel" ? "active" : ""} onClick={() => setMethod("sobel")}>Sobel</button></div></section>
+    <section className="s7a-mainGrid"><div className="s7a-imageCard"><div className="s7a-imageLabel">INPUT IMAGE · CLICK TO PROBE</div><canvas className="s7a-canvas s7a-clickable" ref={node => { if (!node) return; drawGray(node, sourceDisplay); node.onpointerdown = e => { const r = node.getBoundingClientRect(); setX(Math.max(0, Math.min(node.width - 1, Math.round(((e.clientX - r.left) / r.width) * (node.width - 1))))); setY(Math.max(0, Math.min(node.height - 1, Math.round(((e.clientY - r.top) / r.height) * (node.height - 1))))); }; }} /><div className="s7a-coordinate">Selected pixel: ({x}, {y})</div></div><LabCanvas label="Ix · HORIZONTAL DERIVATIVE" image={display.ix}/><LabCanvas label="Iy · VERTICAL DERIVATIVE" image={display.iy}/><LabCanvas label="|∇I| · GRADIENT MAGNITUDE" image={display.magnitude}/><LabCanvas label="θ · GRADIENT ORIENTATION" image={display.orientation}/></section>
+    <section className="s7a-equation panel"><div className="sectionEyebrow">THE MATHEMATICS</div><h2>From two directional changes to one gradient</h2><div className="s7a-equationGrid"><div><code>I_x = ∂I/∂x</code><span>Horizontal intensity change.</span></div><div><code>I_y = ∂I/∂y</code><span>Vertical intensity change.</span></div><div><code>∇I = [ I_x, I_y ]ᵀ</code><span>The gradient points toward greatest increase.</span></div><div><code>|∇I| = √(I_x² + I_y²)</code><span>Large magnitude means strong local change.</span></div><div><code>θ = atan2(I_y, I_x)</code><span>Orientation of the gradient.</span></div></div></section>
+    <section className="s7a-pixel panel"><div className="sectionEyebrow">PIXEL-BY-PIXEL INSPECTOR</div><h2>What happened at ({x}, {y})?</h2><p>These are raw values. The images above are normalized separately for display.</p><div className="s7a-pixelGrid"><div><span>INPUT</span><b>{pixel.center.toFixed(2)}</b></div><div><span>Ix</span><b>{pixel.ix.toFixed(4)}</b></div><div><span>Iy</span><b>{pixel.iy.toFixed(4)}</b></div><div><span>|∇I|</span><b>{pixel.magnitude.toFixed(4)}</b></div><div><span>θ (rad)</span><b>{pixel.orientation.toFixed(4)}</b></div><div><span>θ (deg)</span><b>{(pixel.orientation * 180 / Math.PI).toFixed(2)}°</b></div></div></section>
+    <section className="s7a-finite panel"><div className="sectionEyebrow">FINITE-DIFFERENCE INTUITION</div><h2>The derivative compares nearby pixels</h2><div className="s7a-finiteGrid"><div><code>Ix ≈ [ I(x+1,y) − I(x−1,y) ] / 2</code><p>Compare left and right neighbours.</p></div><div><code>Iy ≈ [ I(x,y+1) − I(x,y−1) ] / 2</code><p>Compare upper and lower neighbours.</p></div></div><div className="s7a-takeaway"><b>KEY IDEA</b><span>A derivative filter asks how quickly brightness is changing here.</span></div></section>
+    <section className="s7a-verification panel"><div className="sectionEyebrow">GROUP A VERIFICATION</div><div className="s7a-checkGrid">{verification.map((item, index) => <div key={item.label}><span>{String(index + 1).padStart(2, "0")}</span><b>{item.label}</b><strong>{item.pass ? "PASS" : "REVIEW"}</strong></div>)}</div></section>
+    <section className="s7a-next panel"><div className="sectionEyebrow">GROUP A → GROUP B</div><h2>Next: turn derivatives into practical edge detectors</h2><p>First derivatives measure directional change. Group B compares Roberts, Prewitt, and Sobel, then introduces the Laplacian and Laplacian of Gaussian.</p></section>
+  </>;
+}
 
-  return <main className="s7a-page">
-    <section className="s7a-hero">
-      <div className="sectionEyebrow">SPRINT 7 · GROUP A</div>
-      <h1>Derivatives &amp; Gradients</h1>
-      <p>An edge is a place where image intensity changes rapidly. This laboratory turns that idea into numbers.</p>
-      <div className="s7a-meta"><span className="statusPill statusCurrent">● CURRENT</span><span>First derivatives</span><span>Gradient magnitude</span><span>Gradient orientation</span></div>
-    </section>
+function GroupB() {
+  const [operator, setOperator] = useState<EdgeOperator>("sobel");
+  const [sceneName, setSceneName] = useState("step");
+  const [sigma, setSigma] = useState(1);
+  const [threshold, setThreshold] = useState(40);
+  const [x, setX] = useState(128), [y, setY] = useState(128);
+  const image = useMemo(() => makeScene(sceneName), [sceneName]);
+  const response = useMemo(() => edgeResponse(image, operator, sigma), [image, operator, sigma]);
+  const responseDisplay = useMemo(() => edgeDisplayImage(image, operator, sigma), [image, operator, sigma]);
+  const edgeMap = useMemo(() => thresholdEdges(response, threshold), [response, threshold]);
+  const sourceDisplay = useMemo(() => normalizeForDisplay(image), [image]);
+  const pixel = useMemo(() => edgePixel(image, x, y, operator, sigma), [image, x, y, operator, sigma]);
+  const operators: { id: EdgeOperator; label: string; detail: string }[] = [
+    { id: "roberts", label: "Roberts", detail: "2×2 diagonal first derivatives" },
+    { id: "prewitt", label: "Prewitt", detail: "3×3 directional derivatives" },
+    { id: "sobel", label: "Sobel", detail: "3×3 derivative + weighted smoothing" },
+    { id: "laplacian", label: "Laplacian", detail: "Second derivative in x and y" },
+    { id: "log", label: "LoG", detail: "Gaussian smoothing + Laplacian" },
+  ];
+  const verification = [
+    { label: "Constant image → no edge response", pass: verifyConstantEdges() },
+    { label: "Horizontal step → Sobel detects transition", pass: verifyHorizontalStep() },
+    { label: "LoG kernel sums to approximately zero", pass: verifyLoGKernel() },
+  ];
+  return <>
+    <section className="s7b-hero"><div className="sectionEyebrow">SPRINT 7 · GROUP B</div><h1>Edge Detection</h1><p>Turn the derivative idea into practical edge operators. Compare first-derivative detectors with second-derivative methods and see exactly where edges appear.</p><div className="s7a-meta"><span className="statusPill statusCurrent">● CURRENT</span><span>Roberts</span><span>Prewitt</span><span>Sobel</span><span>Laplacian</span><span>LoG</span></div></section>
+    <section className="s7b-roadmap panel"><div className="sectionEyebrow">GROUP B LEARNING PATH</div><div className="s7b-flow"><span>INTENSITY</span><b>→</b><span>DERIVATIVE</span><b>→</b><span>EDGE RESPONSE</span><b>→</b><span>THRESHOLD</span><b>→</b><span>EDGE MAP</span></div></section>
+    <section className="s7b-controls panel"><div><div className="sectionEyebrow">EDGE LAB CONTROLS</div><h2>Choose an image and edge operator</h2><p>Keep the scene fixed and change only the operator. For LoG, change σ to see how smoothing changes which structures survive.</p></div><div className="s7b-controlField"><label>IMAGE<select value={sceneName} onChange={e => setSceneName(e.target.value)}><option value="step">Step edge</option><option value="ramp">Horizontal ramp</option><option value="checker">Checkerboard</option><option value="corner">Corner</option><option value="shapes">Synthetic scene</option><option value="noisy">Noisy scene</option><option value="constant">Constant image</option></select></label></div><div className="s7b-controlField"><label>EDGE OPERATOR</label><div className="s7b-operatorButtons">{operators.map(op => <button key={op.id} className={operator === op.id ? "active" : ""} onClick={() => setOperator(op.id)}>{op.label}</button>)}</div></div><div className="s7b-parameterStack">{operator === "log" && <label className="s7b-slider">SIGMA<input type="range" min={0.5} max={2} step={0.5} value={sigma} onChange={e => setSigma(Number(e.target.value))}/><b>{sigma.toFixed(1)}</b></label>}<label className="s7b-slider">THRESHOLD<input type="range" min={0} max={150} step={5} value={threshold} onChange={e => setThreshold(Number(e.target.value))}/><b>{threshold}</b></label></div></section>
+    <section className="s7b-mainGrid"><div className="s7a-imageCard"><div className="s7a-imageLabel">INPUT IMAGE · CLICK TO PROBE</div><canvas className="s7a-canvas s7a-clickable" ref={node => { if (!node) return; drawGray(node, sourceDisplay); node.onpointerdown = e => { const r = node.getBoundingClientRect(); setX(Math.max(0, Math.min(node.width - 1, Math.round(((e.clientX - r.left) / r.width) * (node.width - 1))))); setY(Math.max(0, Math.min(node.height - 1, Math.round(((e.clientY - r.top) / r.height) * (node.height - 1))))); }; }} /><div className="s7a-coordinate">Selected pixel: ({x}, {y})</div></div><LabCanvas label={`${operators.find(o => o.id === operator)?.label} · RAW RESPONSE`} image={responseDisplay}/><LabCanvas label="THRESHOLDED EDGE MAP" image={edgeMap}/></section>
+    <section className="s7b-compare panel"><div className="sectionEyebrow">OPERATOR COMPARISON</div><h2>What changes when the edge operator changes?</h2><div className="s7b-operatorCards">{operators.map(op => <article key={op.id} className={operator === op.id ? "active" : ""} onClick={() => setOperator(op.id)}><div className="s7b-cardTitle"><b>{op.label}</b><span>{op.id === "laplacian" || op.id === "log" ? "2nd order" : "1st order"}</span></div><p>{op.detail}</p></article>)}</div></section>
+    <section className="s7b-math panel"><div className="sectionEyebrow">THE MATHEMATICS</div><h2>Five operators, two main ideas</h2><div className="s7b-equationGrid"><div><code>G = √(Gx² + Gy²)</code><span>Roberts, Prewitt and Sobel combine directional first derivatives.</span></div><div><code>∇²I = Ixx + Iyy</code><span>The Laplacian measures second-order change in both directions.</span></div><div><code>LoG(I) = ∇²(Gσ * I)</code><span>LoG smooths first, then applies the Laplacian.</span></div><div><code>|R(x,y)| ≥ T</code><span>Thresholding converts a response into a binary edge map.</span></div></div></section>
+    <section className="s7b-pixel panel"><div className="sectionEyebrow">PIXEL-BY-PIXEL INSPECTOR</div><h2>What did {operators.find(o => o.id === operator)?.label} do at ({x}, {y})?</h2><p>Inspect the raw response before thresholding. Positive and negative second-derivative responses are meaningful even when the display is normalized.</p><div className="s7a-pixelGrid"><div><span>INPUT</span><b>{pixel.input.toFixed(2)}</b></div><div><span>RESPONSE</span><b>{pixel.response.toFixed(4)}</b></div><div><span>|RESPONSE|</span><b>{pixel.absolute.toFixed(4)}</b></div><div><span>THRESHOLD</span><b>{threshold}</b></div><div><span>EDGE?</span><b>{pixel.absolute >= threshold ? "YES" : "NO"}</b></div></div></section>
+    <section className="s7b-verification panel"><div className="sectionEyebrow">GROUP B VERIFICATION</div><div className="s7a-checkGrid">{verification.map((item, index) => <div key={item.label}><span>{String(index + 1).padStart(2, "0")}</span><b>{item.label}</b><strong>{item.pass ? "PASS" : "REVIEW"}</strong></div>)}</div></section>
+    <section className="s7b-teaching panel"><div className="sectionEyebrow">WHY THE OPERATORS DIFFER</div><div className="s7b-teachingGrid"><div><b>Roberts</b><p>Very small 2×2 operator. It reacts to diagonal changes but is sensitive to noise.</p></div><div><b>Prewitt</b><p>Uses a 3×3 neighbourhood, giving a little local averaging while estimating direction.</p></div><div><b>Sobel</b><p>Weights the centre row or column more strongly, combining derivative measurement with extra smoothing.</p></div><div><b>Laplacian</b><p>Uses second derivatives. It responds to rapid changes of slope and does not directly give a gradient direction.</p></div><div><b>LoG</b><p>Gaussian smoothing reduces noise before the second-derivative response is measured.</p></div></div></section>
+    <section className="s7b-next panel"><div className="sectionEyebrow">GROUP B → GROUP C</div><h2>Next: scale space</h2><p>An edge is not always visible at one resolution. Group C will vary Gaussian σ and observe how fine, medium, and coarse structures appear or disappear across scale.</p></section>
+  </>;
+}
 
-    <section className="s7a-roadmap panel"><div className="sectionEyebrow">GROUP A LEARNING PATH</div>
-      <div className="s7a-flow"><span>IMAGE</span><b>→</b><span>CHANGE IN X</span><b>→</b><span>CHANGE IN Y</span><b>→</b><span>GRADIENT</span><b>→</b><span>EDGE EVIDENCE</span></div>
-    </section>
-
-    <section className="s7a-controls panel">
-      <div><div className="sectionEyebrow">EXPERIMENT CONTROLS</div><h2>Change the scene and derivative operator</h2>
-      <p>Central difference shows the finite-difference idea. Sobel adds weighted smoothing while measuring directional change.</p></div>
-      <label>IMAGE<select value={sceneName} onChange={e=>setSceneName(e.target.value)}>
-        <option value="step">Step edge</option><option value="ramp">Horizontal ramp</option><option value="checker">Checkerboard</option><option value="corner">Corner</option><option value="shapes">Synthetic scene</option><option value="noisy">Noisy scene</option><option value="constant">Constant image</option>
-      </select></label>
-      <div className="s7a-methodButtons">
-        <button className={method==="central"?"active":""} onClick={()=>setMethod("central")}>Central Difference</button>
-        <button className={method==="sobel"?"active":""} onClick={()=>setMethod("sobel")}>Sobel</button>
-      </div>
-    </section>
-
-    <section className="s7a-mainGrid">
-      <div className="s7a-imageCard">
-        <div className="s7a-imageLabel">INPUT IMAGE · CLICK TO PROBE</div>
-        <canvas className="s7a-canvas s7a-clickable" ref={node=>{
-          if(!node)return; drawGray(node,sourceDisplay);
-          node.onpointerdown=e=>{
-            const r=node.getBoundingClientRect();
-            const px=Math.round(((e.clientX-r.left)/r.width)*(node.width-1));
-            const py=Math.round(((e.clientY-r.top)/r.height)*(node.height-1));
-            setX(Math.max(0,Math.min(node.width-1,px))); setY(Math.max(0,Math.min(node.height-1,py)));
-          };
-        }}/>
-        <div className="s7a-coordinate">Selected pixel: ({x}, {y})</div>
-      </div>
-      <LabCanvas label="Ix · HORIZONTAL DERIVATIVE" image={display.ix}/>
-      <LabCanvas label="Iy · VERTICAL DERIVATIVE" image={display.iy}/>
-      <LabCanvas label="|∇I| · GRADIENT MAGNITUDE" image={display.magnitude}/>
-      <LabCanvas label="θ · GRADIENT ORIENTATION" image={display.orientation}/>
-    </section>
-
-    <section className="s7a-equation panel"><div className="sectionEyebrow">THE MATHEMATICS</div><h2>From two directional changes to one gradient</h2>
-      <div className="s7a-equationGrid">
-        <div><code>I_x = ∂I/∂x</code><span>Horizontal intensity change.</span></div>
-        <div><code>I_y = ∂I/∂y</code><span>Vertical intensity change.</span></div>
-        <div><code>∇I = [ I_x, I_y ]ᵀ</code><span>The gradient points toward greatest increase.</span></div>
-        <div><code>|∇I| = √(I_x² + I_y²)</code><span>Large magnitude means strong local change.</span></div>
-        <div><code>θ = atan2(I_y, I_x)</code><span>Orientation of the gradient.</span></div>
-      </div>
-    </section>
-
-    <section className="s7a-pixel panel"><div className="sectionEyebrow">PIXEL-BY-PIXEL INSPECTOR</div><h2>What happened at ({x}, {y})?</h2>
-      <p>These are raw values. The images above are normalized separately for display, so visualization does not change the underlying calculation.</p>
-      <div className="s7a-pixelGrid">
-        <div><span>INPUT</span><b>{pixel.center.toFixed(2)}</b></div><div><span>Ix</span><b>{pixel.ix.toFixed(4)}</b></div><div><span>Iy</span><b>{pixel.iy.toFixed(4)}</b></div>
-        <div><span>|∇I|</span><b>{pixel.magnitude.toFixed(4)}</b></div><div><span>θ (rad)</span><b>{pixel.orientation.toFixed(4)}</b></div><div><span>θ (deg)</span><b>{(pixel.orientation*180/Math.PI).toFixed(2)}°</b></div>
-      </div>
-    </section>
-
-    <section className="s7a-finite panel"><div className="sectionEyebrow">FINITE-DIFFERENCE INTUITION</div><h2>The derivative compares nearby pixels</h2>
-      <div className="s7a-finiteGrid">
-        <div><code>Ix ≈ [ I(x+1,y) − I(x−1,y) ] / 2</code><p>Compare the pixel to its left and right neighbours.</p></div>
-        <div><code>Iy ≈ [ I(x,y+1) − I(x,y−1) ] / 2</code><p>Compare the pixel to its upper and lower neighbours.</p></div>
-      </div>
-      <div className="s7a-takeaway"><b>KEY IDEA</b><span>A derivative filter asks how quickly brightness is changing here.</span></div>
-    </section>
-
-    <section className="s7a-verification panel"><div className="sectionEyebrow">GROUP A VERIFICATION</div>
-      <div className="s7a-checkGrid">{verification.map((item,index)=><div key={item.label}><span>{String(index+1).padStart(2,"0")}</span><b>{item.label}</b><strong>{item.pass?"PASS":"REVIEW"}</strong></div>)}</div>
-    </section>
-
-    <section className="s7a-next panel"><div className="sectionEyebrow">GROUP A → GROUP B</div><h2>Next: second derivatives and the Laplacian</h2>
-      <p>First derivatives tell us how intensity changes. Group B will measure change of change, leading to the Laplacian, zero crossings, and LoG.</p>
-    </section>
-  </main>;
+export default function Sprint7Page() {
+  const [group, setGroup] = useState<"A" | "B">("B");
+  return <main className="s7-page"><section className="s7-groupSwitcher panel"><div><div className="sectionEyebrow">SPRINT 7 · DERIVATIVES + EDGES + SCALE</div><h2>Choose the experiment</h2><p>Group A established derivatives. Group B turns those derivatives into edge detectors.</p></div><div className="s7-groupButtons"><button className={group === "A" ? "active" : ""} onClick={() => setGroup("A")}>A · Derivatives + Gradients</button><button className={group === "B" ? "active" : ""} onClick={() => setGroup("B")}>B · Edge Detection</button></div></section>{group === "A" ? <GroupA /> : <GroupB />}</main>;
 }
