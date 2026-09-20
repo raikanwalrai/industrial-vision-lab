@@ -20,7 +20,7 @@ const groups: Group[] = [
     title: "Grouping + Connected Structures",
     description:
       "Move from individual texture measurements toward regions and connected image structures.",
-    status: "planned",
+    status: "active",
   },
   {
     id: "C",
@@ -80,11 +80,7 @@ export default function Sprint9Page() {
             {groups.map((group) => (
               <button
                 key={group.id}
-                className={
-                  group.status === "active"
-                    ? "active"
-                    : ""
-                }
+                className=""
                 disabled={
                   group.status === "planned"
                 }
@@ -94,7 +90,9 @@ export default function Sprint9Page() {
                     "active"
                   ) {
                     navigateTo(
-                      "/learn/sprint-9/group-a",
+                      group.id === "A"
+                        ? "/learn/sprint-9/group-a"
+                        : "/learn/sprint-9/group-b",
                     );
                   }
                 }}
@@ -139,7 +137,7 @@ export default function Sprint9Page() {
               key={group.id}
               className={
                 group.status === "active"
-                  ? "s9-groupCard active"
+                  ? "s9-groupCard available"
                   : "s9-groupCard"
               }
               onClick={() => {
@@ -147,7 +145,9 @@ export default function Sprint9Page() {
                   group.status === "active"
                 ) {
                   navigateTo(
-                    "/learn/sprint-9/group-a",
+                    group.id === "A"
+                      ? "/learn/sprint-9/group-a"
+                      : "/learn/sprint-9/group-b",
                   );
                 }
               }}
