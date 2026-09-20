@@ -10100,3 +10100,1614 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   SPRINT 9 · GROUP B
+   Laboratory layout
+   ------------------------------------------------------------
+   Design rule:
+   - Canonical desktop experiment image: 300 × 300 px
+   - Images stay on the left
+   - Explanations / controls / measurements stay on the right
+   - B1 uses two equal images
+   - B2/B3/B4 use one primary image
+   - Responsive stacking happens only when genuinely needed
+   ============================================================ */
+
+.s9b-page {
+  gap: 18px;
+  padding-bottom: 32px;
+}
+
+.s9b-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.s9b-panel h2 {
+  margin: 0;
+  line-height: 1.25;
+}
+
+.s9b-panel h3 {
+  margin: 0;
+}
+
+.s9b-hero {
+  gap: 16px;
+}
+
+.s9b-hero p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.s9b-flow {
+  gap: 8px;
+  padding: 11px 13px;
+}
+
+.s9b-flow span {
+  font-size: 0.76rem;
+}
+
+.s9b-equation {
+  padding: 9px 13px;
+  font-size: 1.02rem;
+}
+
+.s9b-note {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.86rem;
+  max-width: 760px;
+}
+
+.s9b-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.s9b-controls label {
+  display: grid;
+  gap: 5px;
+  min-width: min(100%, 300px);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.s9b-controls label strong {
+  font-size: 0.94rem;
+}
+
+.s9b-controls input[type="range"] {
+  width: 100%;
+}
+
+/* ------------------------------------------------------------
+   Canonical experiment image
+   ------------------------------------------------------------ */
+
+.s9b-canvas {
+  display: block;
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+  aspect-ratio: 1;
+  image-rendering: pixelated;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #111;
+  cursor: crosshair;
+}
+
+.s9b-caption {
+  margin-top: 6px;
+  font-size: 0.72rem;
+  opacity: 0.65;
+}
+
+/* ------------------------------------------------------------
+   B1
+   Two equal 300 × 300 images.
+   ------------------------------------------------------------ */
+
+.s9b-b1 .s9b-twoCol {
+  display: grid;
+  grid-template-columns: repeat(2, 300px);
+  gap: 20px;
+  align-items: start;
+}
+
+.s9b-b1 .s9b-twoCol > div {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------
+   B2
+   One primary image with supporting controls/metrics.
+   ------------------------------------------------------------ */
+
+.s9b-b2 > .s9b-canvas {
+  grid-column: 1;
+  grid-row: span 4;
+}
+
+.s9b-b2 > .s9b-caption {
+  grid-column: 1;
+  width: 300px;
+}
+
+.s9b-b2 > .s9b-controls,
+.s9b-b2 > .s9b-metrics,
+.s9b-b2 > .s9b-note {
+  grid-column: 2;
+}
+
+/* ------------------------------------------------------------
+   B3
+   Main image left, connectivity and region information right.
+   ------------------------------------------------------------ */
+
+.s9b-b3 .s9b-twoCol {
+  display: grid;
+  grid-template-columns: 300px minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.s9b-b3 .s9b-twoCol > div {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------
+   B4
+   Selected component image left, measurements right.
+   ------------------------------------------------------------ */
+
+.s9b-b4-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(280px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.s9b-b4-image {
+  width: 300px;
+  min-width: 300px;
+}
+
+.s9b-b4-image .s9b-canvas {
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+}
+
+.s9b-propertyGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------
+   Metrics
+   ------------------------------------------------------------ */
+
+.s9b-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.s9b-metric {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  min-height: 58px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.s9b-metric span {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+}
+
+.s9b-metric strong {
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------
+   Connectivity controls
+   ------------------------------------------------------------ */
+
+.s9b-connectivity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.s9b-connectivity button {
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.035);
+  color: inherit;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+.s9b-connectivity button:hover {
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.s9b-connectivity button.active {
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* ------------------------------------------------------------
+   Region table
+   ------------------------------------------------------------ */
+
+.s9b-regionTable {
+  display: grid;
+  gap: 5px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.s9b-regionTable button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  padding: 8px 10px;
+  text-align: left;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.76rem;
+}
+
+.s9b-regionTable button:hover {
+  background: rgba(255, 255, 255, 0.065);
+}
+
+.s9b-regionTable button.active {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.s9b-regionTable strong {
+  font-size: 0.84rem;
+}
+
+/* ------------------------------------------------------------
+   Mathematical connectivity demonstration
+   ------------------------------------------------------------ */
+
+.s9b-connectivityDemo {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.s9b-connectivityDemoGrid {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.s9b-connectivityDemoGrid .s9b-canvas {
+  width: 130px;
+  height: 130px;
+  max-width: 130px;
+}
+
+.s9b-connectivityResult {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.s9b-smallLabel {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  opacity: 0.65;
+}
+
+.s9b-mathCallout {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.s9b-mathCallout strong {
+  font-size: 0.78rem;
+}
+
+/* ------------------------------------------------------------
+   Shared two-column utility
+   ------------------------------------------------------------ */
+
+.s9b-twoCol {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.s9b-twoCol > div {
+  min-width: 0;
+}
+
+/* ------------------------------------------------------------
+   Takeaway
+   ------------------------------------------------------------ */
+
+.s9b-takeaway {
+  margin: 0;
+  max-width: 900px;
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border-left: 3px solid currentColor;
+  line-height: 1.7;
+}
+
+/* ------------------------------------------------------------
+   Responsive behavior
+   ------------------------------------------------------------ */
+
+@media (max-width: 1050px) {
+  .s9b-b1 .s9b-twoCol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s9b-b1 .s9b-twoCol .s9b-canvas {
+    width: 100%;
+    height: auto;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 820px) {
+  .s9b-b3 .s9b-twoCol,
+  .s9b-b4-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b1 .s9b-twoCol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s9b-canvas,
+  .s9b-b4-image,
+  .s9b-b4-image .s9b-canvas {
+    width: min(300px, 100%);
+    height: auto;
+    max-width: 300px;
+  }
+
+  .s9b-b4-image {
+    min-width: 0;
+  }
+
+  .s9b-b2 > .s9b-canvas,
+  .s9b-b2 > .s9b-caption,
+  .s9b-b2 > .s9b-controls,
+  .s9b-b2 > .s9b-metrics,
+  .s9b-b2 > .s9b-note {
+    grid-column: auto;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 650px) {
+  .s9b-page {
+    gap: 12px;
+  }
+
+  .s9b-panel {
+    padding: 13px;
+    gap: 11px;
+  }
+
+  .s9b-flow {
+    gap: 5px;
+  }
+
+  .s9b-flow span {
+    font-size: 0.62rem;
+  }
+
+  .s9b-b1 .s9b-twoCol {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b1 .s9b-twoCol .s9b-canvas {
+    width: min(300px, 100%);
+    height: auto;
+  }
+
+  .s9b-propertyGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .s9b-connectivityDemoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-connectivityDemoGrid .s9b-canvas {
+    width: 130px;
+    height: 130px;
+  }
+
+  .s9b-connectivityResult {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .s9b-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .s9b-metric {
+    min-height: 54px;
+    padding: 9px 10px;
+  }
+}
+
+/* ============================================================
+   SPRINT 9 · GROUP B
+   Layout refinement
+   ------------------------------------------------------------
+   Keep experiment visuals dominant while using horizontal
+   space for controls, metrics, and interpretation.
+   ============================================================ */
+
+/* B1:
+   Two 300px images form the visual workspace on the left.
+   Threshold control + metrics use the right side. */
+.s9b-b1 {
+  grid-template-columns: minmax(0, 620px) minmax(200px, 1fr);
+  align-items: start;
+}
+
+.s9b-b1 > .s9b-controls {
+  grid-column: 2;
+  grid-row: 4;
+  align-self: start;
+}
+
+.s9b-b1 > .s9b-twoCol {
+  grid-column: 1;
+  grid-row: 4 / span 2;
+}
+
+.s9b-b1 > .s9b-metrics {
+  grid-column: 2;
+  grid-row: 5;
+  align-self: start;
+}
+
+/* Keep the B1 image pair tightly grouped. */
+.s9b-b1 .s9b-twoCol {
+  gap: 16px;
+}
+
+/* B2:
+   Preserve the image-left / explanation-right arrangement,
+   but make the right side denser. */
+.s9b-b2 {
+  grid-template-columns: 300px minmax(220px, 1fr);
+  align-items: start;
+}
+
+.s9b-b2 > .s9b-canvas {
+  grid-column: 1;
+  grid-row: 4 / span 4;
+}
+
+.s9b-b2 > .s9b-caption {
+  grid-column: 1;
+}
+
+.s9b-b2 > .s9b-controls,
+.s9b-b2 > .s9b-metrics,
+.s9b-b2 > .s9b-note {
+  grid-column: 2;
+}
+
+/* B3:
+   Keep the mathematical connectivity demonstration compact. */
+.s9b-b3 {
+  gap: 11px;
+}
+
+.s9b-b3 .s9b-connectivityDemo {
+  max-width: 700px;
+  padding: 9px 11px;
+  gap: 7px;
+}
+
+.s9b-b3 .s9b-connectivityDemoGrid {
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.s9b-b3 .s9b-connectivityDemoGrid .s9b-canvas {
+  width: 110px;
+  height: 110px;
+  max-width: 110px;
+}
+
+.s9b-b3 .s9b-mathCallout {
+  padding: 7px 9px;
+}
+
+/* The actual connected-object analysis gets the visual emphasis. */
+.s9b-b3 .s9b-twoCol {
+  gap: 20px;
+}
+
+/* B4:
+   Keep measurement cards compact beside the selected object. */
+.s9b-b4-layout {
+  gap: 20px;
+}
+
+.s9b-b4 .s9b-propertyGrid {
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+/* Reduce empty vertical space inside all Group B panels. */
+.s9b-stage {
+  gap: 11px;
+}
+
+/* At genuinely narrow widths, stack rather than squeeze. */
+@media (max-width: 900px) {
+  .s9b-b1 {
+    grid-template-columns: minmax(0, 620px);
+  }
+
+  .s9b-b1 > .s9b-controls,
+  .s9b-b1 > .s9b-twoCol,
+  .s9b-b1 > .s9b-metrics {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .s9b-b1 > .s9b-controls {
+    order: 4;
+  }
+
+  .s9b-b1 > .s9b-twoCol {
+    order: 5;
+  }
+
+  .s9b-b1 > .s9b-metrics {
+    order: 6;
+  }
+}
+
+@media (max-width: 650px) {
+  .s9b-b1 {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b1 .s9b-twoCol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .s9b-b1 .s9b-twoCol .s9b-canvas {
+    width: min(300px, 100%);
+    height: auto;
+  }
+
+  .s9b-b2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------
+   B3 · Make the connectivity teaching diagram readable
+   ------------------------------------------------------------ */
+
+.s9b-b3 .s9b-connectivityDemoGrid {
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.s9b-b3 .s9b-connectivityDemoGrid .s9b-canvas {
+  width: 180px;
+  height: 180px;
+  max-width: 180px;
+  image-rendering: pixelated;
+}
+
+.s9b-b3 .s9b-connectivityDemoGrid .s9b-caption {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+/* Give the two mathematical results enough visual weight. */
+.s9b-b3 .s9b-connectivityResult {
+  gap: 10px;
+}
+
+.s9b-b3 .s9b-connectivityResult > * {
+  min-height: 58px;
+}
+
+/* Keep the explanatory Why? box readable. */
+.s9b-b3 .s9b-mathCallout {
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 650px) {
+  .s9b-b3 .s9b-connectivityDemoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b3 .s9b-connectivityDemoGrid .s9b-canvas {
+    width: 180px;
+    height: 180px;
+    max-width: 180px;
+  }
+}
+
+/* ============================================================
+   SPRINT 9 · GROUP B · B1 WORKSPACE
+   Explicit visual + analysis layout
+   ============================================================ */
+
+.s9b-b1-workspace {
+  display: grid;
+  grid-template-columns: 620px minmax(240px, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.s9b-b1-visuals {
+  display: grid;
+  grid-template-columns: repeat(2, 300px);
+  gap: 20px;
+  align-items: start;
+}
+
+.s9b-b1-image {
+  width: 300px;
+}
+
+.s9b-b1-image .s9b-canvas {
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+}
+
+.s9b-b1-analysis {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.s9b-b1-analysis .s9b-controls {
+  display: block;
+}
+
+.s9b-b1-analysis .s9b-controls label {
+  min-width: 0;
+  width: 100%;
+}
+
+.s9b-b1-analysisTitle {
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  opacity: 0.62;
+}
+
+.s9b-b1-analysis .s9b-note {
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+.s9b-b1-analysis .s9b-metrics {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.s9b-b1-analysis .s9b-metric {
+  min-height: 54px;
+}
+
+/* Remove the old B1 row-positioning rules. */
+.s9b-b1 > .s9b-controls,
+.s9b-b1 > .s9b-twoCol,
+.s9b-b1 > .s9b-metrics {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+@media (max-width: 1000px) {
+  .s9b-b1-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b1-analysis {
+    max-width: 620px;
+  }
+
+  .s9b-b1-analysis .s9b-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 650px) {
+  .s9b-b1-visuals {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b1-image {
+    width: min(300px, 100%);
+  }
+
+  .s9b-b1-image .s9b-canvas {
+    width: min(300px, 100%);
+    height: auto;
+  }
+
+  .s9b-b1-analysis .s9b-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ============================================================
+   SPRINT 9 · GROUP B · B1 FINAL STRUCTURAL OVERRIDE
+   Let B1 own its full horizontal workspace.
+   ============================================================ */
+
+.s9b-b1 {
+  display: block;
+}
+
+.s9b-b1-workspace {
+  width: 100%;
+}
+
+/* ============================================================
+   SPRINT 9 · GROUP B · B1 VISUAL BOTTOM ALIGNMENT
+   Align the image + caption block with the analysis column.
+   ============================================================ */
+
+.s9b-b1-workspace {
+  align-items: stretch;
+}
+
+.s9b-b1-visuals {
+  align-self: stretch;
+  align-items: end;
+}
+
+.s9b-b1-image {
+  align-self: end;
+}
+
+.s9b-b1-analysis {
+  align-self: stretch;
+}
+
+@media (max-width: 1000px) {
+  .s9b-b1-visuals {
+    align-items: start;
+  }
+
+  .s9b-b1-image {
+    align-self: start;
+  }
+}
+
+/* ============================================================
+   SPRINT 9 · GROUP B
+   FINAL VISUAL CARD LAYOUT
+   B2 + B3 + B4
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   B2 · REGION GROWING
+   Image left, analysis right.
+   ------------------------------------------------------------ */
+
+.s9b-b2 {
+  grid-template-columns: 300px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 24px;
+}
+
+.s9b-b2 > .s9b-canvas {
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+  grid-column: 1;
+  grid-row: 4 / span 4;
+}
+
+.s9b-b2 > .s9b-caption {
+  grid-column: 1;
+  grid-row: 8;
+  width: 300px;
+  margin-top: 0;
+}
+
+.s9b-b2 > .s9b-controls {
+  grid-column: 2;
+  grid-row: 4;
+  align-self: start;
+  width: 100%;
+}
+
+.s9b-b2 > .s9b-note {
+  grid-column: 2;
+  grid-row: 5;
+  width: 100%;
+}
+
+.s9b-b2 > .s9b-metrics {
+  grid-column: 2;
+  grid-row: 6 / span 2;
+  align-self: end;
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* ------------------------------------------------------------
+   B3 · CONNECTED COMPONENTS
+   Mathematical example first, then main object analysis.
+   ------------------------------------------------------------ */
+
+.s9b-b3 {
+  display: block;
+}
+
+.s9b-b3 .s9b-connectivity {
+  margin-bottom: 2px;
+}
+
+.s9b-b3 .s9b-connectivityDemo {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+.s9b-b3 .s9b-connectivityDemoGrid {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.s9b-b3 .s9b-connectivityDemoGrid .s9b-canvas {
+  width: 180px;
+  height: 180px;
+  max-width: 180px;
+}
+
+.s9b-b3 .s9b-connectivityResult {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.s9b-b3 .s9b-mathCallout {
+  grid-column: 1 / -1;
+}
+
+/* Main connected-component workspace. */
+.s9b-b3 .s9b-twoCol {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 4px;
+}
+
+.s9b-b3 .s9b-twoCol > div:first-child {
+  min-width: 0;
+}
+
+.s9b-b3 .s9b-twoCol > div:last-child {
+  min-width: 0;
+}
+
+.s9b-b3 .s9b-twoCol .s9b-canvas {
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+}
+
+.s9b-b3 .s9b-regionTable {
+  max-height: 300px;
+}
+
+.s9b-b3 .s9b-metrics {
+  margin-top: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* ------------------------------------------------------------
+   B4 · REGION PROPERTIES
+   Selected component left, measurements right.
+   ------------------------------------------------------------ */
+
+.s9b-b4-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.s9b-b4-image {
+  width: 300px;
+  min-width: 300px;
+}
+
+.s9b-b4-image .s9b-canvas {
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+}
+
+.s9b-b4-layout > div:last-child {
+  min-width: 0;
+}
+
+.s9b-b4 .s9b-propertyGrid {
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.s9b-b4 .s9b-metric {
+  min-height: 54px;
+}
+
+/* ------------------------------------------------------------
+   Shared desktop alignment
+   ------------------------------------------------------------ */
+
+@media (min-width: 1001px) {
+  .s9b-b2,
+  .s9b-b3,
+  .s9b-b4-layout {
+    width: 100%;
+  }
+
+  .s9b-b2 > .s9b-canvas,
+  .s9b-b3 .s9b-twoCol .s9b-canvas,
+  .s9b-b4-image .s9b-canvas {
+    image-rendering: pixelated;
+  }
+}
+
+/* ------------------------------------------------------------
+   Responsive behaviour
+   ------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+  .s9b-b2 {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+
+  .s9b-b2 > .s9b-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .s9b-b2 {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b2 > .s9b-canvas,
+  .s9b-b2 > .s9b-caption,
+  .s9b-b2 > .s9b-controls,
+  .s9b-b2 > .s9b-note,
+  .s9b-b2 > .s9b-metrics {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .s9b-b3 .s9b-twoCol,
+  .s9b-b4-layout {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .s9b-b2 {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b2 > .s9b-canvas,
+  .s9b-b2 > .s9b-caption {
+    width: min(300px, 100%);
+  }
+
+  .s9b-b2 > .s9b-canvas {
+    height: auto;
+  }
+
+  .s9b-b2 > .s9b-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .s9b-b3 .s9b-connectivityDemoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b3 .s9b-connectivityDemoGrid .s9b-canvas {
+    width: 180px;
+    height: 180px;
+  }
+
+  .s9b-b3 .s9b-twoCol,
+  .s9b-b4-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b3 .s9b-twoCol .s9b-canvas,
+  .s9b-b4-image .s9b-canvas {
+    width: min(300px, 100%);
+    height: auto;
+  }
+
+  .s9b-b4-image {
+    width: min(300px, 100%);
+    min-width: 0;
+  }
+
+  .s9b-b4 .s9b-propertyGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ============================================================
+   SPRINT 9 · GROUP B · B3 ANALYSIS COLUMN
+   Region table + summary metrics share the right column.
+   ============================================================ */
+
+.s9b-b3 .s9b-b3-analysis {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 300px;
+}
+
+.s9b-b3 .s9b-b3-analysis .s9b-regionTable {
+  flex: 0 0 auto;
+  max-height: none;
+}
+
+.s9b-b3 .s9b-b3-analysis .s9b-metrics {
+  margin-top: auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.s9b-b3 .s9b-b3-analysis .s9b-metric {
+  min-height: 54px;
+}
+
+@media (max-width: 650px) {
+  .s9b-b3 .s9b-b3-analysis {
+    height: auto;
+  }
+
+  .s9b-b3 .s9b-b3-analysis .s9b-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ============================================================
+   SPRINT 9 · GROUP B · B3 FINAL CANVAS ALIGNMENT
+   All B3 visual canvases use the same square geometry.
+   ============================================================ */
+
+.s9b-b3 .s9b-connectivityDemoGrid {
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.s9b-b3 .s9b-connectivityDemoGrid .s9b-canvas,
+.s9b-b3 .s9b-twoCol .s9b-canvas {
+  width: min(300px, 100%) !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1;
+  max-width: 300px !important;
+}
+
+@media (max-width: 650px) {
+  .s9b-b3 .s9b-connectivityDemoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .s9b-b3 .s9b-connectivityDemoGrid .s9b-canvas,
+  .s9b-b3 .s9b-twoCol .s9b-canvas {
+    width: min(300px, 100%) !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+  }
+}
+
+/* ============================================================
+   Sprint 9 Group C · Model Fitting
+   ============================================================ */
+
+.s9c-modelPlot {
+  display: block;
+  width: 300px;
+  height: 300px;
+  max-width: 100%;
+  border-radius: 12px;
+}
+
+.s9c-plotBackground {
+  fill: var(--panel-strong, #f7f7f7);
+}
+
+.s9c-axis {
+  stroke: currentColor;
+  stroke-width: 1;
+  opacity: 0.28;
+}
+
+.s9c-dataPoint {
+  fill: currentColor;
+  opacity: 0.65;
+}
+
+.s9c-dataPoint.selected {
+  opacity: 1;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.s9c-fittedLine {
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+
+.s9c-fittedCircle {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+}
+
+.s9c-twoColumn {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.s9c-analysis {
+  min-width: 0;
+}
+
+.s9c-analysis h2 {
+  margin-top: 0;
+}
+
+.s9c-formula {
+  margin: 10px 0;
+  padding: 10px 12px;
+  border-left: 3px solid currentColor;
+  background: rgba(127, 127, 127, 0.08);
+  font-family: "Times New Roman", serif;
+  font-size: 1.05rem;
+}
+
+.s9c-equation {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 10px;
+  background: rgba(127, 127, 127, 0.1);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.s9c-pointTable,
+.s9c-residualList {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.s9c-pointTable button,
+.s9c-residualList button {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(127, 127, 127, 0.25);
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.s9c-residualList button {
+  grid-template-columns: 45px 1fr 1fr 100px;
+}
+
+.s9c-pointTable button:hover,
+.s9c-residualList button:hover,
+.s9c-pointTable button.selected,
+.s9c-residualList button.selected {
+  background: rgba(127, 127, 127, 0.1);
+}
+
+.s9c-groupNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.s9c-groupNav button {
+  padding: 8px 12px;
+  border: 1px solid rgba(127, 127, 127, 0.3);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.s9c-groupNav button.active {
+  font-weight: 700;
+  background: rgba(127, 127, 127, 0.12);
+}
+
+.s9c-groupNav button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.s9c-industrialGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.s9c-industrialGrid article {
+  padding: 16px;
+  border: 1px solid rgba(127, 127, 127, 0.22);
+  border-radius: 10px;
+}
+
+.s9c-industrialGrid p {
+  margin-bottom: 0;
+}
+
+@media (max-width: 760px) {
+  .s9c-twoColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .s9c-modelPlot {
+    margin-inline: auto;
+  }
+
+  .s9c-residualList button {
+    grid-template-columns: 45px 1fr;
+  }
+
+  .s9c-residualList button strong {
+    grid-column: 2;
+  }
+
+  .s9c-industrialGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* ============================================================
+   Sprint 9 · Shared laboratory page
+   ============================================================ */
+
+.s9-page {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 28px 80px;
+}
+
+.s9-page .panel {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Available means implemented, not currently selected. */
+.s9-groupCard.available {
+  cursor: pointer;
+}
+
+.s9-groupCard.available:hover {
+  border-color: #6da8d3;
+  background: #17232d;
+}
+
+.s9-groupCard.available .s9-groupNumber,
+.s9-groupCard.available .s9-groupStatus {
+  color: #a9cbe3;
+}
+
+/* Sprint 9 Group C · Model Fitting */
+.s9c-page {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 28px 80px;
+}
+
+.s9c-page > .panel {
+  width: 100%;
+  min-width: 0;
+}
+
+.s9c-page .s9c-twoColumn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.s9c-page .s9c-modelPlot {
+  display: block;
+  width: 300px;
+  height: 300px;
+  max-width: 300px;
+  min-width: 300px;
+}
+
+.s9c-page .s9c-analysis {
+  width: 100%;
+  min-width: 0;
+}
+
+.s9c-page .s9c-industrialGrid {
+  width: 100%;
+}
+
+@media (max-width: 760px) {
+  .s9-page,
+  .s9c-page {
+    padding: 20px 16px 60px;
+  }
+
+  .s9c-page .s9c-twoColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .s9c-page .s9c-modelPlot {
+    margin-inline: auto;
+  }
+}
+
+
+/* ============================================================
+   Sprint 9 Group C · Visibility correction
+   ============================================================ */
+
+.s9c-page {
+  color: #e9edf2;
+}
+
+.s9c-page p {
+  color: #b6bec7;
+}
+
+.s9c-page h1,
+.s9c-page h2,
+.s9c-page h3,
+.s9c-page strong {
+  color: #e9edf2;
+}
+
+.s9c-page button {
+  color: #dce9f3;
+}
+
+.s9c-page .s9c-pointTable button,
+.s9c-page .s9c-residualList button {
+  color: #dce9f3;
+  background: #11161b;
+}
+
+.s9c-page .s9c-pointTable button span,
+.s9c-page .s9c-residualList button span {
+  color: #aebdca;
+}
+
+.s9c-page .s9c-pointTable button strong,
+.s9c-page .s9c-residualList button strong {
+  color: #dce9f3;
+}
+
+.s9c-page .s9c-pointTable button:hover,
+.s9c-page .s9c-residualList button:hover,
+.s9c-page .s9c-pointTable button.selected,
+.s9c-page .s9c-residualList button.selected {
+  color: #f2f7fb;
+  background: #17232d;
+}
+
+.s9c-page .s9c-dataPoint {
+  fill: #5f91ad;
+  opacity: 0.9;
+}
+
+.s9c-page .s9c-dataPoint.selected {
+  fill: #8db9d1;
+  stroke: #e9edf2;
+  stroke-width: 2;
+}
+
+.s9c-page .s9c-fittedLine {
+  stroke: #82a9c1;
+  stroke-width: 3;
+}
+
+.s9c-page .s9c-fittedCircle {
+  stroke: #82a9c1;
+  stroke-width: 3;
+}
+
+.s9c-page .s9c-formula {
+  color: #dce9f3;
+}
+
+.s9c-page .s9c-equation {
+  color: #dce9f3;
+}
+
+.s9c-page .s9c-groupNav button {
+  color: #a9bfd1;
+}
+
+.s9c-page .s9c-groupNav button.active {
+  color: #e8f4ff;
+}
+
+.s9c-page .s9c-industrialGrid article {
+  color: #dce9f3;
+}
+
+.s9c-page .s9c-industrialGrid article p {
+  color: #aebbc6;
+}
+
+
+/* ============================================================
+   Sprint Laboratory Standard
+   Group C inherits the common Sprint shell.
+   ============================================================ */
+
+.s7-page.s9c-page {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.s7-page.s9c-page .s9c-twoColumn {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.s7-page.s9c-page .s9c-modelPlot {
+  width: 300px;
+  height: 300px;
+  min-width: 300px;
+  max-width: 300px;
+}
+
+.s7-page.s9c-page .s9c-analysis {
+  min-width: 0;
+  width: 100%;
+}
+
+.s7-page.s9c-page .panel {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 760px) {
+  .s7-page.s9c-page .s9c-twoColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .s7-page.s9c-page .s9c-modelPlot {
+    margin-inline: auto;
+  }
+}
+
+/* ============================================================
+   Sprint Laboratory · Canonical Vertical Rhythm
+   All successive experiment cards use one consistent gap.
+   ============================================================ */
+
+.s7-page.s9c-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/*
+ * The parent flex gap controls vertical spacing.
+ * Remove individual panel margins so cards cannot accumulate
+ * different distances from one another.
+ */
+.s7-page.s9c-page > .panel {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Header participates in the same vertical rhythm. */
+.s7-page.s9c-page > .s7b-hero {
+  margin-bottom: 0;
+}
+
+/*
+ * Keep spacing inside every experiment card consistent.
+ */
+.s7-page.s9c-page .s9c-twoColumn {
+  gap: 24px;
+}
+
+/* Mobile keeps the same card-to-card rhythm. */
+@media (max-width: 760px) {
+  .s7-page.s9c-page {
+    gap: 16px;
+  }
+}

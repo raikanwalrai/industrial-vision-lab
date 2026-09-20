@@ -20,14 +20,14 @@ const groups: Group[] = [
     title: "Grouping + Connected Structures",
     description:
       "Move from individual texture measurements toward regions and connected image structures.",
-    status: "planned",
+    status: "active",
   },
   {
     id: "C",
     title: "Model Fitting",
     description:
-      "Fit mathematical models to image evidence and reason about residual error.",
-    status: "planned",
+      "Fit mathematical models to measured image evidence, inspect residual error, and perform geometric measurement.",
+    status: "active",
   },
   {
     id: "D",
@@ -89,14 +89,13 @@ export default function Sprint9Page() {
                   group.status === "planned"
                 }
                 onClick={() => {
-                  if (
-                    group.status ===
-                    "active"
-                  ) {
-                    navigateTo(
-                      "/learn/sprint-9/group-a",
-                    );
+                  if (group.status !== "active") {
+                    return;
                   }
+
+                  navigateTo(
+                    `/learn/sprint-9/group-${group.id.toLowerCase()}`,
+                  );
                 }}
               >
                 {group.id} · {group.title}
@@ -139,17 +138,17 @@ export default function Sprint9Page() {
               key={group.id}
               className={
                 group.status === "active"
-                  ? "s9-groupCard active"
+                  ? "s9-groupCard available"
                   : "s9-groupCard"
               }
               onClick={() => {
-                if (
-                  group.status === "active"
-                ) {
-                  navigateTo(
-                    "/learn/sprint-9/group-a",
-                  );
+                if (group.status !== "active") {
+                  return;
                 }
+
+                navigateTo(
+                  `/learn/sprint-9/group-${group.id.toLowerCase()}`,
+                );
               }}
             >
               <div className="s9-groupNumber">
