@@ -15,6 +15,7 @@ import Sprint10Page from "./pages/Sprint10Page";
 import Sprint10GroupAPage from "./pages/Sprint10GroupAPage";
 import Sprint10GroupBPage from "./pages/Sprint10GroupBPage";
 import Sprint10GroupCPage from "./pages/Sprint10GroupCPage";
+import Sprint10GroupDPage from "./pages/Sprint10GroupDPage";
 import Sprint4Page from "./pages/Sprint4Page";
 import AppShell from "./components/AppShell";
 import Sprint3 from "./Sprint3";
@@ -1392,6 +1393,14 @@ function App() {
     return (
       <AppShell>
         <Sprint9GroupAPage />
+      </AppShell>
+    );
+  }
+
+  if (path === "/learn/sprint-10/group-d") {
+    return (
+      <AppShell>
+        <Sprint10GroupDPage />
       </AppShell>
     );
   }
