@@ -27,7 +27,7 @@ const groups: Group[] = [
     title: "Extrinsics + Full Camera Model",
     description:
       "Understand camera pose, rotation, translation, and the complete projection pipeline.",
-    status: "planned",
+    status: "active",
   },
   {
     id: "D",
