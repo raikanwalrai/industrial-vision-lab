@@ -11711,3 +11711,301 @@
     gap: 16px;
   }
 }
+
+/* ============================================================
+   Sprint 10 · Camera Models + Calibration
+   Group A · Coordinate Systems + Pinhole Camera
+   Inherits the canonical Sprint experiment geometry.
+   ============================================================ */
+
+.s10-page {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.s10-page > .panel {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.s10-experiment {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.s10-experimentVisual {
+  width: 300px;
+  min-width: 300px;
+  height: 300px;
+}
+
+.s10-visual {
+  display: block;
+  width: 300px;
+  height: 300px;
+  min-width: 300px;
+  max-width: 300px;
+}
+
+.s10-analysis {
+  width: 100%;
+  min-width: 0;
+}
+
+.s10-analysis h2 {
+  margin-top: 6px;
+}
+
+.s10-analysis > p {
+  max-width: 780px;
+}
+
+.s10-svgBackground {
+  fill: #0b1015;
+  stroke: #35424d;
+  stroke-width: 1.5;
+}
+
+.s10-axis {
+  stroke: #52626e;
+  stroke-width: 1.5;
+}
+
+.s10-depthAxis {
+  stroke: #66879d;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.s10-origin {
+  fill: #dce9f3;
+}
+
+.s10-pointLine {
+  stroke: #729bb5;
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+
+.s10-point {
+  fill: #8db9d1;
+  stroke: #e8f4ff;
+  stroke-width: 2;
+}
+
+.s10-pointLabel {
+  fill: #e8f4ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.s10-cameraPlane {
+  stroke: #8098a8;
+  stroke-width: 3;
+}
+
+.s10-imagePlane {
+  stroke: #8db9d1;
+  stroke-width: 3;
+}
+
+.s10-cameraCenter {
+  fill: #e8f4ff;
+  stroke: #729bb5;
+  stroke-width: 2;
+}
+
+.s10-ray,
+.s10-raySecondary {
+  stroke: #82a9c1;
+  stroke-width: 2;
+}
+
+.s10-raySecondary {
+  stroke-dasharray: 5 4;
+}
+
+.s10-projectionPoint {
+  fill: #b8d8ee;
+  stroke: #e8f4ff;
+  stroke-width: 2;
+}
+
+.s10-nearObject,
+.s10-farObject {
+  fill: #719ab3;
+  stroke: #dce9f3;
+  stroke-width: 2;
+}
+
+.s10-farObject {
+  fill: #506c7c;
+}
+
+.s10-title {
+  fill: #9fc4dc;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.s10-label {
+  fill: #aebdca;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.s10-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+  max-width: 620px;
+}
+
+.s10-control {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.s10-control > span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #aebdca;
+  font-size: 11px;
+  letter-spacing: .04em;
+}
+
+.s10-control > span strong {
+  color: #dce9f3;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.s10-control input[type="range"] {
+  width: 100%;
+}
+
+.s10-mathBox {
+  display: grid;
+  gap: 7px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid rgba(145,185,220,.22);
+  border-radius: 7px;
+  background: #10151a;
+  max-width: 760px;
+}
+
+.s10-mathBox strong {
+  margin-top: 4px;
+  color: #c4dff2;
+  font-size: 11px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.s10-mathBox code {
+  color: #dce9f3;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.s10-interpretation {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #303941;
+  max-width: 780px;
+}
+
+.s10-interpretation strong {
+  color: #8db9d1;
+  font-size: 11px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.s10-interpretation span {
+  color: #b8c3cb;
+  line-height: 1.55;
+}
+
+.s10-summaryFlow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.s10-summaryFlow span {
+  padding: 9px 12px;
+  border: 1px solid rgba(145,185,220,.28);
+  border-radius: 6px;
+  background: #11161b;
+  color: #dce9f3;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+.s10-summaryFlow b {
+  color: #82a9c1;
+}
+
+.s10-summaryText {
+  max-width: 850px;
+  margin-top: 16px;
+}
+
+@media (max-width: 760px) {
+  .s10-page {
+    gap: 16px;
+  }
+
+  .s10-experiment {
+    grid-template-columns: 1fr;
+  }
+
+  .s10-experimentVisual {
+    margin-inline: auto;
+  }
+
+  .s10-analysis {
+    width: 100%;
+  }
+
+  .s10-control {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+}
+
+.s10-matrixBracket {
+  fill: #8db9d1;
+  font-size: 34px;
+  font-weight: 500;
+}
+
+.s10-matrixValue {
+  fill: #dce9f3;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 17px;
+  font-weight: 700;
+}
