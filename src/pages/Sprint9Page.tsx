@@ -33,8 +33,8 @@ const groups: Group[] = [
     id: "D",
     title: "Robust Fitting",
     description:
-      "Separate useful evidence from outliers and introduce robust model-fitting ideas.",
-    status: "planned",
+      "Separate useful evidence from outliers and use robust models when measurements are contaminated.",
+    status: "active",
   },
 ];
 
@@ -47,7 +47,7 @@ export default function Sprint9Page() {
         </div>
 
         <h1>
-          Texture + Grouping + Model Fitting
+          Texture + Grouping + Model Fitting + Robust Fitting
         </h1>
 
         <p>
@@ -70,9 +70,10 @@ export default function Sprint9Page() {
             </h2>
 
             <p>
-              Start with texture representation.
-              The remaining groups will build on
-              this foundation.
+              Move from texture representation
+              through grouping and model fitting
+              to robust fitting with outliers.
+
             </p>
           </div>
 
