@@ -27,14 +27,14 @@ const groups: Group[] = [
     title: "Extrinsics + Full Camera Model",
     description:
       "Understand camera pose, rotation, translation, and the complete projection pipeline.",
-    status: "planned",
+    status: "active",
   },
   {
     id: "D",
     title: "Distortion + Calibration + Reprojection",
     description:
       "Understand lens distortion, calibration, and how reprojection error measures calibration quality.",
-    status: "planned",
+    status: "active",
   },
 ];
 
