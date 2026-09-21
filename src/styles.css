@@ -11996,3 +11996,16 @@
     grid-template-columns: 90px minmax(0, 1fr);
   }
 }
+
+.s10-matrixBracket {
+  fill: #8db9d1;
+  font-size: 34px;
+  font-weight: 500;
+}
+
+.s10-matrixValue {
+  fill: #dce9f3;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 17px;
+  font-weight: 700;
+}

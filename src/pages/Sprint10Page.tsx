@@ -20,7 +20,7 @@ const groups: Group[] = [
     title: "Perspective Projection + Intrinsics",
     description:
       "Understand focal length, principal point, pixel coordinates, and the intrinsic matrix.",
-    status: "planned",
+    status: "active",
   },
   {
     id: "C",
