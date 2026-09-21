@@ -120,6 +120,11 @@ export default function AppShell({ children }: AppShellProps) {
       navigateTo("/learn/sprint-9");
       return;
     }
+
+    if (sprint.number === 10) {
+      navigateTo("/learn/sprint-10");
+      return;
+    }
   }
 
 
