@@ -1,4 +1,4 @@
-export type SprintStatus = "complete" | "current" | "planned";
+export type SprintStatus = "complete" | "current" | "active" | "planned";
 
 export type Sprint = {
   number: number;
@@ -17,7 +17,7 @@ export const curriculum: Sprint[] = [
   { number: 8, title: "Corners + Blobs + SIFT", status: "complete" },
   { number: 9, title: "Texture + Grouping + Model Fitting", status: "complete" },
   { number: 10, title: "Camera Models + Calibration", status: "current" },
-  { number: 11, title: "Single-view + Stereo + Epipolar Geometry", status: "planned" },
+  { number: 11, title: "Single-view + Stereo + Epipolar Geometry", status: "active" },
   { number: 12, title: "Multi-view + SfM + Registration", status: "planned" },
   { number: 13, title: "Optical Flow + Motion + Tracking", status: "planned" },
   { number: 14, title: "Segmentation + Shapes + Range Data", status: "planned" },
