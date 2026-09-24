@@ -20,14 +20,14 @@ const groups: Group[] = [
     title: "Epipolar Geometry",
     description:
       "Understand corresponding points, epipolar lines, the fundamental matrix, and the essential matrix.",
-    status: "planned",
+    status: "active",
   },
   {
     id: "C",
     title: "Stereo Reconstruction",
     description:
       "Build toward rectification, disparity maps, depth reconstruction, and 3D point recovery.",
-    status: "planned",
+    status: "active",
   },
   {
     id: "D",
