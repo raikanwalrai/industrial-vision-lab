@@ -1,6 +1,9 @@
 import { useMemo, useState } from "react";
 import {
+  calculateCorrespondingRightX,
+  calculateDisparityMap,
   calculateRectification,
+  C2_DISPARITY_MAP,
   type StereoPoint,
 } from "../stereoReconstructionMath";
 
@@ -50,6 +53,9 @@ export default function Sprint11GroupCPage() {
   const [leftY, setLeftY] = useState(250);
   const [rightX, setRightX] = useState(340);
   const [rightY, setRightY] = useState(270);
+  const [selectedRow, setSelectedRow] = useState(2);
+  const [selectedColumn, setSelectedColumn] = useState(2);
+  const [c2LeftX, setC2LeftX] = useState(420);
 
   const leftPoint: StereoPoint = useMemo(
     () => ({
@@ -70,6 +76,21 @@ export default function Sprint11GroupCPage() {
   const rectification = useMemo(
     () => calculateRectification(leftPoint, rightPoint),
     [leftPoint, rightPoint],
+  );
+
+  const disparityMap = useMemo(
+    () =>
+      calculateDisparityMap(
+        C2_DISPARITY_MAP,
+        selectedRow,
+        selectedColumn,
+      ),
+    [selectedRow, selectedColumn],
+  );
+
+  const c2RightX = calculateCorrespondingRightX(
+    c2LeftX,
+    disparityMap.selectedDisparity,
   );
 
   return (
@@ -331,6 +352,171 @@ export default function Sprint11GroupCPage() {
               </p>
             </div>
           </div>
+      </section>
+
+      <section className="panel s10-experiment">
+        <div className="s10-experimentVisual">
+          <svg
+            viewBox="0 0 300 300"
+            width="300"
+            height="300"
+            role="img"
+            aria-label="Interactive five by five disparity map"
+          >
+            <rect
+              x="10"
+              y="10"
+              width="280"
+              height="280"
+              rx="10"
+              fill="#11161b"
+              stroke="#34424d"
+            />
+
+            <text x="25" y="34" className="s10-label">
+              DISPARITY MAP
+            </text>
+
+            {C2_DISPARITY_MAP.map((row, rowIndex) =>
+              row.map((disparity, columnIndex) => {
+                const x = 35 + columnIndex * 46;
+                const y = 58 + rowIndex * 40;
+                const selected =
+                  rowIndex === selectedRow &&
+                  columnIndex === selectedColumn;
+
+                const normalized = (disparity - 20) / 60;
+                const shade = Math.round(45 + normalized * 150);
+
+                return (
+                  <g
+                    key={`${rowIndex}-${columnIndex}`}
+                    onClick={() => {
+                      setSelectedRow(rowIndex);
+                      setSelectedColumn(columnIndex);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Row ${rowIndex}, column ${columnIndex}, disparity ${disparity} pixels`}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        setSelectedRow(rowIndex);
+                        setSelectedColumn(columnIndex);
+                      }
+                    }}
+                  >
+                    <rect
+                      x={x}
+                      y={y}
+                      width="40"
+                      height="34"
+                      rx="5"
+                      fill={`rgb(${shade}, ${shade + 20}, ${shade + 35})`}
+                      stroke={selected ? "#dce9f3" : "#34424d"}
+                      strokeWidth={selected ? 3 : 1}
+                    />
+
+                    <text
+                      x={x + 20}
+                      y={y + 22}
+                      textAnchor="middle"
+                      className="s10-label"
+                    >
+                      {disparity}
+                    </text>
+                  </g>
+                );
+              }),
+            )}
+
+            <text x="35" y="275" className="s10-label">
+              selected: ({selectedRow}, {selectedColumn})
+            </text>
+          </svg>
+        </div>
+
+        <div className="s10-analysis">
+          <div className="sectionEyebrow">
+            C2 · DISPARITY MAP
+          </div>
+
+          <h2>
+            How does a stereo pair become a disparity map?
+          </h2>
+
+          <p>
+            After rectification, corresponding points lie on the same
+            horizontal scanline. For every correspondence, we measure the
+            horizontal shift between the left and right images.
+          </p>
+
+          <div className="s10-mathBox">
+            <strong>DISPARITY FORMULA</strong>
+
+            <code>
+              d = x<sub>L</sub> - x<sub>R</sub>
+            </code>
+
+            <strong>SELECTED CELL</strong>
+
+            <code>
+              D({disparityMap.selectedRow}, {disparityMap.selectedColumn}) ={" "}
+              {fmt(disparityMap.selectedDisparity, 0)} px
+            </code>
+
+            <strong>CORRESPONDING RIGHT POSITION</strong>
+
+            <code>
+              x<sub>R</sub> = x<sub>L</sub> - d
+            </code>
+
+            <code>
+              x<sub>R</sub> = {fmt(c2LeftX, 0)} -{" "}
+              {fmt(disparityMap.selectedDisparity, 0)} ={" "}
+              {fmt(c2RightX, 0)} px
+            </code>
+
+            <strong>VERIFICATION</strong>
+
+            <code>
+              {fmt(c2LeftX, 0)} - {fmt(c2RightX, 0)} ={" "}
+              {fmt(c2LeftX - c2RightX, 0)} px
+            </code>
+          </div>
+
+          <div className="s10-controls">
+            <Slider
+              label="Left image x"
+              value={c2LeftX}
+              min={100}
+              max={540}
+              step={10}
+              unit="px"
+              onChange={setC2LeftX}
+            />
+          </div>
+
+          <div className="s10-interpretation">
+            <strong>WHAT TO NOTICE</strong>
+
+            <p>
+              Click a cell in the disparity map. The selected disparity is
+              used immediately in the correspondence calculation.
+            </p>
+
+            <p>
+              A larger disparity means a larger horizontal shift between the
+              two rectified views. A smaller disparity means a smaller shift.
+            </p>
+
+            <p>
+              <strong>
+                The next step is depth reconstruction. We deliberately do not
+                introduce the depth equation here; that is C3.
+              </strong>
+            </p>
+          </div>
+        </div>
       </section>
     </main>
   );
