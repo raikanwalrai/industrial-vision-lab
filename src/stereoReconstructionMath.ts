@@ -73,9 +73,127 @@ export function calculateRectification(
   };
 }
 
+export type DisparityMap = number[][];
+
+export interface DisparityMapResult {
+  map: DisparityMap;
+  width: number;
+  height: number;
+  selectedRow: number;
+  selectedColumn: number;
+  selectedDisparity: number;
+}
+
+export function calculateDisparityMap(
+  map: DisparityMap,
+  selectedRow: number,
+  selectedColumn: number,
+): DisparityMapResult {
+  if (map.length === 0 || map[0].length === 0) {
+    throw new Error("Disparity map must not be empty");
+  }
+
+  const width = map[0].length;
+
+  if (!map.every((row) => row.length === width)) {
+    throw new Error("Disparity map rows must have equal length");
+  }
+
+  if (
+    selectedRow < 0 ||
+    selectedRow >= map.length ||
+    selectedColumn < 0 ||
+    selectedColumn >= width
+  ) {
+    throw new Error("Selected disparity-map cell is outside the map");
+  }
+
+  return {
+    map,
+    width,
+    height: map.length,
+    selectedRow,
+    selectedColumn,
+    selectedDisparity: map[selectedRow][selectedColumn],
+  };
+}
+
+export function calculateCorrespondingRightX(
+  leftX: number,
+  disparity: number,
+): number {
+  return leftX - disparity;
+}
+
+export const C2_DISPARITY_MAP: DisparityMap = [
+  [20, 20, 20, 20, 20],
+  [20, 40, 40, 40, 20],
+  [20, 40, 60, 40, 20],
+  [20, 80, 80, 80, 20],
+  [20, 20, 20, 20, 20],
+];
+
 export interface StereoMathVerification {
   passed: boolean;
   checks: string[];
+}
+
+export function verifyStereoDisparityMapMath(): StereoMathVerification {
+  const checks: string[] = [];
+
+  const result = calculateDisparityMap(
+    C2_DISPARITY_MAP,
+    2,
+    2,
+  );
+
+  if (result.width === 5 && result.height === 5) {
+    checks.push("C2 disparity map dimensions = 5 x 5");
+  } else {
+    checks.push("C2 disparity map dimensions check failed");
+  }
+
+  if (result.selectedDisparity === 60) {
+    checks.push("C2 selected center disparity = 60 px");
+  } else {
+    checks.push("C2 selected center disparity check failed");
+  }
+
+  if (C2_DISPARITY_MAP[3][1] === 80) {
+    checks.push("C2 high-disparity region = 80 px");
+  } else {
+    checks.push("C2 high-disparity region check failed");
+  }
+
+  if (C2_DISPARITY_MAP[0][0] === 20) {
+    checks.push("C2 low-disparity region = 20 px");
+  } else {
+    checks.push("C2 low-disparity region check failed");
+  }
+
+  const leftX = 420;
+  const disparity = result.selectedDisparity;
+  const rightX = calculateCorrespondingRightX(
+    leftX,
+    disparity,
+  );
+
+  if (rightX === 360) {
+    checks.push("C2 corresponding right x = 360 px");
+  } else {
+    checks.push("C2 corresponding right x check failed");
+  }
+
+  if (calculateDisparity(leftX, rightX) === disparity) {
+    checks.push("C2 reconstructed disparity = 60 px");
+  } else {
+    checks.push("C2 disparity reconstruction check failed");
+  }
+
+  return {
+    passed: checks.every((check) => !check.includes("failed")),
+    checks,
+  };
 }
 
 export function verifyStereoRectificationMath(): StereoMathVerification {
